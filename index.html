@@ -636,7 +636,7 @@ function SubmitIdea({onSubmit,onCancel}){
 
   return(
     <div className="page-enter" style={{width:"100%",maxWidth:700,margin:"0 auto"}}>
-      <button onClick={onCancel} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,marginBottom:24,padding:"6px 0",transition:"color .2s"}} onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3)";}}>← Cancel</button>
+      
       <div style={{background:"var(--bg3)",borderRadius:"var(--r3)",padding:"clamp(20px,4vw,36px)",border:"1px solid var(--border)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#a78bfa,#4f9fff,#4fffb0)"}}/>
         <h2 style={{fontSize:"clamp(20px,4vw,24px)",fontWeight:700,color:"var(--text)",marginBottom:5,fontFamily:"var(--fd)",letterSpacing:-0.4}}>Launch Your Idea</h2>
@@ -810,7 +810,7 @@ function Dashboard({user,ideas,onIdeaClick,onSubmit,onBack}){
   var tier=user.reputation>=3000?{l:"Elite",c:"#fbbf24"}:user.reputation>=2000?{l:"Expert",c:"#a78bfa"}:user.reputation>=500?{l:"Builder",c:"#60a5fa"}:{l:"Newcomer",c:"#4fffb0"};
   return(
     <div className="page-enter">
-      <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:20,padding:"6px 0",transition:"color .2s"}} onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3)";}}>← Back</button>
+      
       <div style={{position:"relative",background:"linear-gradient(135deg,rgba(167,139,250,.08),rgba(79,159,255,.06))",border:"1px solid rgba(167,139,250,.15)",borderRadius:"var(--r3)",padding:"clamp(20px,4vw,28px)",marginBottom:20,overflow:"hidden"}}>
         <div style={{position:"absolute",top:-40,right:-40,width:200,height:200,borderRadius:"50%",background:"rgba(167,139,250,.06)",filter:"blur(50px)",pointerEvents:"none"}}/>
         <div style={{fontSize:10,color:"rgba(167,139,250,.75)",fontWeight:700,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>Welcome back</div>
@@ -884,7 +884,7 @@ function Profile({user,onSignOut,onBack}){
   var rc=roleColor[user.role]||"#a78bfa";
   return(
     <div className="page-enter" style={{maxWidth:700,margin:"0 auto"}}>
-      <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:20,padding:"6px 0",transition:"color .2s"}} onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3)";}}>← Back</button>
+      
       <Card style={{marginBottom:14,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent)"}}/>
         <div style={{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
@@ -1197,10 +1197,10 @@ function App(){
       {toasts.map(function(t){return <Toast key={t.id} msg={t.msg} type={t.type} onClose={function(){setToasts(function(ts){return ts.filter(function(x){return x.id!==t.id;});});}}/>;})}
     </div>
     <main style={{width:"100%",maxWidth:1400,margin:"0 auto",padding:"24px clamp(12px,3vw,24px) 60px",position:"relative",zIndex:1}}>
-      {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}} onSubmit={function(){navigate("submit");}} onBack={goBack}/>}
+      {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}} onSubmit={function(){navigate("submit");}} onBack={function(){navigate("explore");}}/>}
       {page==="explore"&&<Explore ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}}/>}
-      {page==="submit"&&<SubmitIdea onSubmit={handleSubmitIdea} onCancel={goBack}/>}
-      {page==="profile"&&<Profile user={user} onSignOut={handleSignOut} onBack={goBack}/>}
+      {page==="submit"&&<SubmitIdea onSubmit={handleSubmitIdea} onCancel={function(){navigate("explore");}}/>}
+      {page==="profile"&&<Profile user={user} onSignOut={handleSignOut} onBack={function(){navigate("explore");}}/>}
       {page==="detail"&&selected&&<IdeaDetail idea={selected} user={user} onBack={goBack} onVote={handleVote} onComment={handleComment} onLike={handleLike} onCollab={handleCollab}/>}
     </main>
     <footer style={{borderTop:"1px solid rgba(255,255,255,0.04)",padding:"16px 20px",textAlign:"center",position:"relative",zIndex:1}}>
