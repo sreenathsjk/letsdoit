@@ -307,7 +307,8 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
   var handleReply=function(){if(replyText.trim()){onComment(idea.id,replyText,replyTo);setReplyText("");setReplyTo(null);}};
   var handleCollab=function(){
     if(!collabRole){alert("Please select a role first.");return;}
-    onCollab(idea.id,collabRole,collabMsg);
+    var ideaAuthor=SEED_USERS.find(function(u){return u.id===idea.authorId;})||{id:idea.authorId,name:idea.author,role:idea.authorRole,avatar:(idea.author||"").split(" ").map(function(n){return n[0]||"";}).join("").slice(0,2)||"??"};
+    onCollab(idea.id,collabRole,collabMsg||"Hi! I want to collaborate on your idea as a "+collabRole+".",ideaAuthor);
     setCollabSent(true);
   };
 
@@ -572,9 +573,13 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
                   <div style={{fontSize:11,color:roleColor[u.role],marginBottom:5}}>{u.role+" · "+u.country}</div>
                   <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{u.skills.slice(0,2).map(function(s){return <Pill key={s}>{s}</Pill>;})}</div>
                 </div>
-                <div style={{textAlign:"right",flexShrink:0}}>
+                <div style={{textAlign:"right",flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
                   <div style={{fontSize:14,fontWeight:700,color:"var(--accent3)"}}>{[87,79,73,68][i]+"%"}</div>
                   <div style={{fontSize:10,color:"var(--text3)"}}>match</div>
+                  <button onClick={function(e){e.stopPropagation();var msg="Hi "+u.name+"! I saw you matched with my idea and wanted to connect.";onCollab(idea.id,u.role,msg,u);}}
+                    style={{padding:"4px 10px",borderRadius:8,border:"1px solid rgba(167,139,250,0.3)",background:"rgba(167,139,250,0.1)",color:"#a78bfa",cursor:"pointer",fontSize:10,fontWeight:700,marginTop:2}}>
+                    Message
+                  </button>
                 </div>
               </div>
             );})}
@@ -955,6 +960,168 @@ function Profile({user,onSignOut,onBack}){
   );
 }
 
+function MessagesPanel({convs,user,activeConv,setActiveConv,onSend,onClose}){
+  const [draft,setDraft]=useState("");
+  const [search,setSearch]=useState("");
+  const messagesEndRef=useRef(null);
+  const inputRef=useRef(null);
+
+  var conv=convs.find(function(c){return c.id===activeConv;})||convs[0]||null;
+
+  useEffect(function(){
+    if(messagesEndRef.current){
+      messagesEndRef.current.scrollIntoView({behavior:"smooth"});
+    }
+  },[activeConv,conv&&conv.messages&&conv.messages.length]);
+
+  useEffect(function(){
+    if(inputRef.current&&activeConv)inputRef.current.focus();
+  },[activeConv]);
+
+  var getOtherUser=function(c){
+    var otherId=c.participants.find(function(p){return p!==user.id;});
+    var names={1:"Aria Chen",2:"Marcus Webb",3:"Sofia Reyes",4:"Kai Nakamura",5:"Zara Ahmed"};
+    var roles={1:"Founder",2:"Developer",3:"Designer",4:"Investor",5:"Marketer"};
+    var avatars={1:"AC",2:"MW",3:"SR",4:"KN",5:"ZA"};
+    return {id:otherId,name:names[otherId]||"User",role:roles[otherId]||"Founder",avatar:avatars[otherId]||"??"};
+  };
+
+  var filteredConvs=convs.filter(function(c){
+    if(!search)return true;
+    var other=getOtherUser(c);
+    return other.name.toLowerCase().includes(search.toLowerCase())||c.ideaTitle.toLowerCase().includes(search.toLowerCase());
+  });
+
+  var handleSend=function(){
+    if(!draft.trim()||!conv)return;
+    onSend(conv.id,draft);
+    setDraft("");
+    setTimeout(function(){if(messagesEndRef.current)messagesEndRef.current.scrollIntoView({behavior:"smooth"});},50);
+  };
+
+  var formatTime=function(t){return t;};
+
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"flex-end",pointerEvents:"none"}}>
+      {/* Backdrop */}
+      <div onClick={onClose} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.45)",pointerEvents:"all",backdropFilter:"blur(3px)"}}/>
+      {/* Panel */}
+      <div className="chat-panel" style={{position:"relative",pointerEvents:"all",width:"min(100vw,900px)",height:"min(100vh,640px)",display:"flex",borderRadius:"20px 20px 0 0",overflow:"hidden",border:"1px solid rgba(255,255,255,0.09)",borderBottom:"none",boxShadow:"0 -8px 48px rgba(0,0,0,0.6)",margin:"0 auto"}}>
+
+        {/* ── Sidebar: conversation list ── */}
+        <div style={{width:"clamp(200px,35%,280px)",background:"var(--bg2)",borderRight:"1px solid rgba(255,255,255,0.07)",display:"flex",flexDirection:"column",flexShrink:0}}>
+          {/* Header */}
+          <div style={{padding:"16px 16px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div style={{fontSize:14,fontWeight:700,color:"var(--text)",fontFamily:"var(--fd)"}}>Messages</div>
+              <button onClick={onClose} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:18,lineHeight:1,padding:"2px 6px"}}>×</button>
+            </div>
+            <input value={search} onChange={function(e){setSearch(e.target.value);}} placeholder="Search conversations..."
+              style={{width:"100%",padding:"8px 12px",borderRadius:10,border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.04)",color:"var(--text)",fontSize:12}}/>
+          </div>
+          {/* Conversation list */}
+          <div style={{flex:1,overflowY:"auto"}}>
+            {filteredConvs.length===0&&<div style={{padding:"30px 16px",textAlign:"center",fontSize:12,color:"var(--text3)"}}>No conversations yet</div>}
+            {filteredConvs.map(function(c){
+              var other=getOtherUser(c);
+              var isActive=c.id===activeConv;
+              var rc={"Founder":"#a78bfa","Developer":"#60a5fa","Designer":"#f9a8d4","Marketer":"#fb923c","Investor":"#fbbf24"}[other.role]||"#a78bfa";
+              return(
+                <div key={c.id} onClick={function(){setActiveConv(c.id);}}
+                  style={{padding:"12px 14px",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.04)",transition:"background .15s",
+                    background:isActive?"rgba(167,139,250,0.1)":"transparent",position:"relative"}}>
+                  {c.unread>0&&<div style={{position:"absolute",top:12,right:12,width:7,height:7,borderRadius:"50%",background:"#ff4f7b"}}/>}
+                  <div style={{display:"flex",gap:9,alignItems:"flex-start"}}>
+                    <div style={{width:34,height:34,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:rc,flexShrink:0}}>{other.avatar}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:2}}>
+                        <div style={{fontSize:12,fontWeight:700,color:isActive?"var(--text)":"var(--text2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{other.name}</div>
+                        <div style={{fontSize:10,color:"var(--text3)",flexShrink:0,marginLeft:4}}>{c.lastTime}</div>
+                      </div>
+                      <div style={{fontSize:10,color:"#a78bfa",marginBottom:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.ideaTitle}</div>
+                      <div style={{fontSize:11,color:"var(--text3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontWeight:c.unread>0?600:400,color:c.unread>0?"var(--text2)":"var(--text3)"}}>{c.lastMsg}</div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Main chat area ── */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",background:"var(--bg)",minWidth:0}}>
+          {!conv?(
+            <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:12,padding:24}}>
+              <div style={{fontSize:36}}>💬</div>
+              <div style={{fontSize:14,fontWeight:600,color:"var(--text)"}}>Your Messages</div>
+              <div style={{fontSize:12,color:"var(--text3)",textAlign:"center",maxWidth:240}}>Send a collaboration request to start a conversation with a founder or builder.</div>
+            </div>
+          ):(function(){
+            var other=getOtherUser(conv);
+            var rc={"Founder":"#a78bfa","Developer":"#60a5fa","Designer":"#f9a8d4","Marketer":"#fb923c","Investor":"#fbbf24"}[other.role]||"#a78bfa";
+            return <>
+              {/* Chat header */}
+              <div style={{padding:"12px 16px",borderBottom:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+                <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:rc}}>{other.avatar}</div>
+                <div>
+                  <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{other.name}</div>
+                  <div style={{fontSize:10,color:"var(--text3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"clamp(120px,30vw,300px)"}}>{"Re: "+conv.ideaTitle}</div>
+                </div>
+                <div style={{marginLeft:"auto",display:"flex",gap:8,alignItems:"center"}}>
+                  <div style={{width:7,height:7,borderRadius:"50%",background:"var(--accent3)",boxShadow:"0 0 6px var(--accent3)"}}/>
+                  <span style={{fontSize:10,color:"var(--accent3)"}}>Online</span>
+                </div>
+              </div>
+              {/* Messages */}
+              <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:10}}>
+                {/* Idea context pill */}
+                <div style={{textAlign:"center",marginBottom:4}}>
+                  <span style={{padding:"4px 12px",borderRadius:20,fontSize:10,background:"rgba(167,139,250,0.1)",color:"#a78bfa",border:"1px solid rgba(167,139,250,0.2)"}}>{"💡 "+conv.ideaTitle}</span>
+                </div>
+                {conv.messages.map(function(m){
+                  var isMe=m.from===user.id;
+                  return(
+                    <div key={m.id} className="msg-bubble" style={{display:"flex",justifyContent:isMe?"flex-end":"flex-start",gap:8,alignItems:"flex-end"}}>
+                      {!isMe&&<div style={{width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,color:rc,flexShrink:0}}>{other.avatar}</div>}
+                      <div style={{maxWidth:"72%"}}>
+                        <div style={{padding:"10px 14px",borderRadius:isMe?"16px 16px 4px 16px":"16px 16px 16px 4px",fontSize:13,lineHeight:1.55,wordBreak:"break-word",
+                          background:isMe?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.07)",
+                          color:isMe?"#fff":"var(--text)",
+                          boxShadow:isMe?"0 2px 12px rgba(167,139,250,0.3)":"none"}}>
+                          {m.text}
+                        </div>
+                        <div style={{fontSize:10,color:"var(--text3)",marginTop:3,textAlign:isMe?"right":"left",display:"flex",alignItems:"center",gap:4,justifyContent:isMe?"flex-end":"flex-start"}}>
+                          {m.time}
+                          {isMe&&<span style={{color:m.read?"#4fffb0":"var(--text3)"}}>{m.read?"✓✓":"✓"}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={messagesEndRef}/>
+              </div>
+              {/* Input bar */}
+              <div style={{padding:"12px 14px",borderTop:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",gap:8,alignItems:"flex-end",flexShrink:0}}>
+                <textarea ref={inputRef} value={draft} onChange={function(e){setDraft(e.target.value);}}
+                  onKeyDown={function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
+                  placeholder={"Message "+other.name+"..."}
+                  rows={1}
+                  style={{flex:1,padding:"10px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.05)",color:"var(--text)",fontSize:13,resize:"none",lineHeight:1.5,fontFamily:"var(--fb)",maxHeight:100,overflowY:"auto"}}/>
+                <button onClick={handleSend} disabled={!draft.trim()}
+                  style={{width:40,height:40,borderRadius:12,border:"none",cursor:draft.trim()?"pointer":"not-allowed",flexShrink:0,
+                    background:draft.trim()?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.06)",
+                    color:draft.trim()?"#fff":"var(--text3)",fontSize:16,transition:"all .2s",
+                    display:"flex",alignItems:"center",justifyContent:"center"}}>➤</button>
+              </div>
+            </>;
+          })()}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 function Auth({onLogin}){
   const [mode,setMode]=useState("login");
   const [form,setForm]=useState({name:"",email:"",password:"",role:"Founder",skills:"",country:"",bio:""});
@@ -1046,8 +1213,9 @@ function App(){
     try{
       var u=localStorage.getItem("ldi_user");
       var id=localStorage.getItem("ldi_ideas");
-      return {user:u?JSON.parse(u):null, ideas:id?JSON.parse(id):SEED_IDEAS};
-    }catch(e){return {user:null,ideas:SEED_IDEAS};}
+      var cv=localStorage.getItem("ldi_convs");
+      return {user:u?JSON.parse(u):null, ideas:id?JSON.parse(id):SEED_IDEAS, convs:cv?JSON.parse(cv):SEED_CONVS};
+    }catch(e){return {user:null,ideas:SEED_IDEAS,convs:SEED_CONVS};}
   };
   var saved=loadState();
 
@@ -1055,10 +1223,13 @@ function App(){
   const [page,setPage]=useState("explore");
   const [history,setHistory]=useState([]);
   const [ideas,setIdeas]=useState(saved.ideas);
+  const [convs,setConvs]=useState(saved.convs);
+  const [activeConv,setActiveConv]=useState(null);
+  const [showMessages,setShowMessages]=useState(false);
   const [selected,setSelected]=useState(null);
   const [toasts,setToasts]=useState([]);
 
-  // Persist user to localStorage whenever it changes
+  // Persist user
   useEffect(function(){
     try{
       if(user)localStorage.setItem("ldi_user",JSON.stringify(user));
@@ -1066,10 +1237,15 @@ function App(){
     }catch(e){}
   },[user]);
 
-  // Persist ideas to localStorage whenever they change
+  // Persist ideas
   useEffect(function(){
     try{localStorage.setItem("ldi_ideas",JSON.stringify(ideas));}catch(e){}
   },[ideas]);
+
+  // Persist convs
+  useEffect(function(){
+    try{localStorage.setItem("ldi_convs",JSON.stringify(convs));}catch(e){}
+  },[convs]);
 
   var notify=function(msg,type){
     type=type||"success";var id=Date.now();
@@ -1146,10 +1322,55 @@ function App(){
     });});
   };
 
-  var handleCollab=function(ideaId,role,message){
+  var handleCollab=function(ideaId,role,message,otherUser){
     setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{collaborators:(i.collaborators||0)+1}):i;});});
+    // Auto-create a conversation when collaboration request is sent
+    if(otherUser&&message){
+      var idea=ideas.find(function(i){return i.id===ideaId;});
+      var existingConv=convs.find(function(c){
+        return c.participants.includes(user.id)&&c.participants.includes(otherUser.id)&&c.ideaId===ideaId;
+      });
+      if(!existingConv){
+        var newConv={
+          id:"c"+Date.now(),
+          participants:[user.id,otherUser.id],
+          ideaId:ideaId,
+          ideaTitle:idea?idea.title:"",
+          lastMsg:message,
+          lastTime:"Just now",
+          unread:0,
+          messages:[{id:"m"+Date.now(),from:user.id,text:message,time:"Just now",read:true}]
+        };
+        setConvs(function(cv){return [newConv,...cv];});
+        setActiveConv(newConv.id);
+        setShowMessages(true);
+        notify("Collaboration request sent! Chat opened.","success");
+        return;
+      }
+    }
     notify("Collaboration request sent as "+role+"! +30 reputation when approved.","success");
   };
+
+  var handleSendMessage=function(convId,text){
+    if(!text.trim())return;
+    var newMsg={id:"m"+Date.now(),from:user.id,text:text.trim(),time:"Just now",read:true};
+    setConvs(function(cv){return cv.map(function(c){
+      if(c.id!==convId)return c;
+      return Object.assign({},c,{messages:[...c.messages,newMsg],lastMsg:text.trim(),lastTime:"Just now"});
+    });});
+  };
+
+  var handleOpenConv=function(convId){
+    // Mark all as read
+    setConvs(function(cv){return cv.map(function(c){
+      if(c.id!==convId)return c;
+      return Object.assign({},c,{unread:0,messages:c.messages.map(function(m){return Object.assign({},m,{read:true});})});
+    });});
+    setActiveConv(convId);
+    setShowMessages(true);
+  };
+
+  var totalUnread=convs.reduce(function(acc,c){return acc+(c.unread||0);},0);
 
   var handleSubmitIdea=function(data){
     var ni=Object.assign({},data,{
@@ -1164,7 +1385,7 @@ function App(){
     navigate("explore");
   };
 
-  var navItems=[{id:"dashboard",label:"Home",icon:"⊞"},{id:"explore",label:"Explore",icon:"✦"},{id:"submit",label:"Launch",icon:"+"},{id:"profile",label:"Profile",icon:"◎"}];
+  var navItems=[{id:"dashboard",label:"Home",icon:"⊞"},{id:"explore",label:"Explore",icon:"✦"},{id:"submit",label:"Launch",icon:"+"},{id:"messages",label:"Messages",icon:"✉"},{id:"profile",label:"Profile",icon:"◎"}];
 
   if(!user)return <Auth onLogin={function(u){setUser(u);setPage("explore");try{localStorage.setItem("ldi_user",JSON.stringify(u));}catch(e){}}}/>;
 
@@ -1176,11 +1397,12 @@ function App(){
         <button onClick={function(){navigate("dashboard");}} style={{background:"linear-gradient(135deg,#a78bfa,#60a5fa)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",border:"none",cursor:"pointer",fontSize:19,fontWeight:700,fontFamily:"var(--fd)",letterSpacing:-0.8}}>LetsDoIt</button>
         <div style={{display:"flex",gap:2}}>
           {navItems.map(function(n){return(
-            <button key={n.id} onClick={function(){navigate(n.id);}}
-              style={{padding:"7px 9px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all .2s",
-                background:page===n.id&&page!=="detail"?"rgba(167,139,250,.12)":"transparent",
-                color:page===n.id&&page!=="detail"?"#a78bfa":"rgba(240,240,248,.4)"}}>
+            <button key={n.id} onClick={function(){if(n.id==="messages"){setShowMessages(true);setActiveConv(activeConv||convs[0]?.id||null);}else{navigate(n.id);}}}
+              style={{padding:"7px 9px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all .2s",position:"relative",
+                background:(n.id==="messages"?showMessages:page===n.id&&page!=="detail")?"rgba(167,139,250,.12)":"transparent",
+                color:(n.id==="messages"?showMessages:page===n.id&&page!=="detail")?"#a78bfa":"rgba(240,240,248,.4)"}}>
               <span style={{marginRight:3}}>{n.icon}</span><span className="nav-text">{n.label}</span>
+              {n.id==="messages"&&totalUnread>0&&<span style={{position:"absolute",top:3,right:3,width:8,height:8,borderRadius:"50%",background:"#ff4f7b",border:"1px solid var(--bg)"}}/>}
             </button>
           );})}
         </div>
@@ -1206,6 +1428,14 @@ function App(){
     <footer style={{borderTop:"1px solid rgba(255,255,255,0.04)",padding:"16px 20px",textAlign:"center",position:"relative",zIndex:1}}>
       <span style={{fontSize:10,color:"var(--text3)",letterSpacing:0.8}}>LETSDOIT · AI-POWERED STARTUP COLLABORATION · WHERE IDEAS BECOME COMPANIES</span>
     </footer>
+    {showMessages&&<MessagesPanel
+      convs={convs}
+      user={user}
+      activeConv={activeConv}
+      setActiveConv={function(id){handleOpenConv(id);}}
+      onSend={handleSendMessage}
+      onClose={function(){setShowMessages(false);}}
+    />}
   </>;
 }
 
