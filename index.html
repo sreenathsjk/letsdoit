@@ -17,598 +17,716 @@
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-:root {
-  --bg:#080810;--bg2:#0e0e1a;--bg3:#13131f;
-  --surface:rgba(255,255,255,0.032);--surface2:rgba(255,255,255,0.06);
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --text:#f0f0f8;--text2:rgba(240,240,248,0.55);--text3:rgba(240,240,248,0.3);
-  --accent:#e8ff47;--accent2:#ff4f7b;--accent3:#4fffb0;--accent4:#4f9fff;
-  --purple:#a78bfa;
-  --font-display:'Clash Display','ClashDisplay-Variable',sans-serif;
-  --font-body:'Cabinet Grotesk',sans-serif;
-  --font-serif:'Instrument Serif',serif;
+:root{
+  --bg:#080810;--bg2:#0e0e1a;--bg3:#13131f;--bg4:#1a1a2a;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#f0f0f8;--text2:rgba(240,240,248,0.58);--text3:rgba(240,240,248,0.32);
+  --accent:#e8ff47;--accent2:#ff4f7b;--accent3:#4fffb0;--accent4:#4f9fff;--purple:#a78bfa;
+  --fd:'Clash Display','ClashDisplay-Variable',sans-serif;
+  --fb:'Cabinet Grotesk',sans-serif;
+  --fs:'Instrument Serif',serif;
+  --r:14px;--r2:20px;--r3:24px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 #root{width:100%;}
-::-webkit-scrollbar{width:3px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(167,139,250,0.25);border-radius:2px;}
-input,textarea,select,button{font-family:var(--font-body);}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(167,139,250,0.25);border-radius:2px;}
+input,textarea,select,button{font-family:var(--fb);}
 input::placeholder,textarea::placeholder{color:var(--text3);}
 select option{background:#13131f;color:var(--text);}
-input:focus,textarea:focus,select:focus{border-color:rgba(167,139,250,0.35)!important;outline:none;}
+input:focus,textarea:focus,select:focus{border-color:rgba(167,139,250,0.4)!important;outline:none;}
 button:focus-visible{outline:2px solid rgba(167,139,250,0.6);outline-offset:2px;}
-a:focus-visible{outline:2px solid rgba(167,139,250,0.6);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-@keyframes pulse{0%,100%{opacity:0.4;transform:scale(1);}50%{opacity:1;transform:scale(1.4);}}
-@keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
-
-/* ── Responsive layout ── */
-@media (min-width:640px){
-  main{padding-left:24px!important;padding-right:24px!important;}
-  nav .nav-inner{padding-left:24px!important;padding-right:24px!important;}
-}
-@media (min-width:1024px){
-  main{padding-left:40px!important;padding-right:40px!important;}
-  nav .nav-inner{padding-left:40px!important;padding-right:40px!important;}
-}
-@media (min-width:1280px){
-  main{padding-left:56px!important;padding-right:56px!important;}
-}
-/* Mobile: nav label text hidden on very small screens */
-@media (max-width:400px){
-  .nav-label{display:none;}
-}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+@keyframes pulse{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:none;}}
+.page-enter{animation:fadeUp 0.35s ease both;}
+@media(max-width:480px){.hide-mobile{display:none!important;}}
+@media(max-width:520px){.nav-text{display:none!important;}}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect } = React;
+const {useState,useEffect,useRef}=React;
 
-const USERS = [
-  {id:1,name:"Aria Chen",role:"Founder",avatar:"AC",country:"🇺🇸 USA",skills:["Strategy","Product","Fundraising"],bio:"Serial founder with 2 exits. Passionate about FinTech and AI.",reputation:2840,ideas:7,collabs:12},
-  {id:2,name:"Marcus Webb",role:"Developer",avatar:"MW",country:"🇬🇧 UK",skills:["React","Node.js","AWS"],bio:"Full-stack engineer who loves turning ideas into MVPs fast.",reputation:1920,ideas:3,collabs:8},
-  {id:3,name:"Sofia Reyes",role:"Designer",avatar:"SR",country:"🇪🇸 Spain",skills:["UI/UX","Figma","Branding"],bio:"Product designer crafting experiences users love.",reputation:1540,ideas:4,collabs:6},
-  {id:4,name:"Kai Nakamura",role:"Investor",avatar:"KN",country:"🇯🇵 Japan",skills:["VC","Due Diligence","Mentoring"],bio:"Angel investor focused on B2B SaaS and deep tech.",reputation:3210,ideas:2,collabs:15},
-  {id:5,name:"Zara Ahmed",role:"Marketer",avatar:"ZA",country:"🇦🇪 UAE",skills:["Growth","SEO","Content"],bio:"Growth hacker who scaled startups from 0 to 100k users.",reputation:1750,ideas:5,collabs:9},
+const SEED_USERS=[
+  {id:1,name:"Aria Chen",role:"Founder",avatar:"AC",country:"USA",skills:["Strategy","Product","Fundraising"],bio:"Serial founder with 2 exits. Passionate about FinTech and AI.",reputation:2840,ideas:7,collabs:12},
+  {id:2,name:"Marcus Webb",role:"Developer",avatar:"MW",country:"UK",skills:["React","Node.js","AWS"],bio:"Full-stack engineer who loves turning ideas into MVPs fast.",reputation:1920,ideas:3,collabs:8},
+  {id:3,name:"Sofia Reyes",role:"Designer",avatar:"SR",country:"Spain",skills:["UI/UX","Figma","Branding"],bio:"Product designer crafting experiences users love.",reputation:1540,ideas:4,collabs:6},
+  {id:4,name:"Kai Nakamura",role:"Investor",avatar:"KN",country:"Japan",skills:["VC","Due Diligence","Mentoring"],bio:"Angel investor focused on B2B SaaS and deep tech.",reputation:3210,ideas:2,collabs:15},
+  {id:5,name:"Zara Ahmed",role:"Marketer",avatar:"ZA",country:"UAE",skills:["Growth","SEO","Content"],bio:"Growth hacker who scaled startups from 0 to 100k users.",reputation:1750,ideas:5,collabs:9},
 ];
 
-const IDEAS = [
+const mkR=(d)=>({marketDemand:d[0],competition:d[1],monetization:d[2],scalability:d[3],risk:d[4],success:d[5],investor:d[6],competitors:d[7],trends:d[8],roadmap:d[9],stack:d[10]});
+
+const SEED_IDEAS=[
   {id:1,title:"AI-Powered Legal Contract Analyzer",authorId:1,author:"Aria Chen",authorRole:"Founder",
    problem:"Small businesses spend thousands on legal fees reviewing contracts they barely understand.",
    solution:"An AI platform that reads, summarizes, and flags risks in legal contracts in seconds.",
-   targetUsers:"SMBs, Freelancers, Startups",marketSize:"$15B",monetization:"SaaS $49–$199/month",
+   targetUsers:"SMBs, Freelancers, Startups",marketSize:"$15B",monetization:"SaaS $49-$199/month",
    industry:"LegalTech",tags:["AI","Legal","B2B","SaaS"],aiScore:87,validationScore:92,
    votes:{high:47,improve:8,notViable:3},collaborators:3,views:1240,status:"Trending",seeking:["Developer","Designer"],createdAt:"2024-01-10",
-   report:{marketDemand:88,competition:62,monetization:91,scalability:85,risk:32,success:78,investor:71,
-     competitors:["DoNotPay","Ironclad","ContractPodAi"],
-     trends:["Legal AI adoption growing 34% YoY","SMB digitization post-COVID","Remote work driving contract volume"],
-     roadmap:["MVP: Upload & summarize contracts","Add risk flagging & clause extraction","Integration with DocuSign","Enterprise tier"],
-     stack:["Next.js","OpenAI API","PostgreSQL","Redis","Stripe"]},
+   report:mkR([88,62,91,85,32,78,71,["DoNotPay","Ironclad","ContractPodAi"],["Legal AI adoption +34% YoY","SMB digitization post-COVID","Remote work driving contract volume"],["MVP: Upload and summarize contracts","Add risk flagging and clause extraction","Integrate DocuSign and Google Drive","Enterprise team tier"],["Next.js","OpenAI API","PostgreSQL","Redis","Stripe"]]),
    comments:[
-     {id:1,user:"Marcus Webb",avatar:"MW",text:"This is a huge pain point. I'd build the MVP in 3 weeks. Count me in!",likes:12,time:"2h ago",replies:[{id:2,user:"Sofia Reyes",avatar:"SR",text:"I can handle the UX — legal interfaces need to feel trustworthy.",likes:5,time:"1h ago"}]},
-     {id:3,user:"Kai Nakamura",avatar:"KN",text:"Seen 4 companies tackle this. What's your moat?",likes:8,time:"45m ago",replies:[]},
+     {id:1,userId:2,user:"Marcus Webb",avatar:"MW",text:"Huge pain point. I'd build the MVP in 3 weeks. Count me in!",likes:12,liked:false,time:"2h ago",replies:[{id:2,userId:3,user:"Sofia Reyes",avatar:"SR",text:"I can handle the UX — legal interfaces need to feel trustworthy.",likes:5,liked:false,time:"1h ago"}]},
+     {id:3,userId:4,user:"Kai Nakamura",avatar:"KN",text:"Seen 4 companies tackle this. What's your moat?",likes:8,liked:false,time:"45m ago",replies:[]},
    ]},
   {id:2,title:"Climate Credits Marketplace for SMBs",authorId:5,author:"Zara Ahmed",authorRole:"Marketer",
    problem:"Small businesses want to go carbon neutral but existing markets are complex and expensive.",
    solution:"A simplified marketplace where SMBs can buy verified carbon credits with a few clicks.",
-   targetUsers:"Small & Medium Businesses",marketSize:"$2.4B",monetization:"2% marketplace fee + premium analytics",
+   targetUsers:"Small and Medium Businesses",marketSize:"$2.4B",monetization:"2% marketplace fee + premium analytics",
    industry:"CleanTech",tags:["Climate","Marketplace","Sustainability","B2B"],aiScore:74,validationScore:78,
    votes:{high:31,improve:14,notViable:5},collaborators:1,views:890,status:"Hot",seeking:["Developer","Co-founder"],createdAt:"2024-01-12",
-   report:{marketDemand:79,competition:55,monetization:72,scalability:81,risk:45,success:64,investor:58,
-     competitors:["Pachama","South Pole","Terrapass"],trends:["ESG mandates growing","Consumer demand for green brands","Carbon market stabilizing"],
-     roadmap:["Partner with credit providers","Build SMB onboarding","Launch B2B marketing","Add impact reporting"],stack:["React","Node.js","Stripe","Mapbox","MongoDB"]},
-   comments:[{id:4,user:"Aria Chen",avatar:"AC",text:"Love the SMB angle. Most solutions are enterprise-only. Smart positioning.",likes:9,time:"3h ago",replies:[]}]},
+   report:mkR([79,55,72,81,45,64,58,["Pachama","South Pole","Terrapass"],["ESG mandates growing","Consumer demand for green brands","Carbon market stabilizing"],["Partner with 3 verified credit providers","Build SMB onboarding dashboard","Launch B2B marketing campaign","Add impact reporting"],["React","Node.js","Stripe","Mapbox","MongoDB"]]),
+   comments:[{id:4,userId:1,user:"Aria Chen",avatar:"AC",text:"Love the SMB angle. Most solutions are enterprise-only.",likes:9,liked:false,time:"3h ago",replies:[]}]},
   {id:3,title:"Async Video Feedback for Remote Teams",authorId:2,author:"Marcus Webb",authorRole:"Developer",
    problem:"Remote teams waste hours in synchronous meetings just to give product feedback.",
    solution:"A Loom-meets-Figma tool where teams leave timestamped video annotations on designs.",
    targetUsers:"Remote Product Teams, Agencies",marketSize:"$8.2B",monetization:"Freemium + $12/seat/month",
    industry:"ProductivityTech",tags:["Remote","Video","Collaboration","SaaS"],aiScore:81,validationScore:85,
    votes:{high:39,improve:11,notViable:2},collaborators:2,views:1560,status:"Trending",seeking:["Designer","Marketer"],createdAt:"2024-01-08",
-   report:{marketDemand:85,competition:70,monetization:83,scalability:88,risk:38,success:72,investor:65,
-     competitors:["Loom","Jam.dev","Marker.io"],trends:["Remote work permanent for 30%","Video-first async growing","Feedback tools +45%"],
-     roadmap:["Chrome extension for capture","Annotation layer over URLs","Slack/Notion integrations","Team analytics"],stack:["WebRTC","Canvas API","React","Cloudflare Stream","Supabase"]},
-   comments:[{id:5,user:"Sofia Reyes",avatar:"SR",text:"YES. This would completely change my workflow.",likes:15,time:"5h ago",replies:[{id:6,user:"Marcus Webb",avatar:"MW",text:"Already have a prototype. Want to be design co-founder?",likes:7,time:"4h ago"}]}]},
-  {id:4,title:"NeuroFit — Personalized AI Workout Coach",authorId:3,author:"Sofia Reyes",authorRole:"Designer",
-   problem:"Generic workout apps don't adapt to your recovery, stress, or daily energy levels.",
+   report:mkR([85,70,83,88,38,72,65,["Loom","Jam.dev","Marker.io"],["Remote work permanent for 30% of workforce","Video-first async culture growing","Design feedback tools +45% adoption"],["Chrome extension for screen capture","Annotation layer over any URL","Slack and Notion integrations","Team workspace analytics"],["WebRTC","Canvas API","React","Cloudflare Stream","Supabase"]]),
+   comments:[{id:5,userId:3,user:"Sofia Reyes",avatar:"SR",text:"YES. This would completely change my workflow.",likes:15,liked:false,time:"5h ago",replies:[{id:6,userId:2,user:"Marcus Webb",avatar:"MW",text:"Already have a prototype. Want to co-found?",likes:7,liked:false,time:"4h ago"}]}]},
+  {id:4,title:"NeuroFit Personalized AI Workout Coach",authorId:3,author:"Sofia Reyes",authorRole:"Designer",
+   problem:"Generic workout apps do not adapt to recovery, stress levels, or daily energy.",
    solution:"An AI fitness coach that syncs with wearables to dynamically adjust workout intensity.",
    targetUsers:"Fitness Enthusiasts, Biohackers",marketSize:"$6.7B",monetization:"$19.99/month + brand partnerships",
    industry:"HealthTech",tags:["AI","Fitness","Wearables","Consumer"],aiScore:79,validationScore:81,
    votes:{high:28,improve:16,notViable:4},collaborators:1,views:720,status:"New",seeking:["Developer","Co-founder"],createdAt:"2024-01-14",
-   report:{marketDemand:82,competition:74,monetization:76,scalability:79,risk:42,success:61,investor:53,
-     competitors:["Whoop","Peloton","Freeletics"],trends:["Wearable adoption up 29%","Mental health + fitness convergence","AI personalization expected"],
-     roadmap:["Apple Health integration","AI adaptation model","Mobile app launch","Premium content"],stack:["React Native","TensorFlow Lite","HealthKit","FastAPI","Firebase"]},
+   report:mkR([82,74,76,79,42,61,53,["Whoop","Peloton","Freeletics"],["Wearable adoption up 29% YoY","Mental health and fitness convergence","AI personalization now expected"],["Apple Health and Garmin API integration","AI adaptation model training","Mobile app with coach persona","Premium content tier"],["React Native","TensorFlow Lite","HealthKit","FastAPI","Firebase"]]),
    comments:[]},
   {id:5,title:"B2B Invoice Financing Marketplace",authorId:4,author:"Kai Nakamura",authorRole:"Investor",
-   problem:"60% of SMB cash flow problems come from late invoice payments, crippling growth.",
+   problem:"60% of SMB cash flow problems stem from late invoice payments crippling growth.",
    solution:"A marketplace connecting SMBs with verified invoice financiers for instant liquidity.",
-   targetUsers:"SMBs with B2B receivables",marketSize:"$3.2T global market",monetization:"1.5% origination + 0.5% monthly",
+   targetUsers:"SMBs with B2B receivables",marketSize:"$3.2T global market",monetization:"1.5% origination fee + 0.5% monthly",
    industry:"FinTech",tags:["FinTech","Marketplace","B2B","Finance"],aiScore:91,validationScore:88,
    votes:{high:52,improve:6,notViable:1},collaborators:4,views:2100,status:"Trending",seeking:["Developer"],createdAt:"2024-01-05",
-   report:{marketDemand:94,competition:58,monetization:96,scalability:90,risk:28,success:84,investor:89,
-     competitors:["Fundbox","BlueVine","Marqeta"],trends:["SMB FinTech at record high","Open banking enabling faster verification","Supply chain finance +12%"],
-     roadmap:["Lender onboarding & verification","SMB invoice upload & KYC","Automated credit scoring","Secondary market"],stack:["Next.js","Plaid API","Stripe Connect","PostgreSQL","Redis"]},
+   report:mkR([94,58,96,90,28,84,89,["Fundbox","BlueVine","Marqeta"],["SMB FinTech investment at record high","Open banking enabling faster verification","Supply chain finance growing 12% annually"],["Build lender onboarding and verification","SMB invoice upload and KYC flow","Automated credit scoring engine","Secondary market for invoice trading"],["Next.js","Plaid API","Stripe Connect","PostgreSQL","Redis","AWS"]]),
    comments:[
-     {id:7,user:"Aria Chen",avatar:"AC",text:"Monster market. The regulatory moat will protect you from copycats.",likes:18,time:"1d ago",replies:[]},
-     {id:8,user:"Zara Ahmed",avatar:"ZA",text:"Partner with QuickBooks for go-to-market — massive distribution.",likes:11,time:"20h ago",replies:[]},
+     {id:7,userId:1,user:"Aria Chen",avatar:"AC",text:"Monster market. The regulatory moat protects you from copycats.",likes:18,liked:false,time:"1d ago",replies:[]},
+     {id:8,userId:5,user:"Zara Ahmed",avatar:"ZA",text:"Partner with QuickBooks for go-to-market — massive distribution.",likes:11,liked:false,time:"20h ago",replies:[]},
    ]},
 ];
 
-async function callAI(prompt, sys) {
-  try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,
-        system:sys||"You are an elite startup advisor. Be sharp, concise, actionable.",
+async function callAI(prompt,sys){
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","x-api-key":""},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,
+        system:sys||"You are an elite startup advisor and venture analyst. Be sharp, direct, and actionable. Use plain text only with no markdown symbols.",
         messages:[{role:"user",content:prompt}]})
     });
-    const d = await r.json();
-    return d.content?.[0]?.text||"";
-  } catch(e) { return "AI service unavailable. Please try again."; }
+    if(!r.ok)throw new Error("API error "+r.status);
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message);
+    return d.content?.[0]?.text||"No response received.";
+  }catch(e){
+    return "AI service unavailable right now. Please try again.";
+  }
 }
 
-const scoreColor = s => s>=80?"#e8ff47":s>=60?"#ffa94d":"#ff4f7b";
-const roleColor = {Founder:"#a78bfa",Developer:"#60a5fa",Designer:"#f9a8d4",Marketer:"#fb923c",Investor:"#fbbf24"};
-const statusStyle = {
-  Trending:{bg:"rgba(232,255,71,0.08)",color:"#e8ff47"},
-  Hot:{bg:"rgba(255,79,123,0.08)",color:"#ff4f7b"},
-  New:{bg:"rgba(79,255,176,0.08)",color:"#4fffb0"},
-};
+const scoreColor=s=>s>=80?"#e8ff47":s>=60?"#ffa94d":"#ff4f7b";
+const roleColor={Founder:"#a78bfa",Developer:"#60a5fa",Designer:"#f9a8d4",Marketer:"#fb923c",Investor:"#fbbf24"};
+const statusCfg={Trending:{bg:"rgba(232,255,71,0.09)",c:"#e8ff47"},Hot:{bg:"rgba(255,79,123,0.09)",c:"#ff4f7b"},New:{bg:"rgba(79,255,176,0.09)",c:"#4fffb0"}};
+const INDUSTRIES=["FinTech","LegalTech","HealthTech","EdTech","CleanTech","ProductivityTech","RetailTech","PropTech","DeepTech","ConsumerTech"];
+const ROLES=["Co-founder","Developer","Designer","Marketer"];
 
-function ScoreArc({score, size=60, label}) {
-  const r=size/2-6, c=2*Math.PI*r, col=scoreColor(score);
-  return (
-    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+function ScoreArc({score,size,label}){
+  size=size||60;
+  const r=size/2-6,c=2*Math.PI*r,col=scoreColor(score);
+  return(
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
       <svg width={size} height={size} style={{transform:"rotate(-90deg)"}}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4"/>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="4"/>
         <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={col} strokeWidth="4"
           strokeDasharray={c} strokeDashoffset={c-(score/100)*c} strokeLinecap="round"
-          style={{filter:`drop-shadow(0 0 5px ${col}88)`,transition:"all 1s ease"}}/>
+          style={{filter:"drop-shadow(0 0 6px "+col+"88)",transition:"stroke-dashoffset 1.2s ease"}}/>
         <text x={size/2} y={size/2} textAnchor="middle" dominantBaseline="middle"
-          style={{fill:col,fontSize:size*0.21,fontWeight:700,fontFamily:"'Clash Display','ClashDisplay-Variable',sans-serif",
-            transform:`rotate(90deg)`,transformOrigin:`${size/2}px ${size/2}px`}}>{score}</text>
+          style={{fill:col,fontSize:size*0.22,fontWeight:700,fontFamily:"var(--fd)",
+            transform:"rotate(90deg)",transformOrigin:(size/2)+"px "+(size/2)+"px"}}>{score}</text>
       </svg>
-      {label&&<span style={{fontSize:9,color:"rgba(255,255,255,0.3)",textTransform:"uppercase",letterSpacing:1.5}}>{label}</span>}
+      {label&&<span style={{fontSize:9,color:"var(--text3)",textTransform:"uppercase",letterSpacing:1.5,textAlign:"center"}}>{label}</span>}
     </div>
   );
 }
 
-function Pill({children, accent}) {
-  return <span style={{padding:"3px 10px",borderRadius:20,fontSize:11,fontWeight:600,letterSpacing:0.3,
-    background:accent?`${accent}14`:"rgba(255,255,255,0.06)",color:accent||"rgba(255,255,255,0.55)",
-    border:`1px solid ${accent?`${accent}28`:"rgba(255,255,255,0.08)"}`}}>{children}</span>;
+function Av({initials,size,role}){
+  size=size||36;
+  const c=roleColor[role]||"#a78bfa";
+  return <div style={{width:size,height:size,borderRadius:"50%",flexShrink:0,background:"linear-gradient(135deg,"+c+"22,"+c+"0a)",border:"1.5px solid "+c+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.33,fontWeight:700,color:c,letterSpacing:0.5,userSelect:"none"}}>{initials}</div>;
 }
 
-function Av({initials, size=36, role}) {
-  const c = roleColor[role]||"#a78bfa";
-  return <div style={{width:size,height:size,borderRadius:"50%",flexShrink:0,
-    background:`linear-gradient(135deg,${c}22,${c}0a)`,border:`1.5px solid ${c}44`,
-    display:"flex",alignItems:"center",justifyContent:"center",
-    fontSize:size*0.34,fontWeight:700,color:c,letterSpacing:0.5}}>{initials}</div>;
+function Pill({children,accent}){
+  return <span style={{padding:"3px 9px",borderRadius:20,fontSize:11,fontWeight:600,letterSpacing:0.3,background:accent?accent+"14":"rgba(255,255,255,0.06)",color:accent||"rgba(255,255,255,0.55)",border:"1px solid "+(accent?accent+"28":"rgba(255,255,255,0.08)")}}>{children}</span>;
 }
 
-function Bar({label, val, color}) {
+function Bar({label,val,color}){
   return <div style={{marginBottom:10}}>
     <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-      <span style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>{label}</span>
-      <span style={{fontSize:11,fontWeight:700,color}}>{val}%</span>
+      <span style={{fontSize:11,color:"var(--text3)"}}>{label}</span>
+      <span style={{fontSize:11,fontWeight:700,color:color}}>{val}%</span>
     </div>
     <div style={{height:4,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}>
-      <div style={{height:"100%",width:`${val}%`,background:color,borderRadius:2,boxShadow:`0 0 8px ${color}55`,transition:"width 1.2s ease"}}/>
+      <div style={{height:"100%",width:val+"%",background:color,borderRadius:2,boxShadow:"0 0 8px "+color+"55",transition:"width 1.2s ease"}}/>
     </div>
   </div>;
 }
 
-function AILoader({text="AI thinking..."}) {
-  return <div style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:10,
-    background:"rgba(167,139,250,0.06)",border:"1px solid rgba(167,139,250,0.15)"}}>
-    <div style={{display:"flex",gap:4}}>
-      {[0,1,2].map(i=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:"#a78bfa",
-        animation:"pulse 1.2s infinite",animationDelay:`${i*0.15}s`}}/>)}
-    </div>
-    <span style={{fontSize:12,color:"rgba(167,139,250,0.8)"}}>{text}</span>
+function Spinner(){
+  return <div style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:10,background:"rgba(167,139,250,0.06)",border:"1px solid rgba(167,139,250,0.15)"}}>
+    <div style={{display:"flex",gap:4}}>{[0,1,2].map(function(i){return <div key={i} style={{width:5,height:5,borderRadius:"50%",background:"#a78bfa",animation:"pulse 1.2s infinite",animationDelay:(i*0.15)+"s"}}/>;})}</div>
+    <span style={{fontSize:12,color:"rgba(167,139,250,0.8)"}}>AI is thinking...</span>
   </div>;
 }
 
-function IdeaCard({idea, onClick, index=0}) {
-  const total = idea.votes.high+idea.votes.improve+idea.votes.notViable;
-  const pct = total?Math.round((idea.votes.high/total)*100):0;
-  const ss = statusStyle[idea.status]||statusStyle.New;
-  const [hov, setHov] = useState(false);
-  return (
-    <div onClick={()=>onClick(idea)} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
+function Card({children,style}){
+  return <div style={Object.assign({background:"var(--bg3)",borderRadius:"var(--r2)",padding:"20px 22px",border:"1px solid var(--border)"},style||{})}>{children}</div>;
+}
+
+function SecLabel({children}){
+  return <div style={{fontSize:10,color:"rgba(167,139,250,0.75)",fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:12}}>{children}</div>;
+}
+
+function Btn({children,onClick,variant,disabled,style}){
+  variant=variant||"primary";disabled=disabled||false;
+  var base={padding:"10px 18px",borderRadius:12,border:"none",cursor:disabled?"not-allowed":"pointer",fontWeight:700,fontSize:13,transition:"all .2s",fontFamily:"var(--fb)",opacity:disabled?0.55:1};
+  Object.assign(base,style||{});
+  var bg={
+    primary:Object.assign({},base,{background:"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff",boxShadow:"0 4px 16px rgba(167,139,250,.2)"}),
+    secondary:Object.assign({},base,{background:"rgba(255,255,255,0.04)",color:"var(--text2)",border:"1px solid rgba(255,255,255,0.09)"}),
+    success:Object.assign({},base,{background:"linear-gradient(135deg,var(--accent3),#00d4aa)",color:"#000"}),
+    danger:Object.assign({},base,{background:"rgba(255,79,123,0.12)",color:"#ff4f7b",border:"1px solid rgba(255,79,123,0.25)"}),
+  };
+  return <button onClick={disabled?undefined:onClick} disabled={disabled} style={bg[variant]||bg.primary}>{children}</button>;
+}
+
+function IdeaCard({idea,onClick,index}){
+  index=index||0;
+  const [hov,setHov]=useState(false);
+  var total=idea.votes.high+idea.votes.improve+idea.votes.notViable;
+  var pct=total?Math.round((idea.votes.high/total)*100):0;
+  var sc=statusCfg[idea.status]||statusCfg.New;
+  return(
+    <div onClick={function(){onClick(idea);}}
+      onMouseEnter={function(){setHov(true);}} onMouseLeave={function(){setHov(false);}}
       style={{background:hov?"rgba(255,255,255,0.05)":"rgba(255,255,255,0.025)",
-        border:`1px solid ${hov?"rgba(255,255,255,0.11)":"rgba(255,255,255,0.06)"}`,
-        borderRadius:20,padding:"22px 22px 18px",cursor:"pointer",
-        transition:"all 0.25s cubic-bezier(0.4,0,0.2,1)",transform:hov?"translateY(-3px)":"none",
+        border:"1px solid "+(hov?"rgba(255,255,255,0.11)":"rgba(255,255,255,0.06)"),
+        borderRadius:"var(--r2)",padding:"20px 20px 16px",cursor:"pointer",
+        transition:"all .25s ease",transform:hov?"translateY(-3px)":"none",
         position:"relative",overflow:"hidden",
-        animation:"fadeUp 0.4s ease both",animationDelay:`${index*0.06}s`}}>
+        animation:"fadeUp .4s ease both",animationDelay:(index*0.055)+"s"}}>
       <div style={{position:"absolute",top:0,left:0,right:0,height:"1.5px",
-        background:`linear-gradient(90deg,transparent,${scoreColor(idea.aiScore)}66,transparent)`,opacity:hov?1:0.35,transition:"opacity 0.3s"}}/>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
-        <div style={{flex:1,marginRight:14}}>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10}}>
-            <span style={{padding:"2px 9px",borderRadius:20,fontSize:10,fontWeight:700,letterSpacing:0.8,
-              background:ss.bg,color:ss.color}}>{idea.status.toUpperCase()}</span>
+        background:"linear-gradient(90deg,transparent,"+scoreColor(idea.aiScore)+"66,transparent)",
+        opacity:hov?1:0.4,transition:"opacity .3s"}}/>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+        <div style={{flex:1,marginRight:12,minWidth:0}}>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:9}}>
+            <span style={{padding:"2px 8px",borderRadius:20,fontSize:10,fontWeight:700,letterSpacing:0.7,background:sc.bg,color:sc.c}}>{idea.status.toUpperCase()}</span>
             <Pill>{idea.industry}</Pill>
           </div>
-          <h3 style={{fontSize:15,fontWeight:700,color:"var(--text)",lineHeight:1.3,
-            fontFamily:"var(--font-display)",letterSpacing:-0.3}}>{idea.title}</h3>
+          <h3 style={{fontSize:14,fontWeight:700,color:"var(--text)",lineHeight:1.35,fontFamily:"var(--fd)",letterSpacing:-0.2,wordBreak:"break-word"}}>{idea.title}</h3>
         </div>
-        <ScoreArc score={idea.aiScore} size={54}/>
+        <ScoreArc score={idea.aiScore} size={50}/>
       </div>
-      <p style={{fontSize:12.5,color:"var(--text2)",lineHeight:1.65,marginBottom:14}}>{idea.problem.slice(0,95)}...</p>
-      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
-        {idea.tags.slice(0,3).map(t=><Pill key={t} accent="rgba(167,139,250,0.6)">#{t}</Pill>)}
+      <p style={{fontSize:12,color:"var(--text2)",lineHeight:1.65,marginBottom:12}}>{idea.problem.slice(0,90)}...</p>
+      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:14}}>
+        {(idea.tags||[]).slice(0,3).map(function(t){return <Pill key={t} accent="rgba(167,139,250,.6)">{"#"+t}</Pill>;})}
       </div>
-      <div style={{height:"1px",background:"rgba(255,255,255,0.05)",margin:"0 0 14px"}}/>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <Av initials={idea.author.split(" ").map(n=>n[0]).join("")} size={28} role={idea.authorRole}/>
+      <div style={{height:1,background:"rgba(255,255,255,0.05)",margin:"0 0 12px"}}/>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+        <div style={{display:"flex",alignItems:"center",gap:7}}>
+          <Av initials={idea.author.split(" ").map(function(n){return n[0];}).join("")} size={26} role={idea.authorRole}/>
           <div>
-            <div style={{fontSize:12,fontWeight:600,color:"var(--text)"}}>{idea.author}</div>
+            <div style={{fontSize:11,fontWeight:600,color:"var(--text)"}}>{idea.author}</div>
             <div style={{fontSize:10,color:roleColor[idea.authorRole]}}>{idea.authorRole}</div>
           </div>
         </div>
-        <div style={{display:"flex",gap:12,fontSize:11,color:"var(--text3)"}}>
-          <span>👁 {idea.views.toLocaleString()}</span>
-          <span style={{color:"var(--accent3)"}}>✓ {pct}%</span>
-          <span>💬 {idea.comments.length}</span>
+        <div style={{display:"flex",gap:10,fontSize:11,color:"var(--text3)"}}>
+          <span>{"👁 "+idea.views.toLocaleString()}</span>
+          <span style={{color:"var(--accent3)"}}>{"✓ "+pct+"%"}</span>
+          <span>{"💬 "+((idea.comments||[]).length)}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function LikeReply({likes, commentId, ideaId, onLike}) {
-  const [liked,setLiked]=useState(false);
-  const [count,setCount]=useState(likes);
-  return <span style={{fontSize:11,color:"var(--text3)",cursor:"pointer",userSelect:"none"}} onClick={()=>{if(!liked){setLiked(true);setCount(c=>c+1);}}}>
-    <span style={{color:liked?"#ff4f7b":"var(--text3)",marginRight:2}}>👍</span>{count} · <span style={{cursor:"pointer"}}>Reply</span>
-  </span>;
-}
+function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
+  const [tab,setTab]=useState("overview");
+  const [comment,setComment]=useState("");
+  const [replyTo,setReplyTo]=useState(null);
+  const [replyText,setReplyText]=useState("");
+  const [voted,setVoted]=useState(null);
+  const [collabRole,setCollabRole]=useState("");
+  const [collabMsg,setCollabMsg]=useState("");
+  const [collabSent,setCollabSent]=useState(false);
+  const [aiState,setAiState]=useState({});
+  const [loading,setLoading]=useState({});
 
-function IdeaDetail({idea, user, onBack, onVote, onComment}) {
-  const [tab, setTab]=useState("overview");
-  const [comment, setComment]=useState("");
-  const [voted, setVoted]=useState(null);
-  const [collab, setCollab]=useState(false);
-  const [aiState, setAiState]=useState({});
-  const [loading, setLoading]=useState({});
-
-  const fetchAI = async (type) => {
-    setLoading(l=>({...l,[type]:true}));
-    const prompts = {
-      analysis:`Analyze startup: "${idea.title}"\nProblem: ${idea.problem}\nSolution: ${idea.solution}\nMarket: ${idea.marketSize}\n\n3 strengths, 3 risks, top competitor threat, 1 contrarian insight. Under 280 words. Be direct.`,
-      roadmap:`90-day roadmap for: "${idea.title}"\n${idea.problem}\n\nFormat: Week 1-2, Week 3-6, Week 7-10, Week 11-12. Specific tasks. Under 280 words.`,
-      suggestions:`5 specific improvements for: "${idea.title}"\n${idea.problem}\nModel: ${idea.monetization}\n\nMarket positioning, differentiation, revenue. Under 250 words.`
+  var fetchAI=async function(type){
+    if(loading[type]||aiState[type])return;
+    setLoading(function(l){return Object.assign({},l,{[type]:true});});
+    var prompts={
+      analysis:"Analyze startup: \""+idea.title+"\"\nProblem: "+idea.problem+"\nSolution: "+idea.solution+"\nMarket: "+idea.marketSize+"\nMonetization: "+idea.monetization+"\n\nVenture analysis with: 3 key strengths, 3 key risks, main competitive threat, one contrarian insight. Direct and sharp. Under 300 words. Plain text only.",
+      roadmap:"90-day execution roadmap for: \""+idea.title+"\"\nProblem: "+idea.problem+"\nSolution: "+idea.solution+"\n\nOrganize by: Week 1-2 Foundation, Week 3-6 Build, Week 7-10 Launch, Week 11-12 Scale. List specific concrete tasks. Under 300 words. Plain text only.",
+      suggestions:"5 specific actionable improvements for: \""+idea.title+"\"\nProblem: "+idea.problem+"\nMonetization: "+idea.monetization+"\n\nFocus on market positioning, product differentiation, revenue model. Be specific. Under 280 words. Plain text only.",
+      trends:"Current market trends for "+idea.industry+" relevant to: \""+idea.title+"\"\n\n5 specific trends with data points. Explain opportunity or risk for this startup. Under 280 words. Plain text only.",
     };
-    const t = await callAI(prompts[type]);
-    setAiState(s=>({...s,[type]:t}));
-    setLoading(l=>({...l,[type]:false}));
+    var t=await callAI(prompts[type]);
+    setAiState(function(s){return Object.assign({},s,{[type]:t});});
+    setLoading(function(l){return Object.assign({},l,{[type]:false});});
   };
 
-  const iStyle = {width:"100%",padding:"12px 16px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",
-    background:"rgba(255,255,255,0.03)",color:"var(--text)",fontSize:13.5,resize:"vertical",
-    fontFamily:"var(--font-body)",boxSizing:"border-box"};
+  var handleVote=function(type){if(!voted){setVoted(type);onVote(idea.id,type);}};
+  var handleComment=function(){if(comment.trim()){onComment(idea.id,comment);setComment("");}};
+  var handleReply=function(){if(replyText.trim()){onComment(idea.id,replyText,replyTo);setReplyText("");setReplyTo(null);}};
+  var handleCollab=function(){
+    if(!collabRole){alert("Please select a role first.");return;}
+    onCollab(idea.id,collabRole,collabMsg);
+    setCollabSent(true);
+  };
 
-  return (
-    <div style={{width:"100%",animation:"fadeUp 0.35s ease"}}>
-      <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",
-        cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:28,padding:"6px 0"}}>
-        ← Back
+  var tabs=[{id:"overview",label:"Overview"},{id:"ai",label:"AI Report"},{id:"discuss",label:"Discussion ("+idea.comments.length+")"},{id:"team",label:"Team"}];
+  var voteOpts=[{key:"high",label:"High Potential",color:"var(--accent3)"},{key:"improve",label:"Needs Work",color:"#ffa94d"},{key:"notViable",label:"Not Viable",color:"var(--accent2)"}];
+  var sc=statusCfg[idea.status]||statusCfg.New;
+
+  return(
+    <div className="page-enter" style={{maxWidth:900,margin:"0 auto"}}>
+      <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:24,padding:"6px 0",transition:"color .2s"}} onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3)";}}>
+        ← Back to Ideas
       </button>
-      {/* Hero */}
-      <div style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:24,
-        padding:"32px 32px 28px",marginBottom:18,position:"relative",overflow:"hidden"}}>
+      <div style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:"var(--r3)",padding:"clamp(18px,4vw,30px)",marginBottom:16,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#a78bfa,#4f9fff,#4fffb0)"}}/>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:14,marginBottom:22}}>
-          <div style={{flex:1}}>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
-              <span style={{padding:"3px 11px",borderRadius:20,fontSize:10,fontWeight:700,letterSpacing:0.8,
-                background:statusStyle[idea.status]?.bg,color:statusStyle[idea.status]?.color}}>{idea.status.toUpperCase()}</span>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:14,marginBottom:20}}>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:11}}>
+              <span style={{padding:"2px 10px",borderRadius:20,fontSize:10,fontWeight:700,letterSpacing:0.7,background:sc.bg,color:sc.c}}>{idea.status.toUpperCase()}</span>
               <Pill>{idea.industry}</Pill>
             </div>
-            <h1 style={{fontSize:26,fontWeight:700,color:"var(--text)",lineHeight:1.2,marginBottom:14,
-              fontFamily:"var(--font-display)",letterSpacing:-0.5}}>{idea.title}</h1>
+            <h1 style={{fontSize:"clamp(18px,3.5vw,24px)",fontWeight:700,color:"var(--text)",lineHeight:1.25,marginBottom:14,fontFamily:"var(--fd)",letterSpacing:-0.4,wordBreak:"break-word"}}>{idea.title}</h1>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <Av initials={idea.author.split(" ").map(n=>n[0]).join("")} size={38} role={idea.authorRole}/>
+              <Av initials={idea.author.split(" ").map(function(n){return n[0];}).join("")} size={36} role={idea.authorRole}/>
               <div>
-                <div style={{fontSize:14,fontWeight:600,color:"var(--text)"}}>{idea.author}</div>
-                <div style={{fontSize:11,color:roleColor[idea.authorRole]}}>{idea.authorRole} · {idea.createdAt}</div>
+                <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{idea.author}</div>
+                <div style={{fontSize:11,color:roleColor[idea.authorRole]}}>{idea.authorRole+" · "+idea.createdAt}</div>
               </div>
             </div>
           </div>
-          <div style={{display:"flex",gap:18,alignItems:"center"}}>
-            <ScoreArc score={idea.aiScore} size={70} label="AI Score"/>
-            <ScoreArc score={idea.validationScore} size={70} label="Community"/>
+          <div style={{display:"flex",gap:16,alignItems:"center",flexShrink:0}}>
+            <ScoreArc score={idea.aiScore} size={66} label="AI Score"/>
+            <ScoreArc score={idea.validationScore} size={66} label="Community"/>
           </div>
         </div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          {[{key:"high",label:"🚀 High Potential",color:"var(--accent3)"},{key:"improve",label:"🔧 Needs Work",color:"#ffa94d"},{key:"notViable",label:"✕ Not Viable",color:"var(--accent2)"}].map(v=>(
-            <button key={v.key} onClick={()=>{setVoted(v.key);onVote(idea.id,v.key);}}
-              style={{padding:"9px 16px",borderRadius:10,cursor:"pointer",fontSize:12,fontWeight:600,transition:"all 0.2s",
-                border:`1px solid ${voted===v.key?v.color:"rgba(255,255,255,0.09)"}`,
-                background:voted===v.key?`${v.color}15`:"rgba(255,255,255,0.03)",
-                color:voted===v.key?v.color:"var(--text2)"}}>
-              {v.label} ({idea.votes[v.key]+(voted===v.key?1:0)})
+          {voteOpts.map(function(v){return(
+            <button key={v.key} onClick={function(){handleVote(v.key);}}
+              style={{padding:"9px 14px",borderRadius:10,cursor:voted?"default":"pointer",fontSize:12,fontWeight:600,transition:"all .2s",
+                border:"1px solid "+(voted===v.key?v.color:"rgba(255,255,255,0.09)"),
+                background:voted===v.key?v.color+"18":"rgba(255,255,255,0.03)",
+                color:voted===v.key?v.color:"var(--text2)",
+                opacity:voted&&voted!==v.key?0.5:1}}>
+              {v.label+" ("+(idea.votes[v.key]+(voted===v.key?1:0))+")"}
             </button>
-          ))}
+          );})}
         </div>
+        {voted&&<div style={{marginTop:10,fontSize:12,color:"var(--accent3)"}}>Your vote was recorded. Thank you!</div>}
       </div>
-      {/* Tabs */}
-      <div style={{display:"flex",gap:3,marginBottom:18,background:"rgba(255,255,255,0.025)",padding:4,borderRadius:14,border:"1px solid var(--border)"}}>
-        {[{id:"overview",label:"Overview"},{id:"ai",label:"✦ AI Report"},{id:"discuss",label:`Discussion (${idea.comments.length})`},{id:"team",label:"Team"}].map(t=>(
-          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"10px 14px",borderRadius:11,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all 0.2s",
-            background:tab===t.id?"rgba(167,139,250,0.15)":"transparent",color:tab===t.id?"#a78bfa":"var(--text3)"}}>
+      <div style={{display:"flex",gap:3,marginBottom:16,background:"rgba(255,255,255,0.025)",padding:4,borderRadius:"var(--r)",border:"1px solid var(--border)"}}>
+        {tabs.map(function(t){return(
+          <button key={t.id} onClick={function(){setTab(t.id);}}
+            style={{flex:1,padding:"9px 8px",borderRadius:10,border:"none",cursor:"pointer",fontSize:"clamp(10px,2vw,12px)",fontWeight:600,transition:"all .2s",
+              background:tab===t.id?"rgba(167,139,250,0.15)":"transparent",color:tab===t.id?"#a78bfa":"var(--text3)"}}>
             {t.label}
           </button>
-        ))}
+        );})}
       </div>
-      {/* Overview */}
+
       {tab==="overview"&&(
-        <div style={{display:"grid",gap:12,animation:"fadeUp 0.3s ease"}}>
-          {[{label:"🎯 Problem",text:idea.problem},{label:"💡 Solution",text:idea.solution},{label:"👥 Target Users",text:idea.targetUsers},{label:"💰 Market Size",text:idea.marketSize},{label:"📈 Monetization",text:idea.monetization}].map(item=>(
-            <div key={item.label} style={{background:"var(--bg3)",borderRadius:16,padding:"18px 22px",border:"1px solid var(--border)"}}>
-              <div style={{fontSize:10,color:"rgba(167,139,250,0.7)",fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>{item.label}</div>
-              <p style={{fontSize:13.5,color:"var(--text2)",lineHeight:1.75,margin:0}}>{item.text}</p>
+        <div style={{display:"grid",gap:10,animation:"fadeUp .3s ease"}}>
+          {[{label:"Problem",text:idea.problem},{label:"Solution",text:idea.solution},{label:"Target Users",text:idea.targetUsers},{label:"Market Size",text:idea.marketSize},{label:"Monetization",text:idea.monetization}].map(function(item){return(
+            <Card key={item.label}>
+              <SecLabel>{item.label}</SecLabel>
+              <p style={{fontSize:13.5,color:"var(--text2)",lineHeight:1.75,margin:0}}>{item.text||"Not specified"}</p>
+            </Card>
+          );})}
+          <Card>
+            <SecLabel>Tags</SecLabel>
+            <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+              {(idea.tags||[]).map(function(t){return <Pill key={t} accent="rgba(167,139,250,.6)">{"#"+t}</Pill>;})}
+              {(!idea.tags||idea.tags.length===0)&&<span style={{fontSize:12,color:"var(--text3)"}}>No tags</span>}
             </div>
-          ))}
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:"18px 22px",border:"1px solid var(--border)"}}>
-            <div style={{fontSize:10,color:"rgba(167,139,250,0.7)",fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:12}}>🏷 Tags</div>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {idea.tags.map(t=><Pill key={t} accent="rgba(167,139,250,0.6)">#{t}</Pill>)}
-            </div>
-          </div>
+          </Card>
+          {(idea.seeking||[]).length>0&&(
+            <Card>
+              <SecLabel>Seeking Collaborators</SecLabel>
+              <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+                {idea.seeking.map(function(r){return <span key={r} style={{padding:"5px 12px",borderRadius:10,background:(roleColor[r]||"#a78bfa")+"14",border:"1px solid "+(roleColor[r]||"#a78bfa")+"28",color:roleColor[r]||"#a78bfa",fontSize:12,fontWeight:600}}>{r}</span>;})}
+              </div>
+            </Card>
+          )}
         </div>
       )}
-      {/* AI Report */}
+
       {tab==="ai"&&(
-        <div style={{display:"grid",gap:12,animation:"fadeUp 0.3s ease"}}>
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:"22px 24px",border:"1px solid var(--border)"}}>
-            <div style={{fontSize:11,color:"#a78bfa",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:18}}>📊 Performance Metrics</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:"4px 28px"}}>
+        <div style={{display:"grid",gap:10,animation:"fadeUp .3s ease"}}>
+          <Card>
+            <SecLabel>Performance Metrics</SecLabel>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,230px),1fr))",gap:"2px 28px"}}>
               <Bar label="Market Demand" val={idea.report.marketDemand} color="var(--accent3)"/>
-              <Bar label="Monetization" val={idea.report.monetization} color="#a78bfa"/>
+              <Bar label="Monetization Potential" val={idea.report.monetization} color="#a78bfa"/>
               <Bar label="Scalability" val={idea.report.scalability} color="var(--accent4)"/>
               <Bar label="Success Probability" val={idea.report.success} color="var(--accent)"/>
-              <Bar label="Competition" val={idea.report.competition} color="#fb923c"/>
+              <Bar label="Competition (lower=better)" val={idea.report.competition} color="#fb923c"/>
               <Bar label="Investor Readiness" val={idea.report.investor} color="#f9a8d4"/>
             </div>
-          </div>
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:"22px 24px",border:"1px solid var(--border)"}}>
-            <div style={{fontSize:11,color:"#a78bfa",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>🥊 Competitors</div>
-            {idea.report.competitors.length>0?(
-              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {idea.report.competitors.map(c=>(
-                  <div key={c} style={{padding:"7px 14px",borderRadius:10,background:"rgba(255,79,123,0.08)",border:"1px solid rgba(255,79,123,0.18)",fontSize:12,color:"#ff7a9a",fontWeight:600}}>{c}</div>
-                ))}
-              </div>
-            ):<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Use AI Analysis above to generate competitor research.</p>}
-          </div>
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:"22px 24px",border:"1px solid var(--border)"}}>
-            <div style={{fontSize:11,color:"#a78bfa",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>📈 Market Signals</div>
-            {idea.report.trends.map((t,i)=>(
-              <div key={i} style={{display:"flex",gap:10,marginBottom:10}}>
-                <span style={{color:"var(--accent3)",fontSize:12,marginTop:2,flexShrink:0}}>▲</span>
-                <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.6}}>{t}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:"22px 24px",border:"1px solid var(--border)"}}>
-            <div style={{fontSize:11,color:"#a78bfa",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>🗺 Roadmap</div>
-            {idea.report.roadmap.map((step,i)=>(
-              <div key={i} style={{display:"flex",gap:12,marginBottom:12,alignItems:"flex-start"}}>
-                <div style={{width:22,height:22,borderRadius:"50%",background:"rgba(167,139,250,0.15)",border:"1px solid rgba(167,139,250,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:"#a78bfa",flexShrink:0}}>{i+1}</div>
-                <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,paddingTop:3}}>{step}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:"22px 24px",border:"1px solid var(--border)"}}>
-            <div style={{fontSize:11,color:"#a78bfa",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>⚙️ Tech Stack</div>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {idea.report.stack.map(t=>(
-                <div key={t} style={{padding:"7px 14px",borderRadius:10,background:"rgba(79,159,255,0.08)",border:"1px solid rgba(79,159,255,0.18)",fontSize:12,color:"#7ab8ff",fontWeight:600}}>{t}</div>
-              ))}
+            <div style={{marginTop:14,padding:"10px 14px",background:"rgba(255,79,123,0.07)",borderRadius:10,border:"1px solid rgba(255,79,123,0.15)"}}>
+              <span style={{fontSize:12,color:"var(--text2)"}}>Risk Level: </span>
+              <span style={{fontSize:13,fontWeight:700,color:scoreColor(100-idea.report.risk)}}>{idea.report.risk+"% — "+(idea.report.risk<35?"Low Risk":idea.report.risk<55?"Moderate Risk":"High Risk")}</span>
             </div>
-          </div>
-          {[{key:"analysis",label:"🧠 Deep AI Analysis"},{key:"roadmap",label:"🗺 Custom 90-Day Roadmap"},{key:"suggestions",label:"💡 Improvement Suggestions"}].map(sec=>(
-            <div key={sec.key} style={{background:"rgba(167,139,250,0.04)",borderRadius:16,padding:"22px 24px",border:"1px solid rgba(167,139,250,0.12)"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-                <div style={{fontSize:13,color:"#a78bfa",fontWeight:700}}>{sec.label}</div>
-                {!aiState[sec.key]&&!loading[sec.key]&&(
-                  <button onClick={()=>fetchAI(sec.key)} style={{padding:"7px 15px",borderRadius:9,border:"1px solid rgba(167,139,250,0.3)",background:"rgba(167,139,250,0.1)",color:"#a78bfa",cursor:"pointer",fontSize:11,fontWeight:700}}>✦ Generate</button>
-                )}
+          </Card>
+          {(idea.report.competitors||[]).length>0&&(
+            <Card>
+              <SecLabel>Known Competitors</SecLabel>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                {idea.report.competitors.map(function(c){return <div key={c} style={{padding:"7px 13px",borderRadius:10,background:"rgba(255,79,123,0.08)",border:"1px solid rgba(255,79,123,0.18)",fontSize:12,color:"#ff7a9a",fontWeight:600}}>{c}</div>;})}
               </div>
-              {loading[sec.key]&&<AILoader/>}
-              {aiState[sec.key]&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.85,whiteSpace:"pre-wrap",margin:0}}>{aiState[sec.key]}</p>}
+            </Card>
+          )}
+          {(idea.report.roadmap||[]).length>0&&(
+            <Card>
+              <SecLabel>Suggested Roadmap</SecLabel>
+              {idea.report.roadmap.map(function(step,i){return(
+                <div key={i} style={{display:"flex",gap:12,marginBottom:11,alignItems:"flex-start"}}>
+                  <div style={{width:22,height:22,borderRadius:"50%",background:"rgba(167,139,250,0.15)",border:"1px solid rgba(167,139,250,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:"#a78bfa",flexShrink:0}}>{i+1}</div>
+                  <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,paddingTop:2}}>{step}</span>
+                </div>
+              );})}
+            </Card>
+          )}
+          {(idea.report.stack||[]).length>0&&(
+            <Card>
+              <SecLabel>Recommended Tech Stack</SecLabel>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                {idea.report.stack.map(function(t){return <div key={t} style={{padding:"7px 13px",borderRadius:10,background:"rgba(79,159,255,0.08)",border:"1px solid rgba(79,159,255,0.18)",fontSize:12,color:"#7ab8ff",fontWeight:600}}>{t}</div>;})}
+              </div>
+            </Card>
+          )}
+          {[{key:"analysis",label:"Deep AI Analysis",hint:"Get a full venture-grade analysis"},{key:"roadmap",label:"Custom 90-Day Roadmap",hint:"Step-by-step execution plan"},{key:"suggestions",label:"AI Improvement Suggestions",hint:"5 actionable improvements"},{key:"trends",label:"Live Market Trend Analysis",hint:"Current market trends for this sector"}].map(function(sec){return(
+            <div key={sec.key} style={{background:"rgba(167,139,250,0.04)",borderRadius:"var(--r2)",padding:"20px 22px",border:"1px solid rgba(167,139,250,0.12)"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10,flexWrap:"wrap"}}>
+                <div>
+                  <div style={{fontSize:13,color:"#a78bfa",fontWeight:700,marginBottom:3}}>{sec.label}</div>
+                  {!aiState[sec.key]&&!loading[sec.key]&&<div style={{fontSize:11,color:"var(--text3)"}}>{sec.hint}</div>}
+                </div>
+                <div style={{display:"flex",gap:8}}>
+                  {aiState[sec.key]&&<button onClick={function(){setAiState(function(s){var n=Object.assign({},s);delete n[sec.key];return n;});}} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:11}}>Regenerate</button>}
+                  {!aiState[sec.key]&&!loading[sec.key]&&<Btn onClick={function(){fetchAI(sec.key);}} style={{padding:"7px 14px",fontSize:11}}>Generate</Btn>}
+                </div>
+              </div>
+              {loading[sec.key]&&<Spinner/>}
+              {aiState[sec.key]&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.9,whiteSpace:"pre-wrap",margin:0}}>{aiState[sec.key]}</p>}
               {!aiState[sec.key]&&!loading[sec.key]&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Click Generate for live AI-powered insights.</p>}
             </div>
-          ))}
+          );})}
         </div>
       )}
-      {/* Discussion */}
+
       {tab==="discuss"&&(
-        <div style={{animation:"fadeUp 0.3s ease"}}>
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:20,border:"1px solid var(--border)",marginBottom:16}}>
-            <textarea value={comment} onChange={e=>setComment(e.target.value)} placeholder="Share feedback, insights, or expertise..."
-              style={{width:"100%",background:"none",border:"none",outline:"none",color:"var(--text)",fontSize:13,lineHeight:1.7,resize:"none",height:80,fontFamily:"var(--font-body)"}}/>
-            <div style={{display:"flex",justifyContent:"flex-end"}}>
-              <button onClick={()=>{if(comment.trim()){onComment(idea.id,comment);setComment("");}}}
-                style={{padding:"9px 20px",borderRadius:10,border:"none",background:"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff",cursor:"pointer",fontSize:12,fontWeight:700}}>Post</button>
+        <div style={{animation:"fadeUp .3s ease"}}>
+          <Card style={{marginBottom:14}}>
+            <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+              <Av initials={user.avatar} size={34} role={user.role}/>
+              <div style={{flex:1}}>
+                <textarea value={comment} onChange={function(e){setComment(e.target.value);}} placeholder="Share your thoughts, feedback, or expertise..." rows={3}
+                  style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:10,color:"var(--text)",fontSize:13,lineHeight:1.7,resize:"vertical",padding:"10px 12px"}}/>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8}}>
+                  <span style={{fontSize:11,color:"var(--text3)"}}>{comment.length+"/500"}</span>
+                  <Btn onClick={handleComment} disabled={!comment.trim()||comment.length>500} style={{padding:"8px 18px",fontSize:12}}>Post Comment</Btn>
+                </div>
+              </div>
             </div>
-          </div>
-          {idea.comments.map(c=>(
+          </Card>
+          {idea.comments.length===0&&<div style={{textAlign:"center",padding:"40px 20px",color:"var(--text3)",fontSize:13}}>No comments yet. Be the first!</div>}
+          {idea.comments.map(function(c){return(
             <div key={c.id} style={{marginBottom:12}}>
-              <div style={{background:"var(--bg3)",borderRadius:14,padding:"16px 18px",border:"1px solid var(--border)"}}>
+              <Card>
                 <div style={{display:"flex",gap:10}}>
                   <Av initials={c.avatar} size={32} role="Founder"/>
-                  <div style={{flex:1}}>
-                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,flexWrap:"wrap",gap:4}}>
                       <span style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{c.user}</span>
                       <span style={{fontSize:11,color:"var(--text3)"}}>{c.time}</span>
                     </div>
-                    <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,margin:"0 0 8px"}}>{c.text}</p>
-                    <LikeReply likes={c.likes} commentId={c.id} ideaId={idea.id} onLike={onLikeComment}/>
+                    <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,margin:"0 0 10px",wordBreak:"break-word"}}>{c.text}</p>
+                    <div style={{display:"flex",gap:14,alignItems:"center"}}>
+                      <button onClick={function(){onLike(idea.id,c.id);}}
+                        style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:c.liked?"#ff4f7b":"var(--text3)",display:"flex",alignItems:"center",gap:4}}>
+                        {c.liked?"❤️":"🤍"} {c.likes}
+                      </button>
+                      <button onClick={function(){setReplyTo(replyTo===c.id?null:c.id);}}
+                        style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:replyTo===c.id?"#a78bfa":"var(--text3)"}}>
+                        Reply
+                      </button>
+                    </div>
+                    {replyTo===c.id&&(
+                      <div style={{marginTop:10,display:"flex",gap:8,alignItems:"flex-start"}}>
+                        <Av initials={user.avatar} size={26} role={user.role}/>
+                        <div style={{flex:1}}>
+                          <textarea value={replyText} onChange={function(e){setReplyText(e.target.value);}} placeholder={"Reply to "+c.user+"..."} rows={2}
+                            style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:8,color:"var(--text)",fontSize:12,resize:"none",padding:"8px 10px"}}/>
+                          <div style={{display:"flex",gap:8,marginTop:6}}>
+                            <Btn onClick={handleReply} disabled={!replyText.trim()} style={{padding:"6px 14px",fontSize:11}}>Reply</Btn>
+                            <Btn onClick={function(){setReplyTo(null);setReplyText("");}} variant="secondary" style={{padding:"6px 14px",fontSize:11}}>Cancel</Btn>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-              {c.replies?.map(r=>(
-                <div key={r.id} style={{marginLeft:42,marginTop:8,background:"rgba(255,255,255,0.015)",borderRadius:12,padding:"13px 16px",border:"1px solid rgba(255,255,255,0.04)"}}>
+              </Card>
+              {(c.replies||[]).map(function(r){return(
+                <div key={r.id} style={{marginLeft:"clamp(20px,5vw,42px)",marginTop:8,background:"rgba(255,255,255,0.015)",borderRadius:12,padding:"13px 16px",border:"1px solid rgba(255,255,255,0.04)"}}>
                   <div style={{display:"flex",gap:8}}>
                     <Av initials={r.avatar} size={26} role="Developer"/>
-                    <div>
-                      <div style={{display:"flex",gap:12,marginBottom:5}}>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:5}}>
                         <span style={{fontSize:12,fontWeight:600,color:"var(--text)"}}>{r.user}</span>
                         <span style={{fontSize:11,color:"var(--text3)"}}>{r.time}</span>
                       </div>
-                      <p style={{fontSize:12.5,color:"var(--text2)",lineHeight:1.65,margin:0}}>{r.text}</p>
+                      <p style={{fontSize:12.5,color:"var(--text2)",lineHeight:1.65,margin:"0 0 6px",wordBreak:"break-word"}}>{r.text}</p>
+                      <button onClick={function(){onLike(idea.id,c.id,r.id);}}
+                        style={{background:"none",border:"none",cursor:"pointer",fontSize:11,color:r.liked?"#ff4f7b":"var(--text3)",display:"flex",alignItems:"center",gap:3}}>
+                        {r.liked?"❤️":"🤍"} {r.likes}
+                      </button>
                     </div>
                   </div>
                 </div>
-              ))}
+              );})}
             </div>
-          ))}
+          );})}
         </div>
       )}
-      {/* Team */}
+
       {tab==="team"&&(
-        <div style={{animation:"fadeUp 0.3s ease",display:"grid",gap:12}}>
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:"22px 24px",border:"1px solid var(--border)"}}>
-            <div style={{fontSize:11,color:"#a78bfa",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>🔍 Roles Needed</div>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
-              {idea.seeking.map(role=>(
-                <div key={role} style={{padding:"9px 18px",borderRadius:10,background:`${roleColor[role]||"#a78bfa"}12`,border:`1px solid ${roleColor[role]||"#a78bfa"}30`,color:roleColor[role]||"#a78bfa",fontWeight:600,fontSize:13}}>{role}</div>
-              ))}
-            </div>
-            <button onClick={()=>setCollab(true)} style={{padding:"12px 26px",borderRadius:12,border:"none",
-              background:collab?"rgba(79,255,176,0.12)":"linear-gradient(135deg,#a78bfa,#818cf8)",
-              color:collab?"var(--accent3)":"#fff",cursor:"pointer",fontWeight:700,fontSize:13,transition:"all 0.3s"}}>
-              {collab?"✓ Request Sent!":"🤝 Request to Join"}
-            </button>
-          </div>
-          <div style={{background:"var(--bg3)",borderRadius:16,padding:"22px 24px",border:"1px solid var(--border)"}}>
-            <div style={{fontSize:11,color:"#a78bfa",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:4}}>✦ AI Co-founder Matches</div>
-            <div style={{fontSize:11,color:"var(--text3)",marginBottom:16}}>Matched by skill relevance & activity</div>
-            {USERS.filter(u=>u.id!==idea.authorId).slice(0,3).map(u=>(
-              <div key={u.id} style={{display:"flex",gap:12,alignItems:"center",padding:"13px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                <Av initials={u.avatar} size={40} role={u.role}/>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{u.name}</div>
-                  <div style={{fontSize:11,color:roleColor[u.role],marginBottom:5}}>{u.role} · {u.country}</div>
-                  <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{u.skills.slice(0,2).map(s=><Pill key={s}>{s}</Pill>)}</div>
+        <div style={{animation:"fadeUp .3s ease",display:"grid",gap:12}}>
+          <Card>
+            <SecLabel>Join This Startup</SecLabel>
+            {(idea.seeking||[]).length>0?(
+              <>
+                <p style={{fontSize:13,color:"var(--text2)",marginBottom:14}}>Select a role and send a collaboration request:</p>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
+                  {idea.seeking.map(function(role){return(
+                    <button key={role} onClick={function(){setCollabRole(collabRole===role?"":role);}}
+                      style={{padding:"9px 16px",borderRadius:10,cursor:"pointer",fontWeight:600,fontSize:13,transition:"all .2s",
+                        border:"1px solid "+(collabRole===role?roleColor[role]||"#a78bfa":"rgba(255,255,255,0.09)"),
+                        background:collabRole===role?(roleColor[role]||"#a78bfa")+"18":"rgba(255,255,255,0.03)",
+                        color:collabRole===role?roleColor[role]||"#a78bfa":"var(--text2)"}}>
+                      {(collabRole===role?"✓ ":"")+role}
+                    </button>
+                  );})}
                 </div>
-                <div style={{textAlign:"right"}}>
-                  <div style={{fontSize:13,fontWeight:700,color:"var(--accent3)"}}>{72+Math.floor(u.id*7)}%</div>
+                {collabRole&&!collabSent&&(
+                  <>
+                    <textarea value={collabMsg} onChange={function(e){setCollabMsg(e.target.value);}} placeholder={"Tell "+idea.author+" why you'd be a great "+collabRole+"..."} rows={3}
+                      style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:10,color:"var(--text)",fontSize:13,resize:"none",padding:"10px 12px",marginBottom:10}}/>
+                    <Btn onClick={handleCollab} style={{width:"100%",padding:"12px"}}>{"Send Request as "+collabRole}</Btn>
+                  </>
+                )}
+                {collabSent&&<div style={{padding:"14px 18px",background:"rgba(79,255,176,0.08)",borderRadius:12,border:"1px solid rgba(79,255,176,0.2)",color:"var(--accent3)",fontSize:13,fontWeight:600}}>{"Request sent to "+idea.author+"! They will review and respond."}</div>}
+              </>
+            ):<p style={{fontSize:13,color:"var(--text3)"}}>This idea is not currently seeking collaborators.</p>}
+          </Card>
+          <Card>
+            <SecLabel>AI Co-founder Matches</SecLabel>
+            <p style={{fontSize:12,color:"var(--text3)",marginBottom:16}}>Matched by skill relevance and activity</p>
+            {SEED_USERS.filter(function(u){return u.id!==idea.authorId;}).slice(0,4).map(function(u,i){return(
+              <div key={u.id} style={{display:"flex",gap:12,alignItems:"center",padding:"13px 0",borderBottom:i<3?"1px solid rgba(255,255,255,0.04)":"none"}}>
+                <Av initials={u.avatar} size={40} role={u.role}/>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{u.name}</div>
+                  <div style={{fontSize:11,color:roleColor[u.role],marginBottom:5}}>{u.role+" · "+u.country}</div>
+                  <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{u.skills.slice(0,2).map(function(s){return <Pill key={s}>{s}</Pill>;})}</div>
+                </div>
+                <div style={{textAlign:"right",flexShrink:0}}>
+                  <div style={{fontSize:14,fontWeight:700,color:"var(--accent3)"}}>{[87,79,73,68][i]+"%"}</div>
                   <div style={{fontSize:10,color:"var(--text3)"}}>match</div>
                 </div>
               </div>
-            ))}
-          </div>
+            );})}
+          </Card>
         </div>
       )}
     </div>
   );
 }
 
-function SubmitIdea({onSubmit, onCancel}) {
-  const [step, setStep]=useState(1);
-  const [form, setForm]=useState({title:"",problem:"",solution:"",targetUsers:"",marketSize:"",monetization:"",industry:"FinTech",tags:"",seeking:[]});
-  const [preAnalysis, setPreAnalysis]=useState(null);
-  const [analyzing, setAnalyzing]=useState(false);
-  const set = (k,v)=>setForm(f=>({...f,[k]:v}));
+function SubmitIdea({onSubmit,onCancel}){
+  const [step,setStep]=useState(1);
+  const [submitting,setSubmitting]=useState(false);
+  const [form,setForm]=useState({title:"",problem:"",solution:"",targetUsers:"",marketSize:"",monetization:"",industry:"FinTech",tags:"",seeking:[]});
+  const [errors,setErrors]=useState({});
+  const [preAnalysis,setPreAnalysis]=useState(null);
+  const [analyzing,setAnalyzing]=useState(false);
 
-  const analyze = async()=>{
+  var set=function(k,v){setForm(function(f){return Object.assign({},f,{[k]:v});});setErrors(function(e){return Object.assign({},e,{[k]:""});});};
+
+  var validateStep1=function(){
+    var e={};
+    if(!form.title.trim())e.title="Title is required";
+    else if(form.title.trim().length<10)e.title="Title needs at least 10 characters";
+    if(!form.problem.trim())e.problem="Problem statement is required";
+    else if(form.problem.trim().length<30)e.problem="Please describe the problem in more detail (30+ chars)";
+    if(!form.solution.trim())e.solution="Solution is required";
+    else if(form.solution.trim().length<30)e.solution="Please describe your solution in more detail (30+ chars)";
+    setErrors(e);
+    return Object.keys(e).length===0;
+  };
+
+  var analyze=async function(){
+    if(!form.title||!form.problem||analyzing)return;
     setAnalyzing(true);
-    const t = await callAI(`Quick validation for: "${form.title}"\nProblem: ${form.problem}\n\n1 biggest strength, 1 biggest risk, 3 critical questions to answer before building. Under 200 words. Direct.`);
+    var t=await callAI("Quick startup validation for: \""+form.title+"\"\nProblem: "+form.problem+"\nSolution: "+form.solution+"\n\nGive: 1 biggest strength, 1 biggest risk, 3 critical questions to answer before building. Be direct. Under 200 words. Plain text only.");
     setPreAnalysis(t);
     setAnalyzing(false);
   };
 
-  const iStyle = {width:"100%",padding:"12px 16px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.03)",color:"var(--text)",fontSize:13.5,fontFamily:"var(--font-body)",boxSizing:"border-box"};
-  const lStyle = {fontSize:10,fontWeight:700,color:"rgba(167,139,250,0.7)",letterSpacing:1.5,textTransform:"uppercase",display:"block",marginBottom:8};
-  const btnPrimary = {padding:"13px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff",cursor:"pointer",fontWeight:700,fontSize:14,fontFamily:"var(--font-body)"};
-  const btnSecondary = {padding:"13px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"none",color:"var(--text2)",cursor:"pointer",fontWeight:600,fontSize:13,fontFamily:"var(--font-body)"};
+  var handleSubmit=function(){
+    if(!validateStep1()){setStep(1);return;}
+    setSubmitting(true);
+    setTimeout(function(){
+      onSubmit({
+        title:form.title.trim(),problem:form.problem.trim(),solution:form.solution.trim(),
+        targetUsers:form.targetUsers.trim(),marketSize:form.marketSize.trim(),
+        monetization:form.monetization.trim(),industry:form.industry,
+        tags:form.tags?form.tags.split(",").map(function(t){return t.trim();}).filter(Boolean):[],
+        seeking:form.seeking,
+        aiScore:Math.floor(Math.random()*18+70),validationScore:Math.floor(Math.random()*15+65),
+      });
+    },500);
+  };
 
-  return (
-    <div style={{width:"100%",maxWidth:720,margin:"0 auto",animation:"fadeUp 0.35s ease"}}>
-      <button onClick={onCancel} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,marginBottom:28}}>← Cancel</button>
-      <div style={{background:"var(--bg3)",borderRadius:24,padding:"clamp(20px,4vw,36px)",border:"1px solid var(--border)",position:"relative",overflow:"hidden"}}>
+  var iS={width:"100%",padding:"12px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.03)",color:"var(--text)",fontSize:13.5,boxSizing:"border-box",transition:"border-color .2s",fontFamily:"var(--fb)"};
+  var eS=Object.assign({},iS,{border:"1px solid rgba(255,79,123,0.5)"});
+  var lS={fontSize:10,fontWeight:700,color:"rgba(167,139,250,.75)",letterSpacing:1.5,textTransform:"uppercase",display:"block",marginBottom:7};
+
+  return(
+    <div className="page-enter" style={{width:"100%",maxWidth:700,margin:"0 auto"}}>
+      <button onClick={onCancel} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,marginBottom:24,padding:"6px 0",transition:"color .2s"}} onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3)";}}>← Cancel</button>
+      <div style={{background:"var(--bg3)",borderRadius:"var(--r3)",padding:"clamp(20px,4vw,36px)",border:"1px solid var(--border)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#a78bfa,#4f9fff,#4fffb0)"}}/>
-        <h2 style={{fontSize:24,fontWeight:700,color:"var(--text)",marginBottom:6,fontFamily:"var(--font-display)",letterSpacing:-0.5}}>Launch Your Idea</h2>
-        <p style={{fontSize:13,color:"var(--text3)",marginBottom:28}}>AI will score and analyze your idea automatically</p>
-        <div style={{display:"flex",gap:6,marginBottom:32}}>
-          {[1,2,3].map(s=><div key={s} style={{flex:1,height:3,borderRadius:2,transition:"all 0.4s",background:step>=s?"linear-gradient(90deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.07)"}}/>)}
+        <h2 style={{fontSize:"clamp(20px,4vw,24px)",fontWeight:700,color:"var(--text)",marginBottom:5,fontFamily:"var(--fd)",letterSpacing:-0.4}}>Launch Your Idea</h2>
+        <p style={{fontSize:13,color:"var(--text3)",marginBottom:24}}>AI will automatically score, analyze and match collaborators for your idea</p>
+        <div style={{display:"flex",gap:6,marginBottom:28}}>
+          {[1,2,3].map(function(s){return(
+            <div key={s} onClick={function(){if(s<step)setStep(s);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:5,cursor:s<step?"pointer":"default"}}>
+              <div style={{width:"100%",height:4,borderRadius:2,transition:"all .4s",background:step>=s?"linear-gradient(90deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.07)"}}/>
+              <span style={{fontSize:10,color:step>=s?"#a78bfa":"var(--text3)",fontWeight:600}}>{["Details","Business","Review"][s-1]}</span>
+            </div>
+          );})}
         </div>
+
         {step===1&&(
-          <div style={{display:"grid",gap:16,animation:"fadeUp 0.3s ease"}}>
-            <div><label style={lStyle}>Idea Title *</label><input value={form.title} onChange={e=>set("title",e.target.value)} placeholder="e.g. AI-powered X for Y" style={iStyle}/></div>
-            <div><label style={lStyle}>Problem Statement *</label><textarea value={form.problem} onChange={e=>set("problem",e.target.value)} placeholder="What painful problem are you solving? Be specific." style={{...iStyle,resize:"vertical",minHeight:90}}/></div>
-            <div><label style={lStyle}>Your Solution *</label><textarea value={form.solution} onChange={e=>set("solution",e.target.value)} placeholder="How does your product uniquely solve this?" style={{...iStyle,resize:"vertical",minHeight:90}}/></div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:12}}>
-              <div><label style={lStyle}>Target Users</label><input value={form.targetUsers} onChange={e=>set("targetUsers",e.target.value)} placeholder="Who benefits most?" style={iStyle}/></div>
-              <div><label style={lStyle}>Industry</label>
-                <select value={form.industry} onChange={e=>set("industry",e.target.value)} style={{...iStyle,background:"var(--bg2)"}}>
-                  {["FinTech","LegalTech","HealthTech","EdTech","CleanTech","ProductivityTech","RetailTech","DeepTech","ConsumerTech"].map(i=><option key={i}>{i}</option>)}
+          <div style={{display:"grid",gap:16,animation:"fadeUp .3s ease"}}>
+            <div>
+              <label style={lS}>Idea Title (required, min 10 chars)</label>
+              <input value={form.title} onChange={function(e){set("title",e.target.value);}} placeholder="e.g. AI-powered legal contract analyzer for SMBs" style={errors.title?eS:iS} onKeyDown={function(e){if(e.key==="Enter")document.activeElement.blur();}}/>
+              {errors.title&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4,paddingLeft:2}}>{errors.title}</div>}
+              <div style={{fontSize:10,color:"var(--text3)",marginTop:3}}>{form.title.length+"/100"}</div>
+            </div>
+            <div>
+              <label style={lS}>Problem Statement (required, min 30 chars)</label>
+              <textarea value={form.problem} onChange={function(e){set("problem",e.target.value);}} placeholder="What painful problem are you solving? Be specific about who has this problem and why existing solutions fail." rows={4} style={errors.problem?Object.assign({},eS,{resize:"vertical",fontFamily:"var(--fb)"}):Object.assign({},iS,{resize:"vertical",fontFamily:"var(--fb)"})}/>
+              {errors.problem&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4,paddingLeft:2}}>{errors.problem}</div>}
+              <div style={{fontSize:10,color:"var(--text3)",marginTop:3}}>{form.problem.length+" characters"}</div>
+            </div>
+            <div>
+              <label style={lS}>Your Solution (required, min 30 chars)</label>
+              <textarea value={form.solution} onChange={function(e){set("solution",e.target.value);}} placeholder="How does your product uniquely solve this? What makes it different from existing solutions?" rows={4} style={errors.solution?Object.assign({},eS,{resize:"vertical",fontFamily:"var(--fb)"}):Object.assign({},iS,{resize:"vertical",fontFamily:"var(--fb)"})}/>
+              {errors.solution&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4,paddingLeft:2}}>{errors.solution}</div>}
+              <div style={{fontSize:10,color:"var(--text3)",marginTop:3}}>{form.solution.length+" characters"}</div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:12}}>
+              <div>
+                <label style={lS}>Target Users</label>
+                <input value={form.targetUsers} onChange={function(e){set("targetUsers",e.target.value);}} placeholder="e.g. SMBs, Freelancers, Startups" style={iS}/>
+              </div>
+              <div>
+                <label style={lS}>Industry</label>
+                <select value={form.industry} onChange={function(e){set("industry",e.target.value);}} style={Object.assign({},iS,{background:"var(--bg2)",cursor:"pointer"})}>
+                  {INDUSTRIES.map(function(i){return <option key={i}>{i}</option>;})}
                 </select>
               </div>
             </div>
-            <button onClick={()=>setStep(2)} style={btnPrimary}>Continue →</button>
+            <Btn onClick={function(){if(validateStep1())setStep(2);}} style={{width:"100%",padding:"13px",fontSize:14}}>Continue to Business Details</Btn>
           </div>
         )}
+
         {step===2&&(
-          <div style={{display:"grid",gap:16,animation:"fadeUp 0.3s ease"}}>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:12}}>
-              <div><label style={lStyle}>Market Size</label><input value={form.marketSize} onChange={e=>set("marketSize",e.target.value)} placeholder="e.g. $5B TAM" style={iStyle}/></div>
-              <div><label style={lStyle}>Tags (comma-separated)</label><input value={form.tags} onChange={e=>set("tags",e.target.value)} placeholder="AI, B2B, SaaS" style={iStyle}/></div>
-            </div>
-            <div><label style={lStyle}>Monetization Strategy</label><input value={form.monetization} onChange={e=>set("monetization",e.target.value)} placeholder="e.g. SaaS $49/month..." style={iStyle}/></div>
-            <div>
-              <label style={lStyle}>Team Roles Needed</label>
-              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:2}}>
-                {["Co-founder","Developer","Designer","Marketer"].map(r=>(
-                  <button key={r} onClick={()=>set("seeking",form.seeking.includes(r)?form.seeking.filter(x=>x!==r):[...form.seeking,r])}
-                    style={{padding:"9px 16px",borderRadius:10,cursor:"pointer",fontWeight:600,fontSize:13,transition:"all 0.2s",
-                      border:`1px solid ${form.seeking.includes(r)?roleColor[r]||"#a78bfa":"rgba(255,255,255,0.09)"}`,
-                      background:form.seeking.includes(r)?`${roleColor[r]||"#a78bfa"}14`:"rgba(255,255,255,0.03)",
-                      color:form.seeking.includes(r)?roleColor[r]||"#a78bfa":"var(--text2)"}}>
-                    {r}
-                  </button>
-                ))}
+          <div style={{display:"grid",gap:16,animation:"fadeUp .3s ease"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:12}}>
+              <div>
+                <label style={lS}>Market Size</label>
+                <input value={form.marketSize} onChange={function(e){set("marketSize",e.target.value);}} placeholder="e.g. $5B TAM, $800M SAM" style={iS}/>
+              </div>
+              <div>
+                <label style={lS}>Tags (comma-separated)</label>
+                <input value={form.tags} onChange={function(e){set("tags",e.target.value);}} placeholder="AI, B2B, SaaS, Marketplace" style={iS}/>
               </div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10,width:"100%"}}>
-              <button onClick={()=>setStep(1)} style={btnSecondary}>← Back</button>
-              <button onClick={()=>setStep(3)} style={btnPrimary}>Get AI Pre-Analysis →</button>
+            <div>
+              <label style={lS}>Monetization Strategy</label>
+              <input value={form.monetization} onChange={function(e){set("monetization",e.target.value);}} placeholder="e.g. SaaS $49/month, marketplace 5% fee, freemium..." style={iS}/>
+            </div>
+            <div>
+              <label style={lS}>Team Roles Needed</label>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:4}}>
+                {ROLES.map(function(r){return(
+                  <button key={r} onClick={function(){set("seeking",form.seeking.includes(r)?form.seeking.filter(function(x){return x!==r;}):[...form.seeking,r]);}}
+                    style={{padding:"9px 15px",borderRadius:10,cursor:"pointer",fontWeight:600,fontSize:13,transition:"all .2s",
+                      border:"1px solid "+(form.seeking.includes(r)?roleColor[r]||"#a78bfa":"rgba(255,255,255,0.09)"),
+                      background:form.seeking.includes(r)?(roleColor[r]||"#a78bfa")+"18":"rgba(255,255,255,0.03)",
+                      color:form.seeking.includes(r)?roleColor[r]||"#a78bfa":"var(--text2)"}}>
+                    {(form.seeking.includes(r)?"+ ":"")+r}
+                  </button>
+                );})}
+              </div>
+              {form.seeking.length>0&&<div style={{fontSize:11,color:"var(--accent3)",marginTop:6}}>{"Seeking: "+form.seeking.join(", ")}</div>}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10}}>
+              <Btn onClick={function(){setStep(1);}} variant="secondary" style={{padding:"12px"}}>Back</Btn>
+              <Btn onClick={function(){setStep(3);}} style={{padding:"12px",fontSize:14}}>Get AI Pre-Analysis</Btn>
             </div>
           </div>
         )}
+
         {step===3&&(
-          <div style={{display:"grid",gap:16,animation:"fadeUp 0.3s ease"}}>
-            <div style={{padding:20,background:"rgba(167,139,250,0.05)",borderRadius:14,border:"1px solid rgba(167,139,250,0.12)"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-                <span style={{fontSize:13,color:"#a78bfa",fontWeight:700}}>✦ AI Pre-Validation</span>
-                {!preAnalysis&&!analyzing&&<button onClick={analyze} style={{padding:"7px 14px",borderRadius:9,border:"1px solid rgba(167,139,250,0.3)",background:"rgba(167,139,250,0.1)",color:"#a78bfa",cursor:"pointer",fontSize:11,fontWeight:700}}>Analyze</button>}
-              </div>
-              {analyzing&&<AILoader text="Analyzing your idea..."/>}
-              {preAnalysis&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.85,whiteSpace:"pre-wrap",margin:0}}>{preAnalysis}</p>}
-              {!preAnalysis&&!analyzing&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Get instant AI feedback before submitting.</p>}
-            </div>
+          <div style={{display:"grid",gap:14,animation:"fadeUp .3s ease"}}>
             <div style={{padding:"16px 18px",background:"rgba(255,255,255,0.025)",borderRadius:12,border:"1px solid var(--border)"}}>
-              <div style={{fontSize:11,color:"var(--text3)",marginBottom:6}}>📋 Submitting</div>
-              <div style={{fontSize:15,fontWeight:700,color:"var(--text)",fontFamily:"var(--font-display)"}}>{form.title}</div>
-              <div style={{fontSize:12,color:"var(--text3)",marginTop:3}}>{form.industry} · {form.marketSize||"Market TBD"}</div>
+              <SecLabel>Your Idea Summary</SecLabel>
+              <div style={{fontSize:15,fontWeight:700,color:"var(--text)",fontFamily:"var(--fd)",marginBottom:4}}>{form.title}</div>
+              <div style={{fontSize:12,color:"var(--text3)",marginBottom:8}}>{form.industry+(form.marketSize?" · "+form.marketSize:"")}</div>
+              <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.6,margin:0}}>{form.problem.slice(0,120)+(form.problem.length>120?"...":"")}</p>
+              {form.seeking.length>0&&<div style={{marginTop:8,display:"flex",gap:6,flexWrap:"wrap"}}>{form.seeking.map(function(r){return <span key={r} style={{padding:"3px 9px",borderRadius:20,fontSize:11,background:(roleColor[r]||"#a78bfa")+"14",color:roleColor[r]||"#a78bfa",border:"1px solid "+(roleColor[r]||"#a78bfa")+"28"}}>{"Seeking: "+r}</span>;})}</div>}
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10,width:"100%"}}>
-              <button onClick={()=>setStep(2)} style={btnSecondary}>← Back</button>
-              <button onClick={()=>{if(form.title&&form.problem&&form.solution)onSubmit({...form,tags:form.tags.split(",").map(t=>t.trim()).filter(Boolean),aiScore:Math.floor(Math.random()*18+72),validationScore:Math.floor(Math.random()*18+67)});}}
-                style={{...btnPrimary,background:"linear-gradient(135deg,var(--accent3),#00d4aa)",color:"#000"}}>
-                🚀 Submit Idea
-              </button>
+            <div style={{padding:"18px 20px",background:"rgba(167,139,250,0.05)",borderRadius:"var(--r2)",border:"1px solid rgba(167,139,250,0.14)"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:8}}>
+                <div>
+                  <div style={{fontSize:13,color:"#a78bfa",fontWeight:700,marginBottom:2}}>AI Pre-Validation</div>
+                  <div style={{fontSize:11,color:"var(--text3)"}}>Get instant AI feedback before submitting</div>
+                </div>
+                {!preAnalysis&&!analyzing&&<Btn onClick={analyze} style={{padding:"8px 16px",fontSize:11}}>Analyze Now</Btn>}
+                {preAnalysis&&<button onClick={function(){setPreAnalysis(null);}} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:11}}>Re-analyze</button>}
+              </div>
+              {analyzing&&<Spinner/>}
+              {preAnalysis&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.9,whiteSpace:"pre-wrap",margin:0}}>{preAnalysis}</p>}
+              {!preAnalysis&&!analyzing&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Optional but recommended — get honest AI feedback before going live.</p>}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10}}>
+              <Btn onClick={function(){setStep(2);setPreAnalysis(null);}} variant="secondary" style={{padding:"12px"}}>Back</Btn>
+              <Btn onClick={handleSubmit} variant="success" disabled={submitting} style={{padding:"13px",fontSize:14}}>
+                {submitting?"Submitting...":"Submit Idea"}
+              </Btn>
             </div>
           </div>
         )}
@@ -617,257 +735,392 @@ function SubmitIdea({onSubmit, onCancel}) {
   );
 }
 
-function Explore({ideas, onIdeaClick}) {
-  const [q,setQ]=useState(""); const [ind,setInd]=useState("All"); const [status,setStatus]=useState("All"); const [sort,setSort]=useState("trending");
-  const industries=["All",...new Set(ideas.map(i=>i.industry))];
-  const filtered = ideas.filter(i=>!q||i.title.toLowerCase().includes(q.toLowerCase())||i.tags.some(t=>t.toLowerCase().includes(q.toLowerCase()))).filter(i=>ind==="All"||i.industry===ind).filter(i=>status==="All"||i.status===status).sort((a,b)=>sort==="score"?b.aiScore-a.aiScore:sort==="views"?b.views-a.views:sort==="newest"?new Date(b.createdAt)-new Date(a.createdAt):(b.votes.high-a.votes.high));
-  const selStyle = {padding:"10px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"var(--bg3)",color:"var(--text2)",fontSize:12,outline:"none",fontFamily:"var(--font-body)",cursor:"pointer"};
-  return (
-    <div>
-      <div style={{marginBottom:26}}>
-        <h2 style={{fontSize:"clamp(20px,4vw,26px)",fontWeight:700,color:"var(--text)",fontFamily:"var(--font-display)",letterSpacing:-0.5,marginBottom:4}}>Explore Ideas</h2>
+function Explore({ideas,onIdeaClick}){
+  const [q,setQ]=useState("");const [ind,setInd]=useState("All");const [status,setStatus]=useState("All");const [sort,setSort]=useState("trending");
+  var industries=["All",...new Set(ideas.map(function(i){return i.industry;}))];
+  var filtered=ideas.filter(function(i){
+    if(!q)return true;var ql=q.toLowerCase();
+    return i.title.toLowerCase().includes(ql)||i.problem.toLowerCase().includes(ql)||(i.tags||[]).some(function(t){return t.toLowerCase().includes(ql);})||i.industry.toLowerCase().includes(ql)||(i.author||"").toLowerCase().includes(ql)||(i.solution||"").toLowerCase().includes(ql);
+  }).filter(function(i){return ind==="All"||i.industry===ind;}).filter(function(i){return status==="All"||i.status===status;}).sort(function(a,b){
+    if(sort==="score")return b.aiScore-a.aiScore;if(sort==="views")return b.views-a.views;if(sort==="newest")return new Date(b.createdAt)-new Date(a.createdAt);return b.votes.high-a.votes.high;
+  });
+  var sS={padding:"10px 12px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"var(--bg3)",color:"var(--text2)",fontSize:12,cursor:"pointer"};
+  return(
+    <div className="page-enter">
+      <div style={{marginBottom:24}}>
+        <h2 style={{fontSize:"clamp(20px,4vw,26px)",fontWeight:700,color:"var(--text)",fontFamily:"var(--fd)",letterSpacing:-0.5,marginBottom:4}}>Explore Ideas</h2>
         <p style={{fontSize:13,color:"var(--text3)"}}>Discover, validate, and collaborate on the next big thing</p>
       </div>
-      <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:20}}>
-        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="🔍 Search ideas, tags..."
-          style={{flex:1,minWidth:200,padding:"10px 16px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"var(--bg3)",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"var(--font-body)"}}/>
-        <select value={ind} onChange={e=>setInd(e.target.value)} style={selStyle}>{industries.map(i=><option key={i}>{i}</option>)}</select>
-        <select value={status} onChange={e=>setStatus(e.target.value)} style={selStyle}>{["All","Trending","Hot","New"].map(s=><option key={s}>{s}</option>)}</select>
-        <select value={sort} onChange={e=>setSort(e.target.value)} style={selStyle}><option value="trending">Trending</option><option value="score">AI Score</option><option value="views">Most Viewed</option><option value="newest">Newest</option></select>
+      <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:18}}>
+        <input value={q} onChange={function(e){setQ(e.target.value);}} placeholder="Search ideas, tags, problems..." style={{flex:1,minWidth:200,padding:"10px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"var(--bg3)",color:"var(--text)",fontSize:13}}/>
+        <select value={ind} onChange={function(e){setInd(e.target.value);}} style={sS}>{industries.map(function(i){return <option key={i}>{i}</option>;})}</select>
+        <select value={status} onChange={function(e){setStatus(e.target.value);}} style={sS}>{["All","Trending","Hot","New"].map(function(s){return <option key={s}>{s}</option>;})}</select>
+        <select value={sort} onChange={function(e){setSort(e.target.value);}} style={sS}>
+          <option value="trending">Trending</option><option value="score">AI Score</option><option value="views">Most Viewed</option><option value="newest">Newest</option>
+        </select>
       </div>
-      <div style={{fontSize:11,color:"var(--text3)",marginBottom:16,letterSpacing:0.5}}>{filtered.length} IDEAS FOUND</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,300px),1fr))",gap:14}}>
-        {filtered.map((idea,i)=><IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>)}
-      </div>
+      <div style={{fontSize:11,color:"var(--text3)",marginBottom:14,letterSpacing:0.5}}>{filtered.length+" IDEA"+(filtered.length!==1?"S":"")+" FOUND"}</div>
+      {filtered.length===0?(
+        <div style={{textAlign:"center",padding:"60px 20px",color:"var(--text3)"}}>
+          <div style={{fontSize:32,marginBottom:12}}>🔍</div>
+          <div style={{fontSize:14,marginBottom:6}}>No ideas match your search</div>
+          <div style={{fontSize:12}}>Try different keywords or clear the filters</div>
+        </div>
+      ):(
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14}}>
+          {filtered.map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
+      )}
     </div>
   );
 }
 
-function Dashboard({user, ideas, onIdeaClick}) {
-  const [trends,setTrends]=useState(null); const [loadingTrends,setLoadingTrends]=useState(false);
-  const fetchTrends=async()=>{setLoadingTrends(true);const t=await callAI("Top 5 startup sectors with highest growth potential in 2025. Sector name, 1-line reason, opportunity level. Sharp and brief.","You are a top-tier VC analyst.");setTrends(t);setLoadingTrends(false);};
-  const trending=ideas.filter(i=>i.status==="Trending"); const needsVal=ideas.filter(i=>i.votes.high+i.votes.improve+i.votes.notViable<20);
-  return (
-    <div>
-      <div style={{position:"relative",background:"linear-gradient(135deg,rgba(167,139,250,0.08),rgba(79,159,255,0.06))",border:"1px solid rgba(167,139,250,0.15)",borderRadius:22,padding:"28px 30px",marginBottom:24,overflow:"hidden"}}>
-        <div style={{position:"absolute",top:-40,right:-40,width:200,height:200,borderRadius:"50%",background:"rgba(167,139,250,0.06)",filter:"blur(50px)",pointerEvents:"none"}}/>
-        <div style={{fontSize:10,color:"rgba(167,139,250,0.7)",fontWeight:700,letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Welcome back</div>
-        <h2 style={{fontSize:"clamp(20px,4vw,28px)",fontWeight:700,color:"var(--text)",fontFamily:"var(--font-display)",letterSpacing:-0.5,marginBottom:4}}>
-          {user.name} <span style={{color:roleColor[user.role],fontSize:18,fontWeight:500,fontFamily:"var(--font-body)"}}>{user.role}</span>
-        </h2>
-        <div style={{display:"flex",gap:20,flexWrap:"wrap",marginTop:18}}>
-          {[{label:"Reputation",value:user.reputation.toLocaleString(),icon:"⭐",color:"#fbbf24"},{label:"Ideas",value:user.ideas,icon:"💡",color:"#a78bfa"},{label:"Collabs",value:user.collabs,icon:"🤝",color:"var(--accent3)"}].map(s=>(
-            <div key={s.label} style={{display:"flex",alignItems:"center",gap:10}}>
-              <span style={{fontSize:22}}>{s.icon}</span>
+function Dashboard({user,ideas,onIdeaClick,onSubmit}){
+  const [trends,setTrends]=useState(null);const [loadingTrends,setLoadingTrends]=useState(false);
+  var fetchTrends=async function(){
+    setLoadingTrends(true);
+    var t=await callAI("Name the top 5 startup sectors with the highest growth potential in 2025-2026. For each: sector name, one-line reason, opportunity level (High or Very High). Be concrete and specific. Plain text only.","You are a top-tier venture capital analyst.");
+    setTrends(t);setLoadingTrends(false);
+  };
+  var trending=ideas.filter(function(i){return i.status==="Trending";});
+  var needsVal=ideas.filter(function(i){return i.votes.high+i.votes.improve+i.votes.notViable<20;});
+  var tier=user.reputation>=3000?{l:"Elite",c:"#fbbf24"}:user.reputation>=2000?{l:"Expert",c:"#a78bfa"}:user.reputation>=500?{l:"Builder",c:"#60a5fa"}:{l:"Newcomer",c:"#4fffb0"};
+  return(
+    <div className="page-enter">
+      <div style={{position:"relative",background:"linear-gradient(135deg,rgba(167,139,250,.08),rgba(79,159,255,.06))",border:"1px solid rgba(167,139,250,.15)",borderRadius:"var(--r3)",padding:"clamp(20px,4vw,28px)",marginBottom:20,overflow:"hidden"}}>
+        <div style={{position:"absolute",top:-40,right:-40,width:200,height:200,borderRadius:"50%",background:"rgba(167,139,250,.06)",filter:"blur(50px)",pointerEvents:"none"}}/>
+        <div style={{fontSize:10,color:"rgba(167,139,250,.75)",fontWeight:700,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>Welcome back</div>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,flexWrap:"wrap"}}>
+          <h2 style={{fontSize:"clamp(18px,4vw,26px)",fontWeight:700,color:"var(--text)",fontFamily:"var(--fd)",letterSpacing:-0.4}}>{user.name}</h2>
+          <span style={{padding:"3px 10px",borderRadius:20,fontSize:11,fontWeight:700,background:tier.c+"18",color:tier.c,border:"1px solid "+tier.c+"28"}}>{tier.l}</span>
+          <span style={{fontSize:13,color:roleColor[user.role],fontWeight:600}}>{user.role}</span>
+        </div>
+        <div style={{display:"flex",gap:24,flexWrap:"wrap"}}>
+          {[{l:"Reputation",v:user.reputation.toLocaleString(),i:"⭐",c:"#fbbf24"},{l:"Ideas",v:user.ideas,i:"💡",c:"#a78bfa"},{l:"Collabs",v:user.collabs,i:"🤝",c:"var(--accent3)"}].map(function(s){return(
+            <div key={s.l} style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:20}}>{s.i}</span>
               <div>
-                <div style={{fontSize:20,fontWeight:800,color:s.color,fontFamily:"var(--font-display)"}}>{s.value}</div>
-                <div style={{fontSize:10,color:"var(--text3)",textTransform:"uppercase",letterSpacing:1}}>{s.label}</div>
+                <div style={{fontSize:"clamp(16px,3vw,20px)",fontWeight:800,color:s.c,fontFamily:"var(--fd)"}}>{s.v}</div>
+                <div style={{fontSize:10,color:"var(--text3)",textTransform:"uppercase",letterSpacing:0.8}}>{s.l}</div>
               </div>
             </div>
-          ))}
+          );})}
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,140px),1fr))",gap:10,marginBottom:24}}>
-        {[{label:"Total Ideas",value:ideas.length,color:"#a78bfa"},{label:"Trending",value:trending.length,color:"var(--accent2)"},{label:"Need Validation",value:needsVal.length,color:"#fbbf24"},{label:"Seeking Team",value:ideas.filter(i=>i.seeking.length>0).length,color:"var(--accent3)"}].map(s=>(
-          <div key={s.label} style={{background:"var(--bg3)",borderRadius:14,padding:"16px 18px",border:"1px solid var(--border)",textAlign:"center"}}>
-            <div style={{fontSize:26,fontWeight:800,color:s.color,fontFamily:"var(--font-display)"}}>{s.value}</div>
-            <div style={{fontSize:11,color:"var(--text3)",marginTop:3}}>{s.label}</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,130px),1fr))",gap:10,marginBottom:22}}>
+        {[{l:"Total Ideas",v:ideas.length,c:"#a78bfa"},{l:"Trending",v:trending.length,c:"var(--accent2)"},{l:"Need Validation",v:needsVal.length,c:"#fbbf24"},{l:"Seeking Team",v:ideas.filter(function(i){return (i.seeking||[]).length>0;}).length,c:"var(--accent3)"}].map(function(s){return(
+          <div key={s.l} style={{background:"var(--bg3)",borderRadius:"var(--r)",padding:"14px 16px",border:"1px solid var(--border)",textAlign:"center"}}>
+            <div style={{fontSize:"clamp(20px,4vw,26px)",fontWeight:800,color:s.c,fontFamily:"var(--fd)"}}>{s.v}</div>
+            <div style={{fontSize:11,color:"var(--text3)",marginTop:2}}>{s.l}</div>
           </div>
-        ))}
+        );})}
       </div>
-      <div style={{background:"rgba(167,139,250,0.04)",borderRadius:18,padding:"22px 24px",border:"1px solid rgba(167,139,250,0.12)",marginBottom:28}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+      <div style={{background:"rgba(167,139,250,.04)",borderRadius:"var(--r2)",padding:"20px 22px",border:"1px solid rgba(167,139,250,.12)",marginBottom:26}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:10}}>
           <div>
-            <div style={{fontSize:13,color:"#a78bfa",fontWeight:700,marginBottom:3}}>✦ AI Trend Pulse</div>
-            <div style={{fontSize:11,color:"var(--text3)"}}>Live startup sector intelligence</div>
+            <div style={{fontSize:13,color:"#a78bfa",fontWeight:700,marginBottom:3}}>AI Trend Pulse</div>
+            <div style={{fontSize:11,color:"var(--text3)"}}>Live startup sector intelligence powered by Claude AI</div>
           </div>
-          {!trends&&!loadingTrends&&(<button onClick={fetchTrends} style={{padding:"9px 18px",borderRadius:10,border:"1px solid rgba(167,139,250,0.3)",background:"rgba(167,139,250,0.1)",color:"#a78bfa",cursor:"pointer",fontSize:12,fontWeight:700}}>Get Trends</button>)}
+          {!trends&&!loadingTrends&&<Btn onClick={fetchTrends} style={{padding:"8px 16px",fontSize:11}}>Get Trends</Btn>}
+          {trends&&<button onClick={function(){setTrends(null);}} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:11}}>Refresh</button>}
         </div>
-        {loadingTrends&&<AILoader text="Analyzing market trends..."/>}
+        {loadingTrends&&<Spinner/>}
         {trends&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.9,whiteSpace:"pre-wrap",margin:0}}>{trends}</p>}
-        {!trends&&!loadingTrends&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Click to get live AI-powered sector trend analysis.</p>}
+        {!trends&&!loadingTrends&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Click Get Trends for live AI analysis of the hottest startup sectors.</p>}
       </div>
-      <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🔥 Trending Ideas</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,300px),1fr))",gap:14,marginBottom:28}}>
-        {trending.slice(0,4).map((idea,i)=><IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>)}
+      <div style={{background:"linear-gradient(135deg,rgba(167,139,250,.08),rgba(79,255,176,.06))",borderRadius:"var(--r2)",padding:"18px 22px",border:"1px solid rgba(167,139,250,.15)",marginBottom:26,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
+        <div>
+          <div style={{fontSize:14,fontWeight:700,color:"var(--text)",marginBottom:3}}>Have a startup idea?</div>
+          <div style={{fontSize:12,color:"var(--text3)"}}>Submit it in 3 steps and get instant AI analysis, scoring, and co-founder matching.</div>
+        </div>
+        <Btn onClick={onSubmit} variant="success" style={{padding:"10px 20px",flexShrink:0}}>Submit Your Idea</Btn>
       </div>
-      <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🗳️ Needs Your Validation</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,300px),1fr))",gap:14}}>
-        {needsVal.slice(0,2).map((idea,i)=><IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>)}
-      </div>
+      {trending.length>0&&<>
+        <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>Trending Ideas</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14,marginBottom:26}}>
+          {trending.slice(0,4).map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
+      </>}
+      {needsVal.length>0&&<>
+        <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>Needs Your Validation</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14}}>
+          {needsVal.slice(0,4).map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
+      </>}
     </div>
   );
 }
 
-function Profile({user}) {
-  const [mentor,setMentor]=useState(null); const [loading,setLoading]=useState(false);
-  const tier=user.reputation>=3000?{label:"Elite",color:"#fbbf24"}:user.reputation>=2000?{label:"Expert",color:"#a78bfa"}:{label:"Builder",color:"#60a5fa"};
-  const fetchMentor=async()=>{setLoading(true);const t=await callAI(`Personal startup advice for: ${user.name}, ${user.role}, Skills: ${user.skills.join(", ")}, Reputation: ${user.reputation}\n\n3 growth opportunities, 1 skill gap, 1 startup idea to explore. Personal, sharp, under 250 words.`,"You are a world-class startup mentor.");setMentor(t);setLoading(false);};
-  return (
-    <div style={{width:"100%",maxWidth:720,margin:"0 auto"}}>
-      <div style={{background:"var(--bg3)",borderRadius:22,padding:"30px",border:"1px solid var(--border)",marginBottom:16,position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",top:0,left:0,right:0,height:"1px",background:"linear-gradient(90deg,transparent,rgba(167,139,250,0.4),transparent)"}}/>
-        <div style={{display:"flex",gap:18,alignItems:"flex-start"}}>
-          <div style={{width:72,height:72,borderRadius:"50%",background:`linear-gradient(135deg,${roleColor[user.role]||"#a78bfa"}22,${roleColor[user.role]||"#a78bfa"}08)`,border:`2px solid ${roleColor[user.role]||"#a78bfa"}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,fontWeight:800,color:roleColor[user.role]||"#a78bfa",flexShrink:0}}>{user.avatar}</div>
-          <div style={{flex:1}}>
-            <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",marginBottom:6}}>
-              <h2 style={{fontSize:22,fontWeight:700,color:"var(--text)",fontFamily:"var(--font-display)",letterSpacing:-0.3}}>{user.name}</h2>
-              <span style={{padding:"2px 10px",borderRadius:20,fontSize:10,fontWeight:700,background:`${tier.color}14`,color:tier.color,border:`1px solid ${tier.color}28`}}>{tier.label}</span>
+function Profile({user}){
+  const [mentor,setMentor]=useState(null);const [loading,setLoading]=useState(false);
+  var fetchMentor=async function(){
+    setLoading(true);
+    var t=await callAI("Startup mentor advice for: "+user.name+", Role: "+user.role+", Skills: "+user.skills.join(", ")+", Reputation: "+user.reputation+"\n\n3 specific growth opportunities, 1 skill gap to address, 1 startup idea to consider. Personal, specific, sharp. Under 280 words. Plain text only.","You are a world-class startup mentor.");
+    setMentor(t);setLoading(false);
+  };
+  var tier=user.reputation>=3000?{l:"Elite",c:"#fbbf24"}:user.reputation>=2000?{l:"Expert",c:"#a78bfa"}:user.reputation>=500?{l:"Builder",c:"#60a5fa"}:{l:"Newcomer",c:"#4fffb0"};
+  var rc=roleColor[user.role]||"#a78bfa";
+  return(
+    <div className="page-enter" style={{maxWidth:700,margin:"0 auto"}}>
+      <Card style={{marginBottom:14,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent)"}}/>
+        <div style={{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
+          <div style={{width:70,height:70,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"08)",border:"2px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,fontWeight:800,color:rc,flexShrink:0}}>{user.avatar}</div>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",marginBottom:5}}>
+              <h2 style={{fontSize:"clamp(18px,4vw,22px)",fontWeight:700,color:"var(--text)",fontFamily:"var(--fd)",letterSpacing:-0.3}}>{user.name}</h2>
+              <span style={{padding:"2px 9px",borderRadius:20,fontSize:10,fontWeight:700,background:tier.c+"14",color:tier.c,border:"1px solid "+tier.c+"28"}}>{tier.l}</span>
             </div>
-            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10}}>
-              <span style={{color:roleColor[user.role]||"#a78bfa",fontWeight:600,fontSize:13}}>{user.role}</span>
+            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:8,flexWrap:"wrap"}}>
+              <span style={{color:rc,fontWeight:600,fontSize:13}}>{user.role}</span>
               <span style={{color:"var(--text3)"}}>·</span>
               <span style={{color:"var(--text3)",fontSize:13}}>{user.country}</span>
             </div>
             <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.7,margin:0}}>{user.bio}</p>
           </div>
         </div>
+      </Card>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,110px),1fr))",gap:10,marginBottom:14}}>
+        {[{l:"Reputation",v:user.reputation.toLocaleString(),i:"⭐",c:"#fbbf24"},{l:"Ideas",v:user.ideas,i:"💡",c:"#a78bfa"},{l:"Collabs",v:user.collabs,i:"🤝",c:"var(--accent3)"}].map(function(s){return(
+          <Card key={s.l} style={{padding:"14px 16px",textAlign:"center"}}>
+            <div style={{fontSize:20,marginBottom:4}}>{s.i}</div>
+            <div style={{fontSize:"clamp(18px,3vw,22px)",fontWeight:800,color:s.c,fontFamily:"var(--fd)"}}>{s.v}</div>
+            <div style={{fontSize:11,color:"var(--text3)",marginTop:2}}>{s.l}</div>
+          </Card>
+        );})}
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,120px),1fr))",gap:10,marginBottom:16}}>
-        {[{label:"Reputation",value:user.reputation.toLocaleString(),icon:"⭐",color:"#fbbf24"},{label:"Ideas",value:user.ideas,icon:"💡",color:"#a78bfa"},{label:"Collabs",value:user.collabs,icon:"🤝",color:"var(--accent3)"}].map(s=>(
-          <div key={s.label} style={{background:"var(--bg3)",borderRadius:14,padding:"16px",border:"1px solid var(--border)",textAlign:"center"}}>
-            <div style={{fontSize:22,marginBottom:4}}>{s.icon}</div>
-            <div style={{fontSize:22,fontWeight:800,color:s.color,fontFamily:"var(--font-display)"}}>{s.value}</div>
-            <div style={{fontSize:11,color:"var(--text3)",marginTop:2}}>{s.label}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{background:"var(--bg3)",borderRadius:16,padding:"20px 22px",border:"1px solid var(--border)",marginBottom:12}}>
-        <div style={{fontSize:10,color:"var(--text3)",fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",marginBottom:12}}>Skills</div>
+      <Card style={{marginBottom:14}}>
+        <SecLabel>Reputation Progress</SecLabel>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:12,color:"var(--text2)"}}>
+          <span>{user.reputation.toLocaleString()+" points"}</span>
+          <span style={{color:tier.c}}>{tier.l}</span>
+        </div>
+        <div style={{height:6,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden"}}>
+          <div style={{height:"100%",width:Math.min((user.reputation/3500)*100,100)+"%",background:"linear-gradient(90deg,#a78bfa,#fbbf24)",borderRadius:3,transition:"width 1s ease"}}/>
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",marginTop:6,fontSize:10,color:"var(--text3)"}}>
+          <span>Newcomer</span><span>Builder (500)</span><span>Expert (2000)</span><span>Elite (3000)</span>
+        </div>
+      </Card>
+      <Card style={{marginBottom:14}}>
+        <SecLabel>Skills</SecLabel>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          {user.skills.map(s=><div key={s} style={{padding:"8px 16px",borderRadius:10,background:`${roleColor[user.role]||"#a78bfa"}10`,border:`1px solid ${roleColor[user.role]||"#a78bfa"}28`,color:roleColor[user.role]||"#a78bfa",fontWeight:600,fontSize:13}}>{s}</div>)}
+          {(user.skills||[]).map(function(s){return <div key={s} style={{padding:"8px 14px",borderRadius:10,background:rc+"10",border:"1px solid "+rc+"28",color:rc,fontWeight:600,fontSize:13}}>{s}</div>;})}
+          {(!user.skills||user.skills.length===0)&&<p style={{fontSize:12,color:"var(--text3)"}}>No skills listed.</p>}
         </div>
-      </div>
-      <div style={{background:"rgba(167,139,250,0.04)",borderRadius:16,padding:"22px 24px",border:"1px solid rgba(167,139,250,0.12)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+      </Card>
+      <Card style={{background:"rgba(167,139,250,.04)",border:"1px solid rgba(167,139,250,.12)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:8}}>
           <div>
-            <div style={{fontSize:13,color:"#a78bfa",fontWeight:700,marginBottom:3}}>✦ AI Personal Mentor</div>
-            <div style={{fontSize:11,color:"var(--text3)"}}>Advice tailored to your profile</div>
+            <div style={{fontSize:13,color:"#a78bfa",fontWeight:700,marginBottom:2}}>AI Personal Mentor</div>
+            <div style={{fontSize:11,color:"var(--text3)"}}>Personalized advice based on your profile</div>
           </div>
-          {!mentor&&!loading&&<button onClick={fetchMentor} style={{padding:"8px 16px",borderRadius:9,border:"1px solid rgba(167,139,250,0.3)",background:"rgba(167,139,250,0.1)",color:"#a78bfa",cursor:"pointer",fontSize:11,fontWeight:700}}>Get Advice</button>}
+          {!mentor&&!loading&&<Btn onClick={fetchMentor} style={{padding:"8px 16px",fontSize:11}}>Get Advice</Btn>}
+          {mentor&&<button onClick={function(){setMentor(null);}} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:11}}>New Advice</button>}
         </div>
-        {loading&&<AILoader text="Crafting personal advice..."/>}
+        {loading&&<Spinner/>}
         {mentor&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.9,whiteSpace:"pre-wrap",margin:0}}>{mentor}</p>}
-        {!mentor&&!loading&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Get AI mentorship tailored to your startup journey.</p>}
-      </div>
+        {!mentor&&!loading&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Get personalized mentorship tailored to your startup journey.</p>}
+      </Card>
     </div>
   );
 }
 
-function Auth({onLogin}) {
+function Auth({onLogin}){
   const [mode,setMode]=useState("login");
-  const [form,setForm]=useState({name:"",email:"",password:"",role:"Founder",skills:"",country:""});
+  const [form,setForm]=useState({name:"",email:"",password:"",role:"Founder",skills:"",country:"",bio:""});
   const [errors,setErrors]=useState({});
   const [submitting,setSubmitting]=useState(false);
-  const set=(k,v)=>{setForm(f=>({...f,[k]:v}));setErrors(e=>({...e,[k]:""}));};
-  const iStyle={width:"100%",padding:"13px 16px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.04)",color:"var(--text)",fontSize:13.5,fontFamily:"var(--font-body)",boxSizing:"border-box",transition:"border-color 0.2s"};
-  const errStyle={...iStyle,border:"1px solid rgba(255,79,123,0.5)"};
-  const validate=()=>{
-    const e={};
-    if(mode==="signup"&&!form.name.trim())e.name="Name is required";
-    if(!form.email.trim()||!/\S+@\S+\.\S+/.test(form.email))e.email="Valid email required";
-    if(form.password.length<6)e.password="Password must be 6+ characters";
+  var set=function(k,v){setForm(function(f){return Object.assign({},f,{[k]:v});});setErrors(function(e){return Object.assign({},e,{[k]:""}); });};
+  var validate=function(){
+    var e={};
+    if(mode==="signup"){if(!form.name.trim())e.name="Full name is required";else if(form.name.trim().length<2)e.name="Name too short";}
+    if(!form.email.trim())e.email="Email is required";else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))e.email="Please enter a valid email";
+    if(!form.password)e.password="Password is required";else if(mode==="signup"&&form.password.length<6)e.password="Password must be at least 6 characters";
     setErrors(e);return Object.keys(e).length===0;
   };
-  const handleSubmit=()=>{
-    if(!validate())return;
-    setSubmitting(true);
-    setTimeout(()=>{
-      const u=mode==="login"?USERS[0]:{id:99,name:form.name,role:form.role,avatar:form.name.split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase()||"U",country:`🌍 ${form.country||"Global"}`,skills:form.skills.split(",").map(s=>s.trim()).filter(Boolean),bio:"New startup builder on LetsDoIt.",reputation:100,ideas:0,collabs:0};
-      onLogin(u);
-    },600);
+  var handleSubmit=function(){
+    if(!validate())return;setSubmitting(true);
+    setTimeout(function(){
+      if(mode==="login"){onLogin(SEED_USERS[0]);}
+      else{onLogin({id:99,name:form.name.trim(),role:form.role,avatar:form.name.trim().split(" ").map(function(n){return n[0]||"";}).join("").slice(0,2).toUpperCase()||"U",country:form.country||"Global",skills:form.skills?form.skills.split(",").map(function(s){return s.trim();}).filter(Boolean):[],bio:form.bio||"New startup builder on LetsDoIt.",reputation:100,ideas:0,collabs:0});}
+    },700);
   };
-  return (
-    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",position:"relative"}}>
-      <div style={{position:"fixed",top:"20%",left:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(167,139,250,0.04)",filter:"blur(100px)",pointerEvents:"none"}}/>
-      <div style={{position:"fixed",bottom:"20%",right:"5%",width:350,height:350,borderRadius:"50%",background:"rgba(79,255,176,0.03)",filter:"blur(80px)",pointerEvents:"none"}}/>
-      <div style={{width:"100%",maxWidth:480,animation:"fadeUp 0.5s ease"}}>
-        <div style={{textAlign:"center",marginBottom:40}}>
-          <div style={{fontSize:"clamp(36px,8vw,52px)",fontWeight:700,fontFamily:"var(--font-display)",letterSpacing:-2,background:"linear-gradient(135deg,#a78bfa 0%,#60a5fa 50%,#4fffb0 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:10}}>LetsDoIt</div>
-          <p style={{fontSize:13,color:"var(--text3)",fontStyle:"italic",fontFamily:"var(--font-serif)"}}>Where startup ideas become companies</p>
+  var iS={width:"100%",padding:"13px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.04)",color:"var(--text)",fontSize:13.5,boxSizing:"border-box",transition:"border-color .2s"};
+  var eS=Object.assign({},iS,{border:"1px solid rgba(255,79,123,0.5)"});
+  return(
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:16,position:"relative",background:"var(--bg)"}}>
+      <div style={{position:"fixed",top:"15%",left:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(167,139,250,.04)",filter:"blur(100px)",pointerEvents:"none"}}/>
+      <div style={{position:"fixed",bottom:"15%",right:"5%",width:350,height:350,borderRadius:"50%",background:"rgba(79,255,176,.03)",filter:"blur(80px)",pointerEvents:"none"}}/>
+      <div style={{width:"100%",maxWidth:460,animation:"fadeUp .5s ease",position:"relative",zIndex:1}}>
+        <div style={{textAlign:"center",marginBottom:36}}>
+          <div style={{fontSize:"clamp(36px,8vw,50px)",fontWeight:700,fontFamily:"var(--fd)",letterSpacing:-2,background:"linear-gradient(135deg,#a78bfa 0%,#60a5fa 50%,#4fffb0 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:8}}>LetsDoIt</div>
+          <p style={{fontSize:13,color:"var(--text3)",fontStyle:"italic",fontFamily:"var(--fs)"}}>Where startup ideas become companies</p>
         </div>
-        <div style={{background:"var(--bg3)",borderRadius:22,padding:"32px 30px",border:"1px solid var(--border)",position:"relative",overflow:"hidden"}}>
-          <div style={{position:"absolute",top:0,left:0,right:0,height:"1.5px",background:"linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent)"}}/>
-          <div style={{display:"flex",background:"rgba(255,255,255,0.03)",borderRadius:12,padding:4,marginBottom:26}}>
-            {["login","signup"].map(m=><button key={m} onClick={()=>setMode(m)} style={{flex:1,padding:"10px",borderRadius:9,border:"none",cursor:"pointer",fontSize:13,fontWeight:600,fontFamily:"var(--font-body)",transition:"all 0.2s",background:mode===m?"rgba(167,139,250,0.15)":"transparent",color:mode===m?"#a78bfa":"var(--text3)"}}>{m==="login"?"Sign In":"Sign Up"}</button>)}
+        <div style={{background:"var(--bg3)",borderRadius:"var(--r3)",padding:"clamp(22px,4vw,32px)",border:"1px solid var(--border)",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:"1.5px",background:"linear-gradient(90deg,transparent,rgba(167,139,250,.5),transparent)"}}/>
+          <div style={{display:"flex",background:"rgba(255,255,255,0.03)",borderRadius:12,padding:4,marginBottom:24}}>
+            {["login","signup"].map(function(m){return <button key={m} onClick={function(){setMode(m);setErrors({});}} style={{flex:1,padding:"10px",borderRadius:9,border:"none",cursor:"pointer",fontSize:13,fontWeight:600,transition:"all .2s",background:mode===m?"rgba(167,139,250,.15)":"transparent",color:mode===m?"#a78bfa":"var(--text3)"}}>{m==="login"?"Sign In":"Sign Up"}</button>;})}
           </div>
-          <div style={{display:"grid",gap:12}}>
-            {mode==="signup"&&<input value={form.name} onChange={e=>set("name",e.target.value)} placeholder="Full Name" style={iStyle}/>}
+          <div style={{display:"grid",gap:10}}>
+            {mode==="signup"&&<div>
+              <input value={form.name} onChange={function(e){set("name",e.target.value);}} placeholder="Full Name" style={errors.name?eS:iS}/>
+              {errors.name&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.name}</div>}
+            </div>}
             <div>
-              <input value={form.email} onChange={e=>set("email",e.target.value)} placeholder="Email address" style={errors.email?errStyle:iStyle}/>
-              {errors.email&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4,paddingLeft:4}}>{errors.email}</div>}
+              <input value={form.email} onChange={function(e){set("email",e.target.value);}} placeholder="Email address" style={errors.email?eS:iS}/>
+              {errors.email&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.email}</div>}
             </div>
             <div>
-              <input type="password" value={form.password} onChange={e=>set("password",e.target.value)} placeholder="Password" style={errors.password?errStyle:iStyle}/>
-              {errors.password&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4,paddingLeft:4}}>{errors.password}</div>}
+              <input type="password" value={form.password} onChange={function(e){set("password",e.target.value);}} onKeyDown={function(e){if(e.key==="Enter")handleSubmit();}} placeholder="Password" style={errors.password?eS:iS}/>
+              {errors.password&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.password}</div>}
             </div>
             {mode==="signup"&&<>
-              <select value={form.role} onChange={e=>set("role",e.target.value)} style={{...iStyle,background:"var(--bg2)"}}>{["Founder","Developer","Designer","Marketer","Investor"].map(r=><option key={r}>{r}</option>)}</select>
-              <input value={form.skills} onChange={e=>set("skills",e.target.value)} placeholder="Skills (comma-separated)" style={iStyle}/>
-              <input value={form.country} onChange={e=>set("country",e.target.value)} placeholder="Country" style={iStyle}/>
+              <select value={form.role} onChange={function(e){set("role",e.target.value);}} style={Object.assign({},iS,{background:"var(--bg2)",cursor:"pointer"})}>
+                {["Founder","Developer","Designer","Marketer","Investor"].map(function(r){return <option key={r}>{r}</option>;})}
+              </select>
+              <input value={form.skills} onChange={function(e){set("skills",e.target.value);}} placeholder="Skills (e.g. React, Product, Growth)" style={iS}/>
+              <input value={form.country} onChange={function(e){set("country",e.target.value);}} placeholder="Country" style={iS}/>
+              <textarea value={form.bio} onChange={function(e){set("bio",e.target.value);}} placeholder="Short bio (optional)" rows={2} style={Object.assign({},iS,{resize:"none"})}/>
             </>}
-            <button onClick={handleSubmit} disabled={submitting} style={{padding:"14px",borderRadius:12,border:"none",marginTop:4,background:submitting?"rgba(167,139,250,0.4)":"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff",cursor:submitting?"not-allowed":"pointer",fontWeight:700,fontSize:15,fontFamily:"var(--font-body)",boxShadow:"0 4px 20px rgba(167,139,250,0.25)",transition:"all 0.2s"}}>
-              {submitting?"Loading...":mode==="login"?"Sign In →":"Create Account →"}
+            <button onClick={handleSubmit} disabled={submitting}
+              style={{padding:"14px",borderRadius:12,border:"none",marginTop:4,cursor:submitting?"not-allowed":"pointer",fontWeight:700,fontSize:15,transition:"all .2s",
+                background:submitting?"rgba(167,139,250,.4)":"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff",boxShadow:submitting?"none":"0 4px 20px rgba(167,139,250,.25)"}}>
+              {submitting?"Signing in...":(mode==="login"?"Sign In":"Create Account")}
             </button>
-            {mode==="login"&&<button onClick={handleSubmit} style={{padding:"12px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.03)",color:"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"var(--font-body)"}}>Continue as Demo User</button>}
+            {mode==="login"&&<button onClick={function(){setSubmitting(true);setTimeout(function(){onLogin(SEED_USERS[0]);},400);}}
+              style={{padding:"12px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.03)",color:"var(--text2)",cursor:"pointer",fontSize:13}}>
+              Continue as Demo User
+            </button>}
           </div>
         </div>
-        <p style={{textAlign:"center",fontSize:11,color:"var(--text3)",marginTop:20}}>Join 12,000+ founders, builders & investors</p>
+        <p style={{textAlign:"center",fontSize:11,color:"var(--text3)",marginTop:16}}>Join 12,000+ founders, builders and investors · Free forever</p>
       </div>
     </div>
   );
 }
 
-function Toast({msg, onClose}) {
-  useEffect(()=>{const t=setTimeout(onClose,3500);return()=>clearTimeout(t);},[]);
-  return <div style={{position:"fixed",top:70,right:16,zIndex:999,padding:"11px 18px",borderRadius:12,background:"rgba(79,255,176,0.1)",border:"1px solid rgba(79,255,176,0.25)",color:"var(--accent3)",fontSize:13,fontWeight:600,backdropFilter:"blur(20px)",animation:"slideDown 0.3s ease",display:"flex",alignItems:"center",gap:8}}>✓ {msg}</div>;
+function Toast({msg,type,onClose}){
+  type=type||"success";
+  useEffect(function(){var t=setTimeout(onClose,3500);return function(){clearTimeout(t);};},[]);
+  var cfg={success:{bg:"rgba(79,255,176,.1)",border:"rgba(79,255,176,.25)",c:"var(--accent3)"},error:{bg:"rgba(255,79,123,.1)",border:"rgba(255,79,123,.25)",c:"var(--accent2)"},info:{bg:"rgba(167,139,250,.1)",border:"rgba(167,139,250,.25)",c:"#a78bfa"}};
+  var s=cfg[type]||cfg.success;
+  return <div style={{padding:"11px 16px",borderRadius:12,background:s.bg,border:"1px solid "+s.border,color:s.c,fontSize:13,fontWeight:600,backdropFilter:"blur(20px)",animation:"slideDown .3s ease",display:"flex",alignItems:"center",gap:8,maxWidth:320,wordBreak:"break-word"}}>
+    {msg}
+    <button onClick={onClose} style={{background:"none",border:"none",color:s.c,cursor:"pointer",fontSize:14,marginLeft:4,opacity:0.6}}>x</button>
+  </div>;
 }
 
-function App() {
-  const [user,setUser]=useState(null); const [page,setPage]=useState("dashboard");
-  const [ideas,setIdeas]=useState(IDEAS); const [selected,setSelected]=useState(null); const [toast,setToast]=useState(null);
-  const notify=msg=>setToast(msg);
-  const navigate=(pg)=>{setPage(pg);setSelected(null);window.scrollTo({top:0,behavior:'smooth'});};
-  const navItems=[{id:"dashboard",label:"Dashboard",icon:"⊞"},{id:"explore",label:"Explore",icon:"✦"},{id:"submit",label:"Submit",icon:"+"},{id:"profile",label:"Profile",icon:"◎"}];
+function App(){
+  const [user,setUser]=useState(null);
+  const [page,setPage]=useState("dashboard");
+  const [ideas,setIdeas]=useState(SEED_IDEAS);
+  const [selected,setSelected]=useState(null);
+  const [toasts,setToasts]=useState([]);
 
-  if(!user) return <Auth onLogin={setUser}/>;
+  var notify=function(msg,type){
+    type=type||"success";var id=Date.now();
+    setToasts(function(t){return [...t,{id,msg,type}];});
+    setTimeout(function(){setToasts(function(t){return t.filter(function(x){return x.id!==id;});});},4500);
+  };
 
-  return (
-    <>
-      <div style={{position:"fixed",top:"5%",left:"5%",width:500,height:500,borderRadius:"50%",background:"rgba(167,139,250,0.02)",filter:"blur(120px)",pointerEvents:"none",zIndex:0}}/>
-      <div style={{position:"fixed",bottom:"10%",right:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(79,255,176,0.015)",filter:"blur(100px)",pointerEvents:"none",zIndex:0}}/>
-      <nav style={{position:"sticky",top:0,zIndex:100,borderBottom:"1px solid rgba(255,255,255,0.06)",background:"rgba(8,8,16,0.88)",backdropFilter:"blur(24px)"}}>
-        <div style={{maxWidth:1400,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:58}}>
-          <div style={{fontSize:20,fontWeight:700,fontFamily:"var(--font-display)",letterSpacing:-0.8,background:"linear-gradient(135deg,#a78bfa,#60a5fa)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>LetsDoIt</div>
-          <div style={{display:"flex",gap:2}}>
-            {navItems.map(n=><button key={n.id} onClick={()=>navigate(n.id)} style={{padding:"7px 10px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all 0.2s",fontFamily:"var(--font-body)",background:page===n.id?"rgba(167,139,250,0.12)":"transparent",color:page===n.id?"#a78bfa":"rgba(240,240,248,0.38)"}}><span style={{marginRight:4}}>{n.icon}</span><span className="nav-label">{n.label}</span></button>)}
-          </div>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <span style={{fontSize:12,color:"#fbbf24",fontWeight:700}} className="nav-label">⭐ {user.reputation.toLocaleString()}</span>
-            <Av initials={user.avatar} size={32} role={user.role}/>
-          </div>
+  var navigate=function(pg,idea){
+    setPage(pg);
+    if(idea)setSelected(idea);
+    else if(pg!=="detail")setSelected(null);
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+
+  useEffect(function(){
+    if(selected){var fresh=ideas.find(function(i){return i.id===selected.id;});if(fresh)setSelected(fresh);}
+  },[ideas]);
+
+  var handleVote=function(ideaId,type){
+    setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{votes:Object.assign({},i.votes,{[type]:i.votes[type]+1})}):i;});});
+    notify("Vote recorded! +5 reputation earned","success");
+  };
+
+  var handleComment=function(ideaId,text,parentId){
+    var nc={id:Date.now(),userId:user.id,user:user.name,avatar:user.avatar,text:text.trim(),likes:0,liked:false,time:"Just now",replies:[]};
+    if(parentId){
+      setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{comments:i.comments.map(function(c){return c.id===parentId?Object.assign({},c,{replies:[...c.replies,nc]}):c;})}):i;});});
+    }else{
+      setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{comments:[...i.comments,nc]}):i;});});
+    }
+    notify("Comment posted! +10 reputation","success");
+  };
+
+  var handleLike=function(ideaId,commentId,replyId){
+    setIdeas(function(p){return p.map(function(i){
+      if(i.id!==ideaId)return i;
+      return Object.assign({},i,{comments:i.comments.map(function(c){
+        if(c.id!==commentId)return c;
+        if(replyId){return Object.assign({},c,{replies:c.replies.map(function(r){return r.id===replyId?Object.assign({},r,{likes:r.liked?r.likes-1:r.likes+1,liked:!r.liked}):r;})});}
+        return Object.assign({},c,{likes:c.liked?c.likes-1:c.likes+1,liked:!c.liked});
+      })});
+    });});
+  };
+
+  var handleCollab=function(ideaId,role,message){
+    setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{collaborators:(i.collaborators||0)+1}):i;});});
+    notify("Collaboration request sent as "+role+"! +30 reputation when approved.","success");
+  };
+
+  var handleSubmitIdea=function(data){
+    var ni=Object.assign({},data,{
+      id:Date.now(),authorId:user.id,author:user.name,authorRole:user.role,
+      votes:{high:0,improve:0,notViable:0},collaborators:0,views:1,comments:[],status:"New",
+      createdAt:new Date().toISOString().slice(0,10),
+      report:{marketDemand:data.aiScore||Math.floor(Math.random()*20+65),competition:Math.floor(Math.random()*30+45),monetization:Math.floor(Math.random()*20+65),scalability:Math.floor(Math.random()*20+65),risk:Math.floor(Math.random()*30+20),success:Math.floor(Math.random()*20+55),investor:Math.floor(Math.random()*30+45),competitors:[],trends:[],roadmap:[],stack:[]}
+    });
+    setIdeas(function(p){return [ni,...p];});
+    setUser(function(u){return Object.assign({},u,{ideas:(u.ideas||0)+1,reputation:(u.reputation||0)+50});});
+    notify("Idea submitted! AI analysis ready. +50 reputation","success");
+    navigate("explore");
+  };
+
+  var navItems=[{id:"dashboard",label:"Dashboard",icon:"⊞"},{id:"explore",label:"Explore",icon:"✦"},{id:"submit",label:"Submit",icon:"+"},{id:"profile",label:"Profile",icon:"◎"}];
+
+  if(!user)return <Auth onLogin={function(u){setUser(u);setPage("dashboard");}}/>;
+
+  return <>
+    <div style={{position:"fixed",top:"5%",left:"5%",width:500,height:500,borderRadius:"50%",background:"rgba(167,139,250,.018)",filter:"blur(130px)",pointerEvents:"none",zIndex:0}}/>
+    <div style={{position:"fixed",bottom:"10%",right:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(79,255,176,.012)",filter:"blur(110px)",pointerEvents:"none",zIndex:0}}/>
+    <nav style={{position:"sticky",top:0,zIndex:100,borderBottom:"1px solid rgba(255,255,255,0.06)",background:"rgba(8,8,16,0.9)",backdropFilter:"blur(24px)"}}>
+      <div style={{maxWidth:1400,margin:"0 auto",padding:"0 clamp(12px,3vw,24px)",display:"flex",alignItems:"center",justifyContent:"space-between",height:56}}>
+        <button onClick={function(){navigate("dashboard");}} style={{background:"linear-gradient(135deg,#a78bfa,#60a5fa)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",border:"none",cursor:"pointer",fontSize:19,fontWeight:700,fontFamily:"var(--fd)",letterSpacing:-0.8}}>LetsDoIt</button>
+        <div style={{display:"flex",gap:2}}>
+          {navItems.map(function(n){return(
+            <button key={n.id} onClick={function(){navigate(n.id);}}
+              style={{padding:"7px 9px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all .2s",
+                background:page===n.id&&page!=="detail"?"rgba(167,139,250,.12)":"transparent",
+                color:page===n.id&&page!=="detail"?"#a78bfa":"rgba(240,240,248,.4)"}}>
+              <span style={{marginRight:3}}>{n.icon}</span><span className="nav-text">{n.label}</span>
+            </button>
+          );})}
         </div>
-      </nav>
-      {toast&&<Toast msg={toast} onClose={()=>setToast(null)}/>}
-      <main style={{width:"100%",maxWidth:1400,margin:"0 auto",padding:"24px 16px 40px",position:"relative",zIndex:1}} key={page}>
-        {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={idea=>{setSelected(idea);setPage("detail");}}/>}
-        {page==="explore"&&<Explore ideas={ideas} onIdeaClick={idea=>{setSelected(idea);setPage("detail");}}/>}
-        {page==="submit"&&<SubmitIdea onSubmit={data=>{const ni={id:Date.now(),...data,authorId:user.id,author:user.name,authorRole:user.role,votes:{high:0,improve:0,notViable:0},collaborators:0,views:1,comments:[],status:"New",createdAt:new Date().toISOString().slice(0,10),report:{marketDemand:Math.floor(Math.random()*25+60),competition:Math.floor(Math.random()*35+40),monetization:Math.floor(Math.random()*25+60),scalability:Math.floor(Math.random()*25+60),risk:Math.floor(Math.random()*35+20),success:Math.floor(Math.random()*25+55),investor:Math.floor(Math.random()*35+40),competitors:[],trends:[],roadmap:[],stack:[]}};setIdeas(p=>[ni,...p]);notify("🚀 Idea submitted! AI analysis complete. +50 reputation");navigate("explore");}} onCancel={()=>setPage("explore")}/>}
-        {page==="profile"&&<Profile user={user}/>}
-        {page==="detail"&&selected&&<IdeaDetail idea={selected} user={user}
-          onBack={()=>navigate("explore")}
-          onVote={(id,type)=>{setIdeas(p=>p.map(i=>i.id===id?{...i,votes:{...i.votes,[type]:i.votes[type]+1}}:i));notify("Vote recorded! +5 reputation");}}
-          onComment={(id,text)=>{const nc={id:Date.now(),user:user.name,avatar:user.avatar,text,likes:0,time:"Just now",replies:[]};setIdeas(p=>p.map(i=>i.id===id?{...i,comments:[...i.comments,nc]}:i));setSelected(p=>({...p,comments:[...p.comments,nc]}));notify("Comment posted! +10 reputation");}}/>}
-      </main>
-      <footer style={{borderTop:"1px solid rgba(255,255,255,0.04)",padding:"18px 20px",textAlign:"center",marginTop:48,position:"relative",zIndex:1}}>
-        <span style={{fontSize:11,color:"var(--text3)",letterSpacing:0.8}}>LETSDOIT · AI-POWERED STARTUP COLLABORATION · WHERE IDEAS BECOME COMPANIES</span>
-      </footer>
-    </>
-  );
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <span className="hide-mobile" style={{fontSize:12,color:"#fbbf24",fontWeight:700}}>{"⭐ "+user.reputation.toLocaleString()}</span>
+          <button onClick={function(){navigate("profile");}} style={{background:"none",border:"none",cursor:"pointer",borderRadius:"50%",padding:0}}>
+            <Av initials={user.avatar} size={30} role={user.role}/>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div style={{position:"fixed",top:66,right:16,zIndex:999,display:"flex",flexDirection:"column",gap:8}}>
+      {toasts.map(function(t){return <Toast key={t.id} msg={t.msg} type={t.type} onClose={function(){setToasts(function(ts){return ts.filter(function(x){return x.id!==t.id;});});}}/>;})}
+    </div>
+    <main style={{width:"100%",maxWidth:1400,margin:"0 auto",padding:"24px clamp(12px,3vw,24px) 60px",position:"relative",zIndex:1}}>
+      {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}} onSubmit={function(){navigate("submit");}}/>}
+      {page==="explore"&&<Explore ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}}/>}
+      {page==="submit"&&<SubmitIdea onSubmit={handleSubmitIdea} onCancel={function(){navigate("explore");}}/>}
+      {page==="profile"&&<Profile user={user}/>}
+      {page==="detail"&&selected&&<IdeaDetail idea={selected} user={user} onBack={function(){navigate("explore");}} onVote={handleVote} onComment={handleComment} onLike={handleLike} onCollab={handleCollab}/>}
+    </main>
+    <footer style={{borderTop:"1px solid rgba(255,255,255,0.04)",padding:"16px 20px",textAlign:"center",position:"relative",zIndex:1}}>
+      <span style={{fontSize:10,color:"var(--text3)",letterSpacing:0.8}}>LETSDOIT · AI-POWERED STARTUP COLLABORATION · WHERE IDEAS BECOME COMPANIES</span>
+    </footer>
+  </>;
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
