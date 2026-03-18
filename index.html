@@ -136,10 +136,10 @@ async function callAI(prompt,sys){
         system:sys||"You are an elite startup advisor and venture analyst. Be sharp, direct, and actionable. Use plain text only — no markdown.",
         messages:[{role:"user",content:prompt}]})
     });
-    if(!r.ok){const eb=await r.json().catch(()=>({}));throw new Error(eb.error?.message||"HTTP "+r.status);}
+    if(!r.ok){const eb=await r.json().catch(()=>({}));throw new Error(eb.error&&eb.error.message||"HTTP "+r.status);}
     const d=await r.json();
     if(d.error)throw new Error(d.error.message);
-    return d.content?.[0]?.text||"No response received.";
+    return (d.content&&d.content[0]&&d.content[0].text)||"No response received.";
   }catch(e){
     return getMockAI(prompt);
   }
@@ -1433,7 +1433,7 @@ function App(){
         <button onClick={function(){navigate("dashboard");}} style={{background:"linear-gradient(135deg,#a78bfa,#60a5fa)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",border:"none",cursor:"pointer",fontSize:19,fontWeight:700,fontFamily:"var(--fd)",letterSpacing:-0.8}}>LetsDoIt</button>
         <div style={{display:"flex",gap:2}}>
           {navItems.map(function(n){return(
-            <button key={n.id} onClick={function(){if(n.id==="messages"){setShowMessages(true);setActiveConv(activeConv||convs[0]?.id||null);}else{navigate(n.id);}}}
+            <button key={n.id} onClick={function(){if(n.id==="messages"){setShowMessages(true);setActiveConv(activeConv||(convs[0]&&convs[0].id)||null);}else{navigate(n.id);}}}
               style={{padding:"7px 9px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all .2s",position:"relative",
                 background:(n.id==="messages"?showMessages:page===n.id&&page!=="detail")?"rgba(167,139,250,.12)":"transparent",
                 color:(n.id==="messages"?showMessages:page===n.id&&page!=="detail")?"#a78bfa":"rgba(240,240,248,.4)"}}>
@@ -1479,4 +1479,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 
 </script>
 </body>
-</html>
+ </html>
