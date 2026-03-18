@@ -109,6 +109,24 @@ const SEED_IDEAS=[
    ]},
 ];
 
+const SEED_CONVS=[
+  {id:"c1",participants:[1,2],ideaId:1,ideaTitle:"AI-Powered Legal Contract Analyzer",
+   lastMsg:"I can start the backend this weekend",lastTime:"10m ago",unread:1,
+   messages:[
+     {id:"m1",from:1,text:"Hey Marcus! Loved your comment on my contract analyzer idea. You really think MVP in 3 weeks?",time:"Yesterday 9:12 AM",read:true},
+     {id:"m2",from:2,text:"100%. Core is just PDF parsing plus GPT summarization. I have done similar work. What stack are you thinking?",time:"Yesterday 9:45 AM",read:true},
+     {id:"m3",from:1,text:"Thinking Next.js, OpenAI API, PostgreSQL. Open to suggestions though.",time:"Yesterday 10:02 AM",read:true},
+     {id:"m4",from:2,text:"Perfect stack. I would add Redis for caching API calls to cut costs when users re-upload the same contracts. I can start the backend this weekend",time:"10m ago",read:false}
+   ]},
+  {id:"c2",participants:[1,4],ideaId:1,ideaTitle:"AI-Powered Legal Contract Analyzer",
+   lastMsg:"What is your current runway?",lastTime:"2h ago",unread:0,
+   messages:[
+     {id:"m5",from:4,text:"Aria, the legal AI space is really hot right now. I have looked at 6 companies in this space. What is your moat vs DoNotPay?",time:"Yesterday 3:00 PM",read:true},
+     {id:"m6",from:1,text:"Our focus is SMBs not consumers. DoNotPay went after individuals. We go after the 50-person company drowning in vendor contracts.",time:"Yesterday 3:22 PM",read:true},
+     {id:"m7",from:4,text:"Smart positioning. What is your current runway?",time:"2h ago",read:true}
+   ]}
+];
+
 async function callAI(prompt,sys){
   try{
     const r=await fetch("https://api.anthropic.com/v1/messages",{
@@ -960,6 +978,7 @@ function Profile({user,onSignOut,onBack}){
   );
 }
 
+
 function MessagesPanel({convs,user,activeConv,setActiveConv,onSend,onClose}){
   const [draft,setDraft]=useState("");
   const [search,setSearch]=useState("");
@@ -1050,78 +1069,95 @@ function MessagesPanel({convs,user,activeConv,setActiveConv,onSend,onClose}){
 
         {/* ── Main chat area ── */}
         <div style={{flex:1,display:"flex",flexDirection:"column",background:"var(--bg)",minWidth:0}}>
-          {!conv?(
-            <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:12,padding:24}}>
-              <div style={{fontSize:36}}>💬</div>
-              <div style={{fontSize:14,fontWeight:600,color:"var(--text)"}}>Your Messages</div>
-              <div style={{fontSize:12,color:"var(--text3)",textAlign:"center",maxWidth:240}}>Send a collaboration request to start a conversation with a founder or builder.</div>
-            </div>
-          ):(function(){
-            var other=getOtherUser(conv);
-            var rc={"Founder":"#a78bfa","Developer":"#60a5fa","Designer":"#f9a8d4","Marketer":"#fb923c","Investor":"#fbbf24"}[other.role]||"#a78bfa";
-            return <>
-              {/* Chat header */}
-              <div style={{padding:"12px 16px",borderBottom:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-                <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:rc}}>{other.avatar}</div>
-                <div>
-                  <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{other.name}</div>
-                  <div style={{fontSize:10,color:"var(--text3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"clamp(120px,30vw,300px)"}}>{"Re: "+conv.ideaTitle}</div>
-                </div>
-                <div style={{marginLeft:"auto",display:"flex",gap:8,alignItems:"center"}}>
-                  <div style={{width:7,height:7,borderRadius:"50%",background:"var(--accent3)",boxShadow:"0 0 6px var(--accent3)"}}/>
-                  <span style={{fontSize:10,color:"var(--accent3)"}}>Online</span>
-                </div>
-              </div>
-              {/* Messages */}
-              <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:10}}>
-                {/* Idea context pill */}
-                <div style={{textAlign:"center",marginBottom:4}}>
-                  <span style={{padding:"4px 12px",borderRadius:20,fontSize:10,background:"rgba(167,139,250,0.1)",color:"#a78bfa",border:"1px solid rgba(167,139,250,0.2)"}}>{"💡 "+conv.ideaTitle}</span>
-                </div>
-                {conv.messages.map(function(m){
-                  var isMe=m.from===user.id;
-                  return(
-                    <div key={m.id} className="msg-bubble" style={{display:"flex",justifyContent:isMe?"flex-end":"flex-start",gap:8,alignItems:"flex-end"}}>
-                      {!isMe&&<div style={{width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,color:rc,flexShrink:0}}>{other.avatar}</div>}
-                      <div style={{maxWidth:"72%"}}>
-                        <div style={{padding:"10px 14px",borderRadius:isMe?"16px 16px 4px 16px":"16px 16px 16px 4px",fontSize:13,lineHeight:1.55,wordBreak:"break-word",
-                          background:isMe?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.07)",
-                          color:isMe?"#fff":"var(--text)",
-                          boxShadow:isMe?"0 2px 12px rgba(167,139,250,0.3)":"none"}}>
-                          {m.text}
-                        </div>
-                        <div style={{fontSize:10,color:"var(--text3)",marginTop:3,textAlign:isMe?"right":"left",display:"flex",alignItems:"center",gap:4,justifyContent:isMe?"flex-end":"flex-start"}}>
-                          {m.time}
-                          {isMe&&<span style={{color:m.read?"#4fffb0":"var(--text3)"}}>{m.read?"✓✓":"✓"}</span>}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                <div ref={messagesEndRef}/>
-              </div>
-              {/* Input bar */}
-              <div style={{padding:"12px 14px",borderTop:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",gap:8,alignItems:"flex-end",flexShrink:0}}>
-                <textarea ref={inputRef} value={draft} onChange={function(e){setDraft(e.target.value);}}
-                  onKeyDown={function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
-                  placeholder={"Message "+other.name+"..."}
-                  rows={1}
-                  style={{flex:1,padding:"10px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.05)",color:"var(--text)",fontSize:13,resize:"none",lineHeight:1.5,fontFamily:"var(--fb)",maxHeight:100,overflowY:"auto"}}/>
-                <button onClick={handleSend} disabled={!draft.trim()}
-                  style={{width:40,height:40,borderRadius:12,border:"none",cursor:draft.trim()?"pointer":"not-allowed",flexShrink:0,
-                    background:draft.trim()?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.06)",
-                    color:draft.trim()?"#fff":"var(--text3)",fontSize:16,transition:"all .2s",
-                    display:"flex",alignItems:"center",justifyContent:"center"}}>➤</button>
-              </div>
-            </>;
-          })()}
-        </div>
+          {!conv&&(
+          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:12,padding:24}}>
+            <div style={{fontSize:36}}>💬</div>
+            <div style={{fontSize:14,fontWeight:600,color:"var(--text)"}}>Your Messages</div>
+            <div style={{fontSize:12,color:"var(--text3)",textAlign:"center",maxWidth:240}}>Send a collaboration request to start a conversation.</div>
+          </div>
+        )}
+        {conv&&<ActiveChat conv={conv} user={user} draft={draft} setDraft={setDraft} handleSend={handleSend} messagesEndRef={messagesEndRef} inputRef={inputRef}/>}
       </div>
     </div>
   );
 }
 
-
+function ActiveChat({conv,user,draft,setDraft,handleSend,messagesEndRef,inputRef}){
+  var roleColor={"Founder":"#a78bfa","Developer":"#60a5fa","Designer":"#f9a8d4","Marketer":"#fb923c","Investor":"#fbbf24"};
+  var names={1:"Aria Chen",2:"Marcus Webb",3:"Sofia Reyes",4:"Kai Nakamura",5:"Zara Ahmed"};
+  var roles={1:"Founder",2:"Developer",3:"Designer",4:"Investor",5:"Marketer"};
+  var avatars={1:"AC",2:"MW",3:"SR",4:"KN",5:"ZA"};
+  var otherId=conv.participants.find(function(p){return p!==user.id;});
+  var otherName=names[otherId]||"User";
+  var otherRole=roles[otherId]||"Founder";
+  var otherAvatar=avatars[otherId]||"??";
+  var rc=roleColor[otherRole]||"#a78bfa";
+  return(
+    <>
+      <div style={{padding:"12px 16px",borderBottom:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+        <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:rc}}>{otherAvatar}</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{otherName}</div>
+          <div style={{fontSize:10,color:"var(--text3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{"Re: "+conv.ideaTitle}</div>
+        </div>
+        <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
+          <div style={{width:7,height:7,borderRadius:"50%",background:"var(--accent3)",boxShadow:"0 0 6px var(--accent3)"}}/>
+          <span style={{fontSize:10,color:"var(--accent3)"}}>Online</span>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:10}}>
+        <div style={{textAlign:"center",marginBottom:4}}>
+          <span style={{padding:"4px 12px",borderRadius:20,fontSize:10,background:"rgba(167,139,250,0.1)",color:"#a78bfa",border:"1px solid rgba(167,139,250,0.2)"}}>{"💡 "+conv.ideaTitle}</span>
+        </div>
+        {conv.messages.map(function(m){
+          var isMe=m.from===user.id;
+          return(
+            <div key={m.id} className="msg-bubble" style={{display:"flex",justifyContent:isMe?"flex-end":"flex-start",gap:8,alignItems:"flex-end"}}>
+              {!isMe&&<div style={{width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,color:rc,flexShrink:0}}>{otherAvatar}</div>}
+              <div style={{maxWidth:"72%"}}>
+                <div style={{padding:"10px 14px",borderRadius:isMe?"16px 16px 4px 16px":"16px 16px 16px 4px",fontSize:13,lineHeight:1.55,wordBreak:"break-word",
+                  background:isMe?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.07)",
+                  color:isMe?"#fff":"var(--text)",boxShadow:isMe?"0 2px 12px rgba(167,139,250,0.3)":"none"}}>
+                  {m.text}
+                </div>
+                <div style={{fontSize:10,color:"var(--text3)",marginTop:3,display:"flex",alignItems:"center",gap:4,justifyContent:isMe?"flex-end":"flex-start"}}>
+                  {m.time}
+                  {isMe&&<span style={{color:m.read?"#4fffb0":"var(--text3)"}}>{m.read?"✓✓":"✓"}</span>}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={messagesEndRef}/>
+      </div>
+      <div style={{padding:"12px 14px",borderTop:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",gap:8,alignItems:"flex-end",flexShrink:0}}>
+        <textarea ref={inputRef} value={draft} onChange={function(e){setDraft(e.target.value);}}
+          onKeyDown={function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
+          placeholder={"Message "+otherName+"..."}
+          rows={1}
+          style={{flex:1,padding:"10px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.05)",color:"var(--text)",fontSize:13,resize:"none",lineHeight:1.5,fontFamily:"var(--fb)",maxHeight:100,overflowY:"auto"}}/>
+        <button onClick={handleSend} disabled={!draft.trim()}
+          style={{width:40,height:40,borderRadius:12,border:"none",cursor:draft.trim()?"pointer":"not-allowed",flexShrink:0,
+            background:draft.trim()?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.06)",
+            color:draft.trim()?"#fff":"var(--text3)",fontSize:16,transition:"all .2s",
+            display:"flex",alignItems:"center",justifyContent:"center"}}>&#10148;</button>
+      </div>
+    </>
+  );
+}
+meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LetsDoIt — Where Ideas Become Companies</title>
+<meta name="description" content="AI-powered startup collaboration platform. Submit ideas, validate them, find co-founders, and build companies together."/>
+<meta name="theme-color" content="#080810"/>
+<meta property="og:title" content="LetsDoIt — Where Ideas Become Companies"/>
+<meta property="og:description" content="AI-powered startup collaboration. Validate ideas, find co-founders, build companies."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@300,400,500,700,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin
 function Auth({onLogin}){
   const [mode,setMode]=useState("login");
   const [form,setForm]=useState({name:"",email:"",password:"",role:"Founder",skills:"",country:"",bio:""});
@@ -1440,6 +1476,7 @@ function App(){
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+
 </script>
 </body>
 </html>
