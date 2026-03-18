@@ -1033,11 +1033,34 @@ function Toast({msg,type,onClose}){
 }
 
 function App(){
-  const [user,setUser]=useState(null);
+  // ── Persist session across refreshes ──────────────────────────────────────
+  var loadState=function(){
+    try{
+      var u=localStorage.getItem("ldi_user");
+      var id=localStorage.getItem("ldi_ideas");
+      return {user:u?JSON.parse(u):null, ideas:id?JSON.parse(id):SEED_IDEAS};
+    }catch(e){return {user:null,ideas:SEED_IDEAS};}
+  };
+  var saved=loadState();
+
+  const [user,setUser]=useState(saved.user);
   const [page,setPage]=useState("dashboard");
-  const [ideas,setIdeas]=useState(SEED_IDEAS);
+  const [ideas,setIdeas]=useState(saved.ideas);
   const [selected,setSelected]=useState(null);
   const [toasts,setToasts]=useState([]);
+
+  // Persist user to localStorage whenever it changes
+  useEffect(function(){
+    try{
+      if(user)localStorage.setItem("ldi_user",JSON.stringify(user));
+      else localStorage.removeItem("ldi_user");
+    }catch(e){}
+  },[user]);
+
+  // Persist ideas to localStorage whenever they change
+  useEffect(function(){
+    try{localStorage.setItem("ldi_ideas",JSON.stringify(ideas));}catch(e){}
+  },[ideas]);
 
   var notify=function(msg,type){
     type=type||"success";var id=Date.now();
@@ -1050,6 +1073,14 @@ function App(){
     if(idea)setSelected(idea);
     else if(pg!=="detail")setSelected(null);
     window.scrollTo({top:0,behavior:"smooth"});
+  };
+
+  var handleSignOut=function(){
+    setUser(null);
+    setPage("dashboard");
+    setSelected(null);
+    try{localStorage.removeItem("ldi_user");}catch(e){}
+    navigate("dashboard");
   };
 
   useEffect(function(){
@@ -1102,7 +1133,7 @@ function App(){
 
   var navItems=[{id:"dashboard",label:"Dashboard",icon:"⊞"},{id:"explore",label:"Explore",icon:"✦"},{id:"submit",label:"Submit",icon:"+"},{id:"profile",label:"Profile",icon:"◎"}];
 
-  if(!user)return <Auth onLogin={function(u){setUser(u);setPage("dashboard");}}/>;
+  if(!user)return <Auth onLogin={function(u){setUser(u);setPage("dashboard");try{localStorage.setItem("ldi_user",JSON.stringify(u));}catch(e){}}}/>;
 
   return <>
     <div style={{position:"fixed",top:"5%",left:"5%",width:500,height:500,borderRadius:"50%",background:"rgba(167,139,250,.018)",filter:"blur(130px)",pointerEvents:"none",zIndex:0}}/>
@@ -1124,6 +1155,9 @@ function App(){
           <span className="hide-mobile" style={{fontSize:12,color:"#fbbf24",fontWeight:700}}>{"⭐ "+user.reputation.toLocaleString()}</span>
           <button onClick={function(){navigate("profile");}} style={{background:"none",border:"none",cursor:"pointer",borderRadius:"50%",padding:0}}>
             <Av initials={user.avatar} size={30} role={user.role}/>
+          </button>
+          <button onClick={handleSignOut} title="Sign Out" style={{background:"rgba(255,79,123,0.08)",border:"1px solid rgba(255,79,123,0.18)",borderRadius:8,cursor:"pointer",color:"#ff4f7b",fontSize:11,fontWeight:700,padding:"5px 9px",transition:"all .2s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,79,123,0.18)";}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(255,79,123,0.08)";}} >
+            <span className="hide-mobile" style={{marginRight:3}}>Sign Out</span>⏻
           </button>
         </div>
       </div>
@@ -1147,4 +1181,4 @@ function App(){
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
- </html>
+</html>
