@@ -759,7 +759,7 @@ function SubmitIdea({onSubmit,onCancel}){
   );
 }
 
-function Explore({ideas,onIdeaClick}){
+function Explore({ideas,onIdeaClick,onBack}){
   const [q,setQ]=useState("");const [ind,setInd]=useState("All");const [status,setStatus]=useState("All");const [sort,setSort]=useState("trending");
   var industries=["All",...new Set(ideas.map(function(i){return i.industry;}))];
   var filtered=ideas.filter(function(i){
@@ -798,7 +798,7 @@ function Explore({ideas,onIdeaClick}){
   );
 }
 
-function Dashboard({user,ideas,onIdeaClick,onSubmit}){
+function Dashboard({user,ideas,onIdeaClick,onSubmit,onBack}){
   const [trends,setTrends]=useState(null);const [loadingTrends,setLoadingTrends]=useState(false);
   var fetchTrends=async function(){
     setLoadingTrends(true);
@@ -810,6 +810,7 @@ function Dashboard({user,ideas,onIdeaClick,onSubmit}){
   var tier=user.reputation>=3000?{l:"Elite",c:"#fbbf24"}:user.reputation>=2000?{l:"Expert",c:"#a78bfa"}:user.reputation>=500?{l:"Builder",c:"#60a5fa"}:{l:"Newcomer",c:"#4fffb0"};
   return(
     <div className="page-enter">
+      <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:20,padding:"6px 0",transition:"color .2s"}} onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3)";}}>← Back</button>
       <div style={{position:"relative",background:"linear-gradient(135deg,rgba(167,139,250,.08),rgba(79,159,255,.06))",border:"1px solid rgba(167,139,250,.15)",borderRadius:"var(--r3)",padding:"clamp(20px,4vw,28px)",marginBottom:20,overflow:"hidden"}}>
         <div style={{position:"absolute",top:-40,right:-40,width:200,height:200,borderRadius:"50%",background:"rgba(167,139,250,.06)",filter:"blur(50px)",pointerEvents:"none"}}/>
         <div style={{fontSize:10,color:"rgba(167,139,250,.75)",fontWeight:700,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>Welcome back</div>
@@ -872,7 +873,7 @@ function Dashboard({user,ideas,onIdeaClick,onSubmit}){
   );
 }
 
-function Profile({user,onSignOut}){
+function Profile({user,onSignOut,onBack}){
   const [mentor,setMentor]=useState(null);const [loading,setLoading]=useState(false);
   var fetchMentor=async function(){
     setLoading(true);
@@ -883,6 +884,7 @@ function Profile({user,onSignOut}){
   var rc=roleColor[user.role]||"#a78bfa";
   return(
     <div className="page-enter" style={{maxWidth:700,margin:"0 auto"}}>
+      <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:20,padding:"6px 0",transition:"color .2s"}} onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3)";}}>← Back</button>
       <Card style={{marginBottom:14,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent)"}}/>
         <div style={{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
@@ -1051,6 +1053,7 @@ function App(){
 
   const [user,setUser]=useState(saved.user);
   const [page,setPage]=useState("explore");
+  const [history,setHistory]=useState([]);
   const [ideas,setIdeas]=useState(saved.ideas);
   const [selected,setSelected]=useState(null);
   const [toasts,setToasts]=useState([]);
@@ -1074,11 +1077,36 @@ function App(){
     setTimeout(function(){setToasts(function(t){return t.filter(function(x){return x.id!==id;});});},4500);
   };
 
-  var navigate=function(pg,idea){
+  var navigate=function(pg,idea,replace){
+    if(!replace){
+      setHistory(function(h){
+        // Don't push duplicate consecutive entries
+        if(h.length>0&&h[h.length-1]===page)return h;
+        return [...h,page];
+      });
+    }
     setPage(pg);
     if(idea)setSelected(idea);
     else if(pg!=="detail")setSelected(null);
     window.scrollTo({top:0,behavior:"smooth"});
+  };
+
+  var goBack=function(){
+    setHistory(function(h){
+      if(h.length===0){
+        // No history left — on landing page, close/minimize (window.close or go to explore)
+        try{window.close();}catch(e){}
+        // If window.close doesn't work (most browsers block it), stay on explore
+        setPage("explore");
+        return h;
+      }
+      var prev=h[h.length-1];
+      var newH=h.slice(0,-1);
+      setPage(prev);
+      if(prev!=="detail")setSelected(null);
+      window.scrollTo({top:0,behavior:"smooth"});
+      return newH;
+    });
   };
 
   var handleSignOut=function(){
@@ -1169,11 +1197,11 @@ function App(){
       {toasts.map(function(t){return <Toast key={t.id} msg={t.msg} type={t.type} onClose={function(){setToasts(function(ts){return ts.filter(function(x){return x.id!==t.id;});});}}/>;})}
     </div>
     <main style={{width:"100%",maxWidth:1400,margin:"0 auto",padding:"24px clamp(12px,3vw,24px) 60px",position:"relative",zIndex:1}}>
-      {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}} onSubmit={function(){navigate("submit");}}/>}
+      {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}} onSubmit={function(){navigate("submit");}} onBack={goBack}/>}
       {page==="explore"&&<Explore ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}}/>}
-      {page==="submit"&&<SubmitIdea onSubmit={handleSubmitIdea} onCancel={function(){navigate("explore");}}/>}
-      {page==="profile"&&<Profile user={user} onSignOut={handleSignOut}/>}
-      {page==="detail"&&selected&&<IdeaDetail idea={selected} user={user} onBack={function(){navigate("explore");}} onVote={handleVote} onComment={handleComment} onLike={handleLike} onCollab={handleCollab}/>}
+      {page==="submit"&&<SubmitIdea onSubmit={handleSubmitIdea} onCancel={goBack}/>}
+      {page==="profile"&&<Profile user={user} onSignOut={handleSignOut} onBack={goBack}/>}
+      {page==="detail"&&selected&&<IdeaDetail idea={selected} user={user} onBack={goBack} onVote={handleVote} onComment={handleComment} onLike={handleLike} onCollab={handleCollab}/>}
     </main>
     <footer style={{borderTop:"1px solid rgba(255,255,255,0.04)",padding:"16px 20px",textAlign:"center",position:"relative",zIndex:1}}>
       <span style={{fontSize:10,color:"var(--text3)",letterSpacing:0.8}}>LETSDOIT · AI-POWERED STARTUP COLLABORATION · WHERE IDEAS BECOME COMPANIES</span>
