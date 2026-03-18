@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -22,8 +22,9 @@
   --font-serif:'Instrument Serif',serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html,body{width:100%;scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+#root{width:100%;}
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(167,139,250,0.25);border-radius:2px;}
@@ -35,6 +36,23 @@ input:focus,textarea:focus,select:focus{border-color:rgba(167,139,250,0.35)!impo
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 @keyframes pulse{0%,100%{opacity:0.4;transform:scale(1);}50%{opacity:1;transform:scale(1.4);}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
+
+/* ── Responsive layout ── */
+@media (min-width:640px){
+  main{padding-left:24px!important;padding-right:24px!important;}
+  nav .nav-inner{padding-left:24px!important;padding-right:24px!important;}
+}
+@media (min-width:1024px){
+  main{padding-left:40px!important;padding-right:40px!important;}
+  nav .nav-inner{padding-left:40px!important;padding-right:40px!important;}
+}
+@media (min-width:1280px){
+  main{padding-left:56px!important;padding-right:56px!important;}
+}
+/* Mobile: nav label text hidden on very small screens */
+@media (max-width:400px){
+  .nav-label{display:none;}
+}
 </style>
 </head>
 <body>
@@ -262,7 +280,7 @@ function IdeaDetail({idea, user, onBack, onVote, onComment}) {
     fontFamily:"var(--font-body)",boxSizing:"border-box"};
 
   return (
-    <div style={{maxWidth:860,margin:"0 auto",animation:"fadeUp 0.35s ease"}}>
+    <div style={{width:"100%",animation:"fadeUp 0.35s ease"}}>
       <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",
         cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:28,padding:"6px 0"}}>
         ← Back
@@ -271,7 +289,7 @@ function IdeaDetail({idea, user, onBack, onVote, onComment}) {
       <div style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:24,
         padding:"32px 32px 28px",marginBottom:18,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#a78bfa,#4f9fff,#4fffb0)"}}/>
-        <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:16,marginBottom:22}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:14,marginBottom:22}}>
           <div style={{flex:1}}>
             <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
               <span style={{padding:"3px 11px",borderRadius:20,fontSize:10,fontWeight:700,letterSpacing:0.8,
@@ -336,7 +354,7 @@ function IdeaDetail({idea, user, onBack, onVote, onComment}) {
         <div style={{display:"grid",gap:12,animation:"fadeUp 0.3s ease"}}>
           <div style={{background:"var(--bg3)",borderRadius:16,padding:"22px 24px",border:"1px solid var(--border)"}}>
             <div style={{fontSize:11,color:"#a78bfa",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:18}}>📊 Performance Metrics</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px 32px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:"4px 28px"}}>
               <Bar label="Market Demand" val={idea.report.marketDemand} color="var(--accent3)"/>
               <Bar label="Monetization" val={idea.report.monetization} color="#a78bfa"/>
               <Bar label="Scalability" val={idea.report.scalability} color="var(--accent4)"/>
@@ -498,7 +516,7 @@ function SubmitIdea({onSubmit, onCancel}) {
   const btnSecondary = {padding:"13px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"none",color:"var(--text2)",cursor:"pointer",fontWeight:600,fontSize:13,fontFamily:"var(--font-body)"};
 
   return (
-    <div style={{maxWidth:680,margin:"0 auto",animation:"fadeUp 0.35s ease"}}>
+    <div style={{width:"100%",maxWidth:720,margin:"0 auto",animation:"fadeUp 0.35s ease"}}>
       <button onClick={onCancel} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,marginBottom:28}}>← Cancel</button>
       <div style={{background:"var(--bg3)",borderRadius:24,padding:"36px 36px 32px",border:"1px solid var(--border)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#a78bfa,#4f9fff,#4fffb0)"}}/>
@@ -512,7 +530,7 @@ function SubmitIdea({onSubmit, onCancel}) {
             <div><label style={lStyle}>Idea Title *</label><input value={form.title} onChange={e=>set("title",e.target.value)} placeholder="e.g. AI-powered X for Y" style={iStyle}/></div>
             <div><label style={lStyle}>Problem Statement *</label><textarea value={form.problem} onChange={e=>set("problem",e.target.value)} placeholder="What painful problem are you solving? Be specific." style={{...iStyle,resize:"vertical",minHeight:90}}/></div>
             <div><label style={lStyle}>Your Solution *</label><textarea value={form.solution} onChange={e=>set("solution",e.target.value)} placeholder="How does your product uniquely solve this?" style={{...iStyle,resize:"vertical",minHeight:90}}/></div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:12}}>
               <div><label style={lStyle}>Target Users</label><input value={form.targetUsers} onChange={e=>set("targetUsers",e.target.value)} placeholder="Who benefits most?" style={iStyle}/></div>
               <div><label style={lStyle}>Industry</label>
                 <select value={form.industry} onChange={e=>set("industry",e.target.value)} style={{...iStyle,background:"var(--bg2)"}}>
@@ -525,7 +543,7 @@ function SubmitIdea({onSubmit, onCancel}) {
         )}
         {step===2&&(
           <div style={{display:"grid",gap:16,animation:"fadeUp 0.3s ease"}}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))",gap:12}}>
               <div><label style={lStyle}>Market Size</label><input value={form.marketSize} onChange={e=>set("marketSize",e.target.value)} placeholder="e.g. $5B TAM" style={iStyle}/></div>
               <div><label style={lStyle}>Tags (comma-separated)</label><input value={form.tags} onChange={e=>set("tags",e.target.value)} placeholder="AI, B2B, SaaS" style={iStyle}/></div>
             </div>
@@ -544,7 +562,7 @@ function SubmitIdea({onSubmit, onCancel}) {
                 ))}
               </div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10,width:"100%"}}>
               <button onClick={()=>setStep(1)} style={btnSecondary}>← Back</button>
               <button onClick={()=>setStep(3)} style={btnPrimary}>Get AI Pre-Analysis →</button>
             </div>
@@ -566,7 +584,7 @@ function SubmitIdea({onSubmit, onCancel}) {
               <div style={{fontSize:15,fontWeight:700,color:"var(--text)",fontFamily:"var(--font-display)"}}>{form.title}</div>
               <div style={{fontSize:12,color:"var(--text3)",marginTop:3}}>{form.industry} · {form.marketSize||"Market TBD"}</div>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10,width:"100%"}}>
               <button onClick={()=>setStep(2)} style={btnSecondary}>← Back</button>
               <button onClick={()=>{if(form.title&&form.problem&&form.solution)onSubmit({...form,tags:form.tags.split(",").map(t=>t.trim()).filter(Boolean),aiScore:Math.floor(Math.random()*18+72),validationScore:Math.floor(Math.random()*18+67)});}}
                 style={{...btnPrimary,background:"linear-gradient(135deg,var(--accent3),#00d4aa)",color:"#000"}}>
@@ -599,7 +617,7 @@ function Explore({ideas, onIdeaClick}) {
         <select value={sort} onChange={e=>setSort(e.target.value)} style={selStyle}><option value="trending">Trending</option><option value="score">AI Score</option><option value="views">Most Viewed</option><option value="newest">Newest</option></select>
       </div>
       <div style={{fontSize:11,color:"var(--text3)",marginBottom:16,letterSpacing:0.5}}>{filtered.length} IDEAS FOUND</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,300px),1fr))",gap:14}}>
         {filtered.map((idea,i)=><IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>)}
       </div>
     </div>
@@ -618,7 +636,7 @@ function Dashboard({user, ideas, onIdeaClick}) {
         <h2 style={{fontSize:28,fontWeight:700,color:"var(--text)",fontFamily:"var(--font-display)",letterSpacing:-0.5,marginBottom:4}}>
           {user.name} <span style={{color:roleColor[user.role],fontSize:18,fontWeight:500,fontFamily:"var(--font-body)"}}>{user.role}</span>
         </h2>
-        <div style={{display:"flex",gap:28,flexWrap:"wrap",marginTop:18}}>
+        <div style={{display:"flex",gap:20,flexWrap:"wrap",marginTop:18}}>
           {[{label:"Reputation",value:user.reputation.toLocaleString(),icon:"⭐",color:"#fbbf24"},{label:"Ideas",value:user.ideas,icon:"💡",color:"#a78bfa"},{label:"Collabs",value:user.collabs,icon:"🤝",color:"var(--accent3)"}].map(s=>(
             <div key={s.label} style={{display:"flex",alignItems:"center",gap:10}}>
               <span style={{fontSize:22}}>{s.icon}</span>
@@ -630,7 +648,7 @@ function Dashboard({user, ideas, onIdeaClick}) {
           ))}
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:10,marginBottom:24}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,140px),1fr))",gap:10,marginBottom:24}}>
         {[{label:"Total Ideas",value:ideas.length,color:"#a78bfa"},{label:"Trending",value:trending.length,color:"var(--accent2)"},{label:"Need Validation",value:needsVal.length,color:"#fbbf24"},{label:"Seeking Team",value:ideas.filter(i=>i.seeking.length>0).length,color:"var(--accent3)"}].map(s=>(
           <div key={s.label} style={{background:"var(--bg3)",borderRadius:14,padding:"16px 18px",border:"1px solid var(--border)",textAlign:"center"}}>
             <div style={{fontSize:26,fontWeight:800,color:s.color,fontFamily:"var(--font-display)"}}>{s.value}</div>
@@ -651,11 +669,11 @@ function Dashboard({user, ideas, onIdeaClick}) {
         {!trends&&!loadingTrends&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Click to get live AI-powered sector trend analysis.</p>}
       </div>
       <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🔥 Trending Ideas</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14,marginBottom:28}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,300px),1fr))",gap:14,marginBottom:28}}>
         {trending.slice(0,4).map((idea,i)=><IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>)}
       </div>
       <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🗳️ Needs Your Validation</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,300px),1fr))",gap:14}}>
         {needsVal.slice(0,2).map((idea,i)=><IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>)}
       </div>
     </div>
@@ -667,7 +685,7 @@ function Profile({user}) {
   const tier=user.reputation>=3000?{label:"Elite",color:"#fbbf24"}:user.reputation>=2000?{label:"Expert",color:"#a78bfa"}:{label:"Builder",color:"#60a5fa"};
   const fetchMentor=async()=>{setLoading(true);const t=await callAI(`Personal startup advice for: ${user.name}, ${user.role}, Skills: ${user.skills.join(", ")}, Reputation: ${user.reputation}\n\n3 growth opportunities, 1 skill gap, 1 startup idea to explore. Personal, sharp, under 250 words.`,"You are a world-class startup mentor.");setMentor(t);setLoading(false);};
   return (
-    <div style={{maxWidth:680,margin:"0 auto"}}>
+    <div style={{width:"100%",maxWidth:720,margin:"0 auto"}}>
       <div style={{background:"var(--bg3)",borderRadius:22,padding:"30px",border:"1px solid var(--border)",marginBottom:16,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:"1px",background:"linear-gradient(90deg,transparent,rgba(167,139,250,0.4),transparent)"}}/>
         <div style={{display:"flex",gap:18,alignItems:"flex-start"}}>
@@ -686,7 +704,7 @@ function Profile({user}) {
           </div>
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,120px),1fr))",gap:10,marginBottom:16}}>
         {[{label:"Reputation",value:user.reputation.toLocaleString(),icon:"⭐",color:"#fbbf24"},{label:"Ideas",value:user.ideas,icon:"💡",color:"#a78bfa"},{label:"Collabs",value:user.collabs,icon:"🤝",color:"var(--accent3)"}].map(s=>(
           <div key={s.label} style={{background:"var(--bg3)",borderRadius:14,padding:"16px",border:"1px solid var(--border)",textAlign:"center"}}>
             <div style={{fontSize:22,marginBottom:4}}>{s.icon}</div>
@@ -727,10 +745,10 @@ function Auth({onLogin}) {
     onLogin(u);
   };
   return (
-    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:20,position:"relative"}}>
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",position:"relative"}}>
       <div style={{position:"fixed",top:"20%",left:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(167,139,250,0.04)",filter:"blur(100px)",pointerEvents:"none"}}/>
       <div style={{position:"fixed",bottom:"20%",right:"5%",width:350,height:350,borderRadius:"50%",background:"rgba(79,255,176,0.03)",filter:"blur(80px)",pointerEvents:"none"}}/>
-      <div style={{width:"100%",maxWidth:420,animation:"fadeUp 0.5s ease"}}>
+      <div style={{width:"100%",maxWidth:480,animation:"fadeUp 0.5s ease"}}>
         <div style={{textAlign:"center",marginBottom:40}}>
           <div style={{fontSize:48,fontWeight:700,fontFamily:"var(--font-display)",letterSpacing:-2,background:"linear-gradient(135deg,#a78bfa 0%,#60a5fa 50%,#4fffb0 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:10}}>LetsDoIt</div>
           <p style={{fontSize:13,color:"var(--text3)",fontStyle:"italic",fontFamily:"var(--font-serif)"}}>Where startup ideas become companies</p>
@@ -779,10 +797,10 @@ function App() {
       <div style={{position:"fixed",top:"5%",left:"5%",width:500,height:500,borderRadius:"50%",background:"rgba(167,139,250,0.02)",filter:"blur(120px)",pointerEvents:"none",zIndex:0}}/>
       <div style={{position:"fixed",bottom:"10%",right:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(79,255,176,0.015)",filter:"blur(100px)",pointerEvents:"none",zIndex:0}}/>
       <nav style={{position:"sticky",top:0,zIndex:100,borderBottom:"1px solid rgba(255,255,255,0.06)",background:"rgba(8,8,16,0.88)",backdropFilter:"blur(24px)"}}>
-        <div style={{maxWidth:1080,margin:"0 auto",padding:"0 20px",display:"flex",alignItems:"center",justifyContent:"space-between",height:58}}>
+        <div style={{maxWidth:1400,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:58}}>
           <div style={{fontSize:20,fontWeight:700,fontFamily:"var(--font-display)",letterSpacing:-0.8,background:"linear-gradient(135deg,#a78bfa,#60a5fa)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>LetsDoIt</div>
           <div style={{display:"flex",gap:2}}>
-            {navItems.map(n=><button key={n.id} onClick={()=>{setPage(n.id);setSelected(null);}} style={{padding:"7px 14px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all 0.2s",fontFamily:"var(--font-body)",background:page===n.id?"rgba(167,139,250,0.12)":"transparent",color:page===n.id?"#a78bfa":"rgba(240,240,248,0.38)"}}><span style={{marginRight:5}}>{n.icon}</span>{n.label}</button>)}
+            {navItems.map(n=><button key={n.id} onClick={()=>{setPage(n.id);setSelected(null);}} style={{padding:"7px 10px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all 0.2s",fontFamily:"var(--font-body)",background:page===n.id?"rgba(167,139,250,0.12)":"transparent",color:page===n.id?"#a78bfa":"rgba(240,240,248,0.38)"}}><span style={{marginRight:4}}>{n.icon}</span><span className="nav-label">{n.label}</span></button>)}
           </div>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <span style={{fontSize:12,color:"#fbbf24",fontWeight:700}}>⭐ {user.reputation.toLocaleString()}</span>
@@ -791,7 +809,7 @@ function App() {
         </div>
       </nav>
       {toast&&<Toast msg={toast} onClose={()=>setToast(null)}/>}
-      <main style={{maxWidth:1080,margin:"0 auto",padding:"30px 20px",position:"relative",zIndex:1}}>
+      <main style={{width:"100%",maxWidth:1400,margin:"0 auto",padding:"24px 16px 40px",position:"relative",zIndex:1}}>
         {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={idea=>{setSelected(idea);setPage("detail");}}/>}
         {page==="explore"&&<Explore ideas={ideas} onIdeaClick={idea=>{setSelected(idea);setPage("detail");}}/>}
         {page==="submit"&&<SubmitIdea onSubmit={data=>{const ni={id:Date.now(),...data,authorId:user.id,author:user.name,authorRole:user.role,votes:{high:0,improve:0,notViable:0},collaborators:0,views:1,comments:[],status:"New",createdAt:new Date().toISOString().slice(0,10),report:{marketDemand:Math.floor(Math.random()*25+60),competition:Math.floor(Math.random()*35+40),monetization:Math.floor(Math.random()*25+60),scalability:Math.floor(Math.random()*25+60),risk:Math.floor(Math.random()*35+20),success:Math.floor(Math.random()*25+55),investor:Math.floor(Math.random()*35+40),competitors:[],trends:[],roadmap:[],stack:[]}};setIdeas(p=>[ni,...p]);notify("🚀 Idea submitted! AI analysis complete. +50 reputation");setPage("explore");}} onCancel={()=>setPage("explore")}/>}
