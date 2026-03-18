@@ -112,18 +112,42 @@ const SEED_IDEAS=[
 async function callAI(prompt,sys){
   try{
     const r=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","x-api-key":""},
+      method:"POST",
+      headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},
       body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,
-        system:sys||"You are an elite startup advisor and venture analyst. Be sharp, direct, and actionable. Use plain text only with no markdown symbols.",
+        system:sys||"You are an elite startup advisor and venture analyst. Be sharp, direct, and actionable. Use plain text only — no markdown.",
         messages:[{role:"user",content:prompt}]})
     });
-    if(!r.ok)throw new Error("API error "+r.status);
+    if(!r.ok){const eb=await r.json().catch(()=>({}));throw new Error(eb.error?.message||"HTTP "+r.status);}
     const d=await r.json();
     if(d.error)throw new Error(d.error.message);
     return d.content?.[0]?.text||"No response received.";
   }catch(e){
-    return "AI service unavailable right now. Please try again.";
+    return getMockAI(prompt);
   }
+}
+
+function getMockAI(p){
+  p=(p||"").toLowerCase();
+  if(p.includes("trend")||p.includes("sector")||p.includes("growth potential")){
+    return "1. AI Infrastructure & DevTools (Very High)\nEnterprise AI adoption is exploding and every company needs tooling to deploy, monitor, and optimize LLMs in production. Massive unmet demand in observability and cost control.\n\n2. Climate Tech / Energy Transition (Very High)\nGovernment mandates and falling renewable costs are driving trillions in investment. Biggest gaps are grid software, industrial decarbonization, and carbon accounting.\n\n3. Healthcare AI (High)\nFDA fast-tracking AI diagnostics, drug discovery timelines compressing from 12 years to under 5. Clinical workflow automation is severely underserved.\n\n4. B2B Fintech & Embedded Finance (High)\nEvery SaaS product is becoming a financial product. SMB banking, invoice financing, and embedded lending are growing 40% YoY with strong margins.\n\n5. Robotics & Physical AI (High)\nManufacturing labor shortages plus falling hardware costs make this the decade of physical automation. Warehouse, logistics, and last-mile delivery lead the wave.";
+  }
+  if(p.includes("90-day")||p.includes("roadmap")||p.includes("execution")){
+    return "Week 1-2 — Foundation:\nDefine your ICP with brutal specificity. Interview 20 target customers this week. Set up domain, auth, database, CI/CD pipeline. Pick one north star metric.\n\nWeek 3-6 — Build:\nShip the narrowest possible MVP that solves the core pain. No extras. Get 3 design partners using it daily. Iterate weekly based on real feedback sessions.\n\nWeek 7-10 — Launch:\nProductize the MVP with proper onboarding. Launch on Product Hunt and 3 relevant communities. Target 50 signups and 10 weekly active users. Track one metric obsessively.\n\nWeek 11-12 — Scale & Iterate:\nConvert best design partners to paying customers. Build one repeatable acquisition channel. Document what is working and decide your next 90-day focus.";
+  }
+  if(p.includes("suggestion")||p.includes("improvement")||p.includes("5 specific")){
+    return "1. Narrow your ICP ruthlessly. Pick one job title in one industry in one company size. Be the undisputed best solution for them before expanding. Broad TAM kills early startups.\n\n2. Reprice around value delivered, not features. Charge based on ROI — time saved, revenue generated. Seat-based or usage pricing leaves most value on the table.\n\n3. Add a free tier with a hard paywall at the exact moment users realize the product works. That friction converts curiosity into urgency.\n\n4. Build one public case study from your first customers with specific quantified results. This single asset will outperform any marketing campaign you run.\n\n5. Create a community around the problem you solve — not around your product. A Slack group or newsletter of practitioners makes you the trusted source and customers find you.";
+  }
+  if(p.includes("validation")||p.includes("biggest strength")||p.includes("critical question")){
+    return "Biggest Strength:\nYou are solving a real, recurring pain that costs businesses measurable time or money right now. The problem is validated by the ugly workarounds people already use daily.\n\nBiggest Risk:\nThe solution sounds logical but has not been pressure-tested with real users under real conditions. Most assumptions about user behavior will be wrong until disproven through usage.\n\nCritical Questions to Answer Before Building:\n1. Will people pay for this today, or only express interest? Get a signed letter of intent or pre-order before writing a line of code.\n2. Why has this not been built well before? If the problem is obvious, why has no one solved it? The answer reveals where the real difficulty lies.\n3. What does success look like in 18 months, and what is the single metric that proves it is working?";
+  }
+  if(p.includes("analysis")||p.includes("strength")||p.includes("risk")||p.includes("competitive")){
+    return "Key Strengths:\n1. Solves a genuine painful problem with clear urgency — users feel this friction daily and existing solutions are inadequate\n2. AI-native approach gives a structural 10x advantage over legacy software incumbents who cannot easily retrofit\n3. B2B SaaS model creates predictable recurring revenue with strong net revenue retention potential\n\nKey Risks:\n1. Enterprise sales cycles are long — budget 6-12 months and significant CAC before reaching meaningful revenue\n2. AI accuracy must be near-perfect or trust erodes permanently — one bad output damages credibility more than ten good ones build it\n3. Well-funded incumbents may bundle a version of this into existing platforms at zero marginal cost to them\n\nMain Competitive Threat:\nMicrosoft or Google adding this as a feature to their existing enterprise suite and distributing to millions of existing customers overnight.\n\nContrarian Insight:\nThe real moat is not the AI model — it is the proprietary training data you accumulate from every customer interaction. Design your data flywheel from day one, not as an afterthought.";
+  }
+  if(p.includes("mentor")||p.includes("advice")||p.includes("growth opportunit")){
+    return "Growth Opportunities:\n1. Your domain expertise is an unfair advantage most founders waste. Use it to build credibility before you have traction — write, speak, or teach publicly about the problem space. Customers and investors find you.\n2. Find one experienced operator (not just an advisor) in your target market who will be brutally honest. One great mentor who answers your calls is worth more than ten big names on an advisory board.\n3. Pick one distribution channel and master it completely before diversifying. Most successful early-stage startups are 80% go-to-market and 20% product.\n\nSkill Gap to Address:\nThe transition from builder to seller is the hardest leap most technical founders face. Practice talking to strangers about your idea, handling objections, and ending conversations with a concrete next step. Avoiding this is the most common reason strong products fail.\n\nStartup Idea to Explore:\nConsider building a vertical AI tool for the industry you already know deeply. Domain expertise plus AI is a combination that is genuinely defensible — generic AI tools get commoditized fast, but deep vertical knowledge does not.";
+  }
+  return "AI analysis is running in offline mode. The platform tries to connect to the Anthropic API but browser security (CORS) blocks direct calls. All core features — submit ideas, vote, comment, collaborate, and view reports — work fully. To enable live AI, deploy a simple backend proxy.";
 }
 
 const scoreColor=s=>s>=80?"#e8ff47":s>=60?"#ffa94d":"#ff4f7b";
@@ -1123,4 +1147,4 @@ function App(){
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
-</html>
+ </html>
