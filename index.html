@@ -4,42 +4,39 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>LetsDoIt — Where Ideas Become Companies</title>
-<meta name="description" content="AI-powered startup collaboration platform. Submit ideas, validate them, find co-founders, and build companies together."/>
+<meta name="description" content="AI-powered startup collaboration platform."/>
 <meta name="theme-color" content="#080810"/>
-<meta property="og:title" content="LetsDoIt — Where Ideas Become Companies"/>
-<meta property="og:description" content="AI-powered startup collaboration. Validate ideas, find co-founders, build companies."/>
-<meta property="og:type" content="website"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@300,400,500,700,800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
 <style>
 :root{
-  --bg:#080810;--bg2:#0e0e1a;--bg3:#13131f;--bg4:#1a1a2a;
+  --bg:#080810;--bg2:#0e0e1a;--bg3:#13131f;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
   --text:#f0f0f8;--text2:rgba(240,240,248,0.58);--text3:rgba(240,240,248,0.32);
   --accent:#e8ff47;--accent2:#ff4f7b;--accent3:#4fffb0;--accent4:#4f9fff;--purple:#a78bfa;
-  --fd:'Clash Display','ClashDisplay-Variable',sans-serif;
-  --fb:'Cabinet Grotesk',sans-serif;
-  --fs:'Instrument Serif',serif;
+  --fd:"Clash Display","ClashDisplay-Variable",sans-serif;
+  --fb:"Cabinet Grotesk",sans-serif;
+  --fs:"Instrument Serif",serif;
   --r:14px;--r2:20px;--r3:24px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:var(--fb);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 #root{width:100%;}
-::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(167,139,250,0.25);border-radius:2px;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:rgba(167,139,250,0.25);border-radius:2px;}
 input,textarea,select,button{font-family:var(--fb);}
 input::placeholder,textarea::placeholder{color:var(--text3);}
 select option{background:#13131f;color:var(--text);}
 input:focus,textarea:focus,select:focus{border-color:rgba(167,139,250,0.4)!important;outline:none;}
-button:focus-visible{outline:2px solid rgba(167,139,250,0.6);outline-offset:2px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
 @keyframes pulse{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:none;}}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 .page-enter{animation:fadeUp 0.35s ease both;}
 @media(max-width:480px){.hide-mobile{display:none!important;}}
 @media(max-width:520px){.nav-text{display:none!important;}}
@@ -47,38 +44,57 @@ button:focus-visible{outline:2px solid rgba(167,139,250,0.6);outline-offset:2px;
 </head>
 <body>
 <div id="root"></div>
-<div id="loading" style="position:fixed;inset:0;background:#080810;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9999;">
-  <div style="font-size:32px;font-weight:700;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">LetsDoIt</div>
+
+<!-- Loading screen -->
+<div id="ld" style="position:fixed;inset:0;background:#080810;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9999;">
+  <div style="font-size:32px;font-weight:700;font-family:sans-serif;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">LetsDoIt</div>
   <div style="display:flex;gap:6px;">
-    <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:ldpulse 1s infinite 0s;"></div>
-    <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:ldpulse 1s infinite 0.15s;"></div>
-    <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:ldpulse 1s infinite 0.3s;"></div>
+    <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:pulse 1s infinite 0s;"></div>
+    <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:pulse 1s infinite 0.15s;"></div>
+    <div style="width:8px;height:8px;border-radius:50%;background:#a78bfa;animation:pulse 1s infinite 0.3s;"></div>
   </div>
 </div>
-<style>@keyframes ldpulse{0%,100%{opacity:0.2;transform:scale(1);}50%{opacity:1;transform:scale(1.4);}}</style>
-<script>
-// Hide loading screen once React renders, show error if it crashes
-window.__ldTimeout=setTimeout(function(){
-  var el=document.getElementById("loading");
-  if(el&&el.style.display!=="none"){
-    el.innerHTML='<div style="text-align:center;padding:20px;color:#f0f0f8;font-family:sans-serif;"><div style="font-size:28px;margin-bottom:12px;">LetsDoIt</div><div style="color:#ff4f7b;margin-bottom:8px;">Something went wrong loading the app.</div><div style="font-size:13px;color:rgba(240,240,248,0.5);margin-bottom:20px;">Please clear your browser cache and try again.</div><button onclick="localStorage.clear();location.reload();" style="padding:10px 24px;border-radius:10px;border:none;background:#a78bfa;color:#fff;font-size:14px;cursor:pointer;font-weight:700;">Clear Cache &amp; Reload</button></div>';
-  }
-},8000);
-</script>
-<script type="text/babel">
-const {useState,useEffect,useRef}=React;
+<div id="errd" style="display:none;position:fixed;top:0;left:0;right:0;background:#1a0a0a;color:#ff6b6b;padding:12px;font-size:11px;font-family:monospace;z-index:99999;word-break:break-all;max-height:50vh;overflow-y:auto;"></div>
 
-const SEED_USERS=[
+<script>
+// Error capture
+window.onerror=function(msg,src,line,col,err){
+  var el=document.getElementById("errd");
+  if(el){el.style.display="block";el.innerHTML+="<div>ERR L"+line+": "+msg+"</div>";}
+};
+window.addEventListener("unhandledrejection",function(e){
+  var el=document.getElementById("errd");
+  if(el){el.style.display="block";el.innerHTML+="<div>PROMISE: "+(e.reason&&e.reason.message||String(e.reason))+"</div>";}
+});
+// Hide loading when React mounts
+window.__hideLd=function(){
+  var el=document.getElementById("ld");
+  if(el)el.style.display="none";
+};
+// Fallback timeout
+setTimeout(function(){
+  var el=document.getElementById("ld");
+  if(el&&el.style.display!=="none"){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:#f0f0f8;font-family:sans-serif;"><div style="font-size:28px;margin-bottom:12px;">LetsDoIt</div><div style="color:#ff4f7b;margin-bottom:8px;">Something went wrong.</div><button onclick="localStorage.clear();location.reload();" style="padding:10px 24px;border-radius:10px;border:none;background:#a78bfa;color:#fff;font-size:14px;cursor:pointer;font-weight:700;">Clear Cache &amp; Reload</button></div>';
+  }
+},12000);
+</script>
+
+<!-- Plain JS: seed data + AI (no JSX, no Babel needed) -->
+<script>
+var APP_VERSION="v5";
+
+var SEED_USERS=[
   {id:1,name:"Aria Chen",role:"Founder",avatar:"AC",country:"USA",skills:["Strategy","Product","Fundraising"],bio:"Serial founder with 2 exits. Passionate about FinTech and AI.",reputation:2840,ideas:7,collabs:12},
   {id:2,name:"Marcus Webb",role:"Developer",avatar:"MW",country:"UK",skills:["React","Node.js","AWS"],bio:"Full-stack engineer who loves turning ideas into MVPs fast.",reputation:1920,ideas:3,collabs:8},
   {id:3,name:"Sofia Reyes",role:"Designer",avatar:"SR",country:"Spain",skills:["UI/UX","Figma","Branding"],bio:"Product designer crafting experiences users love.",reputation:1540,ideas:4,collabs:6},
   {id:4,name:"Kai Nakamura",role:"Investor",avatar:"KN",country:"Japan",skills:["VC","Due Diligence","Mentoring"],bio:"Angel investor focused on B2B SaaS and deep tech.",reputation:3210,ideas:2,collabs:15},
-  {id:5,name:"Zara Ahmed",role:"Marketer",avatar:"ZA",country:"UAE",skills:["Growth","SEO","Content"],bio:"Growth hacker who scaled startups from 0 to 100k users.",reputation:1750,ideas:5,collabs:9},
+  {id:5,name:"Zara Ahmed",role:"Marketer",avatar:"ZA",country:"UAE",skills:["Growth","SEO","Content"],bio:"Growth hacker who scaled startups from 0 to 100k users.",reputation:1750,ideas:5,collabs:9}
 ];
 
-const mkR=(d)=>({marketDemand:d[0],competition:d[1],monetization:d[2],scalability:d[3],risk:d[4],success:d[5],investor:d[6],competitors:d[7],trends:d[8],roadmap:d[9],stack:d[10]});
+function mkR(d){return{marketDemand:d[0],competition:d[1],monetization:d[2],scalability:d[3],risk:d[4],success:d[5],investor:d[6],competitors:d[7],trends:d[8],roadmap:d[9],stack:d[10]};}
 
-const SEED_IDEAS=[
+var SEED_IDEAS=[
   {id:1,title:"AI-Powered Legal Contract Analyzer",authorId:1,author:"Aria Chen",authorRole:"Founder",
    problem:"Small businesses spend thousands on legal fees reviewing contracts they barely understand.",
    solution:"An AI platform that reads, summarizes, and flags risks in legal contracts in seconds.",
@@ -87,8 +103,8 @@ const SEED_IDEAS=[
    votes:{high:47,improve:8,notViable:3},collaborators:3,views:1240,status:"Trending",seeking:["Developer","Designer"],createdAt:"2024-01-10",
    report:mkR([88,62,91,85,32,78,71,["DoNotPay","Ironclad","ContractPodAi"],["Legal AI adoption +34% YoY","SMB digitization post-COVID","Remote work driving contract volume"],["MVP: Upload and summarize contracts","Add risk flagging and clause extraction","Integrate DocuSign and Google Drive","Enterprise team tier"],["Next.js","OpenAI API","PostgreSQL","Redis","Stripe"]]),
    comments:[
-     {id:1,userId:2,user:"Marcus Webb",avatar:"MW",text:"Huge pain point. I'd build the MVP in 3 weeks. Count me in!",likes:12,liked:false,time:"2h ago",replies:[{id:2,userId:3,user:"Sofia Reyes",avatar:"SR",text:"I can handle the UX — legal interfaces need to feel trustworthy.",likes:5,liked:false,time:"1h ago"}]},
-     {id:3,userId:4,user:"Kai Nakamura",avatar:"KN",text:"Seen 4 companies tackle this. What's your moat?",likes:8,liked:false,time:"45m ago",replies:[]},
+     {id:1,userId:2,user:"Marcus Webb",avatar:"MW",text:"Huge pain point. I would build the MVP in 3 weeks. Count me in!",likes:12,liked:false,time:"2h ago",replies:[{id:2,userId:3,user:"Sofia Reyes",avatar:"SR",text:"I can handle the UX — legal interfaces need to feel trustworthy.",likes:5,liked:false,time:"1h ago"}]},
+     {id:3,userId:4,user:"Kai Nakamura",avatar:"KN",text:"Seen 4 companies tackle this. What is your moat?",likes:8,liked:false,time:"45m ago",replies:[]}
    ]},
   {id:2,title:"Climate Credits Marketplace for SMBs",authorId:5,author:"Zara Ahmed",authorRole:"Marketer",
    problem:"Small businesses want to go carbon neutral but existing markets are complex and expensive.",
@@ -96,7 +112,7 @@ const SEED_IDEAS=[
    targetUsers:"Small and Medium Businesses",marketSize:"$2.4B",monetization:"2% marketplace fee + premium analytics",
    industry:"CleanTech",tags:["Climate","Marketplace","Sustainability","B2B"],aiScore:74,validationScore:78,
    votes:{high:31,improve:14,notViable:5},collaborators:1,views:890,status:"Hot",seeking:["Developer","Co-founder"],createdAt:"2024-01-12",
-   report:mkR([79,55,72,81,45,64,58,["Pachama","South Pole","Terrapass"],["ESG mandates growing","Consumer demand for green brands","Carbon market stabilizing"],["Partner with 3 verified credit providers","Build SMB onboarding dashboard","Launch B2B marketing campaign","Add impact reporting"],["React","Node.js","Stripe","Mapbox","MongoDB"]]),
+   report:mkR([79,55,72,81,45,64,58,["Pachama","South Pole","Terrapass"],["ESG mandates growing","Consumer demand for green brands","Carbon market stabilizing"],["Partner with 3 credit providers","Build SMB onboarding","Launch B2B marketing","Add impact reporting"],["React","Node.js","Stripe","Mapbox","MongoDB"]]),
    comments:[{id:4,userId:1,user:"Aria Chen",avatar:"AC",text:"Love the SMB angle. Most solutions are enterprise-only.",likes:9,liked:false,time:"3h ago",replies:[]}]},
   {id:3,title:"Async Video Feedback for Remote Teams",authorId:2,author:"Marcus Webb",authorRole:"Developer",
    problem:"Remote teams waste hours in synchronous meetings just to give product feedback.",
@@ -104,7 +120,7 @@ const SEED_IDEAS=[
    targetUsers:"Remote Product Teams, Agencies",marketSize:"$8.2B",monetization:"Freemium + $12/seat/month",
    industry:"ProductivityTech",tags:["Remote","Video","Collaboration","SaaS"],aiScore:81,validationScore:85,
    votes:{high:39,improve:11,notViable:2},collaborators:2,views:1560,status:"Trending",seeking:["Designer","Marketer"],createdAt:"2024-01-08",
-   report:mkR([85,70,83,88,38,72,65,["Loom","Jam.dev","Marker.io"],["Remote work permanent for 30% of workforce","Video-first async culture growing","Design feedback tools +45% adoption"],["Chrome extension for screen capture","Annotation layer over any URL","Slack and Notion integrations","Team workspace analytics"],["WebRTC","Canvas API","React","Cloudflare Stream","Supabase"]]),
+   report:mkR([85,70,83,88,38,72,65,["Loom","Jam.dev","Marker.io"],["Remote work permanent for 30%","Video-first async growing","Feedback tools +45%"],["Chrome extension for capture","Annotation layer over URLs","Slack and Notion integrations","Team analytics"],["WebRTC","Canvas API","React","Cloudflare Stream","Supabase"]]),
    comments:[{id:5,userId:3,user:"Sofia Reyes",avatar:"SR",text:"YES. This would completely change my workflow.",likes:15,liked:false,time:"5h ago",replies:[{id:6,userId:2,user:"Marcus Webb",avatar:"MW",text:"Already have a prototype. Want to co-found?",likes:7,liked:false,time:"4h ago"}]}]},
   {id:4,title:"NeuroFit Personalized AI Workout Coach",authorId:3,author:"Sofia Reyes",authorRole:"Designer",
    problem:"Generic workout apps do not adapt to recovery, stress levels, or daily energy.",
@@ -112,7 +128,7 @@ const SEED_IDEAS=[
    targetUsers:"Fitness Enthusiasts, Biohackers",marketSize:"$6.7B",monetization:"$19.99/month + brand partnerships",
    industry:"HealthTech",tags:["AI","Fitness","Wearables","Consumer"],aiScore:79,validationScore:81,
    votes:{high:28,improve:16,notViable:4},collaborators:1,views:720,status:"New",seeking:["Developer","Co-founder"],createdAt:"2024-01-14",
-   report:mkR([82,74,76,79,42,61,53,["Whoop","Peloton","Freeletics"],["Wearable adoption up 29% YoY","Mental health and fitness convergence","AI personalization now expected"],["Apple Health and Garmin API integration","AI adaptation model training","Mobile app with coach persona","Premium content tier"],["React Native","TensorFlow Lite","HealthKit","FastAPI","Firebase"]]),
+   report:mkR([82,74,76,79,42,61,53,["Whoop","Peloton","Freeletics"],["Wearable adoption up 29%","Mental health and fitness convergence","AI personalization now expected"],["Apple Health and Garmin integration","AI adaptation model","Mobile app launch","Premium content tier"],["React Native","TensorFlow Lite","HealthKit","FastAPI","Firebase"]]),
    comments:[]},
   {id:5,title:"B2B Invoice Financing Marketplace",authorId:4,author:"Kai Nakamura",authorRole:"Investor",
    problem:"60% of SMB cash flow problems stem from late invoice payments crippling growth.",
@@ -120,78 +136,89 @@ const SEED_IDEAS=[
    targetUsers:"SMBs with B2B receivables",marketSize:"$3.2T global market",monetization:"1.5% origination fee + 0.5% monthly",
    industry:"FinTech",tags:["FinTech","Marketplace","B2B","Finance"],aiScore:91,validationScore:88,
    votes:{high:52,improve:6,notViable:1},collaborators:4,views:2100,status:"Trending",seeking:["Developer"],createdAt:"2024-01-05",
-   report:mkR([94,58,96,90,28,84,89,["Fundbox","BlueVine","Marqeta"],["SMB FinTech investment at record high","Open banking enabling faster verification","Supply chain finance growing 12% annually"],["Build lender onboarding and verification","SMB invoice upload and KYC flow","Automated credit scoring engine","Secondary market for invoice trading"],["Next.js","Plaid API","Stripe Connect","PostgreSQL","Redis","AWS"]]),
+   report:mkR([94,58,96,90,28,84,89,["Fundbox","BlueVine","Marqeta"],["SMB FinTech at record high","Open banking enabling faster verification","Supply chain finance +12%"],["Build lender onboarding","SMB invoice upload and KYC","Automated credit scoring","Secondary market"],["Next.js","Plaid API","Stripe Connect","PostgreSQL","Redis"]]),
    comments:[
      {id:7,userId:1,user:"Aria Chen",avatar:"AC",text:"Monster market. The regulatory moat protects you from copycats.",likes:18,liked:false,time:"1d ago",replies:[]},
-     {id:8,userId:5,user:"Zara Ahmed",avatar:"ZA",text:"Partner with QuickBooks for go-to-market — massive distribution.",likes:11,liked:false,time:"20h ago",replies:[]},
-   ]},
+     {id:8,userId:5,user:"Zara Ahmed",avatar:"ZA",text:"Partner with QuickBooks for go-to-market.",likes:11,liked:false,time:"20h ago",replies:[]}
+   ]}
 ];
 
-const SEED_CONVS=[
+var SEED_CONVS=[
   {id:"c1",participants:[1,2],ideaId:1,ideaTitle:"AI-Powered Legal Contract Analyzer",
    lastMsg:"I can start the backend this weekend",lastTime:"10m ago",unread:1,
    messages:[
-     {id:"m1",from:1,text:"Hey Marcus! Loved your comment on my contract analyzer idea. You really think MVP in 3 weeks?",time:"Yesterday 9:12 AM",read:true},
-     {id:"m2",from:2,text:"100%. Core is just PDF parsing plus GPT summarization. I have done similar work. What stack are you thinking?",time:"Yesterday 9:45 AM",read:true},
-     {id:"m3",from:1,text:"Thinking Next.js, OpenAI API, PostgreSQL. Open to suggestions though.",time:"Yesterday 10:02 AM",read:true},
-     {id:"m4",from:2,text:"Perfect stack. I would add Redis for caching API calls to cut costs when users re-upload the same contracts. I can start the backend this weekend",time:"10m ago",read:false}
+     {id:"m1",from:1,text:"Hey Marcus! Loved your comment. You really think MVP in 3 weeks?",time:"Yesterday 9:12 AM",read:true},
+     {id:"m2",from:2,text:"100%. Core is PDF parsing plus GPT summarization. What stack are you thinking?",time:"Yesterday 9:45 AM",read:true},
+     {id:"m3",from:1,text:"Next.js, OpenAI API, PostgreSQL. Open to suggestions.",time:"Yesterday 10:02 AM",read:true},
+     {id:"m4",from:2,text:"Perfect stack. Add Redis for caching API calls to cut costs. I can start the backend this weekend",time:"10m ago",read:false}
    ]},
   {id:"c2",participants:[1,4],ideaId:1,ideaTitle:"AI-Powered Legal Contract Analyzer",
    lastMsg:"What is your current runway?",lastTime:"2h ago",unread:0,
    messages:[
-     {id:"m5",from:4,text:"Aria, the legal AI space is really hot right now. I have looked at 6 companies in this space. What is your moat vs DoNotPay?",time:"Yesterday 3:00 PM",read:true},
-     {id:"m6",from:1,text:"Our focus is SMBs not consumers. DoNotPay went after individuals. We go after the 50-person company drowning in vendor contracts.",time:"Yesterday 3:22 PM",read:true},
+     {id:"m5",from:4,text:"Aria, the legal AI space is hot. What is your moat vs DoNotPay?",time:"Yesterday 3:00 PM",read:true},
+     {id:"m6",from:1,text:"We focus on SMBs not consumers. DoNotPay went after individuals. We go after the 50-person company drowning in vendor contracts.",time:"Yesterday 3:22 PM",read:true},
      {id:"m7",from:4,text:"Smart positioning. What is your current runway?",time:"2h ago",read:true}
    ]}
 ];
 
+// AI call function
 async function callAI(prompt,sys){
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{
+    var r=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
       headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},
       body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,
-        system:sys||"You are an elite startup advisor and venture analyst. Be sharp, direct, and actionable. Use plain text only — no markdown.",
+        system:sys||"You are an elite startup advisor. Be sharp, direct, and actionable. Plain text only, no markdown.",
         messages:[{role:"user",content:prompt}]})
     });
-    if(!r.ok){const eb=await r.json().catch(()=>({}));throw new Error(eb.error&&eb.error.message||"HTTP "+r.status);}
-    const d=await r.json();
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    var d=await r.json();
     if(d.error)throw new Error(d.error.message);
-    return (d.content&&d.content[0]&&d.content[0].text)||"No response received.";
+    var content=d.content;
+    if(content&&content[0]&&content[0].text)return content[0].text;
+    return "No response received.";
   }catch(e){
     return getMockAI(prompt);
   }
 }
 
+// Compact mock responses
 function getMockAI(p){
   p=(p||"").toLowerCase();
-  if(p.includes("trend")||p.includes("sector")||p.includes("growth potential")){
-    return "1. AI Infrastructure & DevTools (Very High)\nEnterprise AI adoption is exploding and every company needs tooling to deploy, monitor, and optimize LLMs in production. Massive unmet demand in observability and cost control.\n\n2. Climate Tech / Energy Transition (Very High)\nGovernment mandates and falling renewable costs are driving trillions in investment. Biggest gaps are grid software, industrial decarbonization, and carbon accounting.\n\n3. Healthcare AI (High)\nFDA fast-tracking AI diagnostics, drug discovery timelines compressing from 12 years to under 5. Clinical workflow automation is severely underserved.\n\n4. B2B Fintech & Embedded Finance (High)\nEvery SaaS product is becoming a financial product. SMB banking, invoice financing, and embedded lending are growing 40% YoY with strong margins.\n\n5. Robotics & Physical AI (High)\nManufacturing labor shortages plus falling hardware costs make this the decade of physical automation. Warehouse, logistics, and last-mile delivery lead the wave.";
+  if(p.indexOf("trend")>=0||p.indexOf("sector")>=0){
+    return "Top 5 Startup Sectors 2025:\n\n1. AI Infrastructure (Very High) — Every enterprise needs LLM tooling, monitoring and cost control.\n\n2. Climate Tech (Very High) — Government mandates and cheap renewables driving massive capital.\n\n3. Healthcare AI (High) — FDA fast-tracking diagnostics, clinical workflows severely underserved.\n\n4. B2B Fintech (High) — Embedded finance and invoice financing growing 40% annually.\n\n5. Robotics (High) — Labor shortages plus falling hardware costs drive physical automation.";
   }
-  if(p.includes("90-day")||p.includes("roadmap")||p.includes("execution")){
-    return "Week 1-2 — Foundation:\nDefine your ICP with brutal specificity. Interview 20 target customers this week. Set up domain, auth, database, CI/CD pipeline. Pick one north star metric.\n\nWeek 3-6 — Build:\nShip the narrowest possible MVP that solves the core pain. No extras. Get 3 design partners using it daily. Iterate weekly based on real feedback sessions.\n\nWeek 7-10 — Launch:\nProductize the MVP with proper onboarding. Launch on Product Hunt and 3 relevant communities. Target 50 signups and 10 weekly active users. Track one metric obsessively.\n\nWeek 11-12 — Scale & Iterate:\nConvert best design partners to paying customers. Build one repeatable acquisition channel. Document what is working and decide your next 90-day focus.";
+  if(p.indexOf("roadmap")>=0||p.indexOf("90-day")>=0){
+    return "90-Day Roadmap:\n\nWeek 1-2 Foundation: Define ICP precisely. Interview 20 customers. Set up infrastructure and CI/CD.\n\nWeek 3-6 Build: Ship narrowest MVP. Get 3 design partners using it daily. Iterate weekly.\n\nWeek 7-10 Launch: Launch on Product Hunt. Target 50 signups and 10 active users.\n\nWeek 11-12 Scale: Convert design partners to paying customers. Build one repeatable acquisition channel.";
   }
-  if(p.includes("suggestion")||p.includes("improvement")||p.includes("5 specific")){
-    return "1. Narrow your ICP ruthlessly. Pick one job title in one industry in one company size. Be the undisputed best solution for them before expanding. Broad TAM kills early startups.\n\n2. Reprice around value delivered, not features. Charge based on ROI — time saved, revenue generated. Seat-based or usage pricing leaves most value on the table.\n\n3. Add a free tier with a hard paywall at the exact moment users realize the product works. That friction converts curiosity into urgency.\n\n4. Build one public case study from your first customers with specific quantified results. This single asset will outperform any marketing campaign you run.\n\n5. Create a community around the problem you solve — not around your product. A Slack group or newsletter of practitioners makes you the trusted source and customers find you.";
+  if(p.indexOf("suggestion")>=0||p.indexOf("improvement")>=0){
+    return "5 Key Improvements:\n\n1. Narrow your ICP ruthlessly — one job title, one industry, one company size first.\n\n2. Price around value delivered, not features. Charge based on ROI and time saved.\n\n3. Free tier with hard paywall at the moment users realize the product works.\n\n4. Build one public case study with quantified results — your best sales asset.\n\n5. Build community around the problem, not your product. Become the trusted resource.";
   }
-  if(p.includes("validation")||p.includes("biggest strength")||p.includes("critical question")){
-    return "Biggest Strength:\nYou are solving a real, recurring pain that costs businesses measurable time or money right now. The problem is validated by the ugly workarounds people already use daily.\n\nBiggest Risk:\nThe solution sounds logical but has not been pressure-tested with real users under real conditions. Most assumptions about user behavior will be wrong until disproven through usage.\n\nCritical Questions to Answer Before Building:\n1. Will people pay for this today, or only express interest? Get a signed letter of intent or pre-order before writing a line of code.\n2. Why has this not been built well before? If the problem is obvious, why has no one solved it? The answer reveals where the real difficulty lies.\n3. What does success look like in 18 months, and what is the single metric that proves it is working?";
+  if(p.indexOf("validation")>=0||p.indexOf("critical")>=0){
+    return "Validation Analysis:\n\nStrength: Solves a real recurring pain validated by existing workarounds people already use daily.\n\nRisk: Assumptions about user behavior are untested. Most will be wrong until disproven.\n\nCritical Questions:\n1. Will people pay today? Get a letter of intent before writing code.\n2. Why has this not been built well before? The answer reveals the real difficulty.\n3. What is the one metric that proves it is working in 18 months?";
   }
-  if(p.includes("analysis")||p.includes("strength")||p.includes("risk")||p.includes("competitive")){
-    return "Key Strengths:\n1. Solves a genuine painful problem with clear urgency — users feel this friction daily and existing solutions are inadequate\n2. AI-native approach gives a structural 10x advantage over legacy software incumbents who cannot easily retrofit\n3. B2B SaaS model creates predictable recurring revenue with strong net revenue retention potential\n\nKey Risks:\n1. Enterprise sales cycles are long — budget 6-12 months and significant CAC before reaching meaningful revenue\n2. AI accuracy must be near-perfect or trust erodes permanently — one bad output damages credibility more than ten good ones build it\n3. Well-funded incumbents may bundle a version of this into existing platforms at zero marginal cost to them\n\nMain Competitive Threat:\nMicrosoft or Google adding this as a feature to their existing enterprise suite and distributing to millions of existing customers overnight.\n\nContrarian Insight:\nThe real moat is not the AI model — it is the proprietary training data you accumulate from every customer interaction. Design your data flywheel from day one, not as an afterthought.";
+  if(p.indexOf("analysis")>=0||p.indexOf("strength")>=0||p.indexOf("risk")>=0){
+    return "Venture Analysis:\n\nStrengths:\n1. Solves genuine daily pain with clear urgency\n2. AI-native approach gives 10x advantage over legacy incumbents\n3. B2B SaaS model with strong recurring revenue potential\n\nRisks:\n1. Enterprise sales cycles are long — budget 6-12 months before meaningful revenue\n2. AI accuracy must be near-perfect or trust erodes fast\n3. Large platforms could bundle a version into existing products\n\nContrarian Insight: Your real moat is proprietary training data from customer interactions, not the model itself.";
   }
-  if(p.includes("mentor")||p.includes("advice")||p.includes("growth opportunit")){
-    return "Growth Opportunities:\n1. Your domain expertise is an unfair advantage most founders waste. Use it to build credibility before you have traction — write, speak, or teach publicly about the problem space. Customers and investors find you.\n2. Find one experienced operator (not just an advisor) in your target market who will be brutally honest. One great mentor who answers your calls is worth more than ten big names on an advisory board.\n3. Pick one distribution channel and master it completely before diversifying. Most successful early-stage startups are 80% go-to-market and 20% product.\n\nSkill Gap to Address:\nThe transition from builder to seller is the hardest leap most technical founders face. Practice talking to strangers about your idea, handling objections, and ending conversations with a concrete next step. Avoiding this is the most common reason strong products fail.\n\nStartup Idea to Explore:\nConsider building a vertical AI tool for the industry you already know deeply. Domain expertise plus AI is a combination that is genuinely defensible — generic AI tools get commoditized fast, but deep vertical knowledge does not.";
+  if(p.indexOf("mentor")>=0||p.indexOf("advice")>=0){
+    return "Mentor Advice:\n\nGrowth Opportunities:\n1. Your domain expertise is an unfair advantage — write and teach publicly about the problem.\n2. Find one experienced operator who will be brutally honest with you.\n3. Master one distribution channel completely before diversifying.\n\nSkill Gap: The transition from builder to seller is the hardest leap. Practice handling objections daily.\n\nIdea to Explore: Build a vertical AI tool for the industry you know deeply — domain expertise plus AI is genuinely defensible.";
   }
-  return "AI analysis is running in offline mode. The platform tries to connect to the Anthropic API but browser security (CORS) blocks direct calls. All core features — submit ideas, vote, comment, collaborate, and view reports — work fully. To enable live AI, deploy a simple backend proxy.";
+  return "AI analysis running in offline mode. All core features work fully without AI connectivity.";
 }
+</script>
 
-const scoreColor=s=>s>=80?"#e8ff47":s>=60?"#ffa94d":"#ff4f7b";
+<!-- Babel script: JSX components only (kept small for mobile performance) -->
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef}=React;
+
+// -- Constants -------------------------------------------------------------
+function scoreColor(s){return s>=80?"#e8ff47":s>=60?"#ffa94d":"#ff4f7b";}
 const roleColor={Founder:"#a78bfa",Developer:"#60a5fa",Designer:"#f9a8d4",Marketer:"#fb923c",Investor:"#fbbf24"};
 const statusCfg={Trending:{bg:"rgba(232,255,71,0.09)",c:"#e8ff47"},Hot:{bg:"rgba(255,79,123,0.09)",c:"#ff4f7b"},New:{bg:"rgba(79,255,176,0.09)",c:"#4fffb0"}};
 const INDUSTRIES=["FinTech","LegalTech","HealthTech","EdTech","CleanTech","ProductivityTech","RetailTech","PropTech","DeepTech","ConsumerTech"];
 const ROLES=["Co-founder","Developer","Designer","Marketer"];
 
+// -- Tiny Components ------------------------------------------------------
 function ScoreArc({score,size,label}){
   size=size||60;
   const r=size/2-6,c=2*Math.PI*r,col=scoreColor(score);
@@ -203,10 +230,10 @@ function ScoreArc({score,size,label}){
           strokeDasharray={c} strokeDashoffset={c-(score/100)*c} strokeLinecap="round"
           style={{filter:"drop-shadow(0 0 6px "+col+"88)",transition:"stroke-dashoffset 1.2s ease"}}/>
         <text x={size/2} y={size/2} textAnchor="middle" dominantBaseline="middle"
-          style={{fill:col,fontSize:size*0.22,fontWeight:700,fontFamily:"var(--fd)",
+          style={{fill:col,fontSize:size*0.22,fontWeight:700,fontFamily:"sans-serif",
             transform:"rotate(90deg)",transformOrigin:(size/2)+"px "+(size/2)+"px"}}>{score}</text>
       </svg>
-      {label&&<span style={{fontSize:9,color:"var(--text3)",textTransform:"uppercase",letterSpacing:1.5,textAlign:"center"}}>{label}</span>}
+      {label&&<span style={{fontSize:9,color:"var(--text3)",textTransform:"uppercase",letterSpacing:1.5}}>{label}</span>}
     </div>
   );
 }
@@ -214,11 +241,11 @@ function ScoreArc({score,size,label}){
 function Av({initials,size,role}){
   size=size||36;
   const c=roleColor[role]||"#a78bfa";
-  return <div style={{width:size,height:size,borderRadius:"50%",flexShrink:0,background:"linear-gradient(135deg,"+c+"22,"+c+"0a)",border:"1.5px solid "+c+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.33,fontWeight:700,color:c,letterSpacing:0.5,userSelect:"none"}}>{initials}</div>;
+  return <div style={{width:size,height:size,borderRadius:"50%",flexShrink:0,background:"linear-gradient(135deg,"+c+"22,"+c+"0a)",border:"1.5px solid "+c+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.33,fontWeight:700,color:c,userSelect:"none"}}>{initials}</div>;
 }
 
 function Pill({children,accent}){
-  return <span style={{padding:"3px 9px",borderRadius:20,fontSize:11,fontWeight:600,letterSpacing:0.3,background:accent?accent+"14":"rgba(255,255,255,0.06)",color:accent||"rgba(255,255,255,0.55)",border:"1px solid "+(accent?accent+"28":"rgba(255,255,255,0.08)")}}>{children}</span>;
+  return <span style={{padding:"3px 9px",borderRadius:20,fontSize:11,fontWeight:600,background:accent?accent+"14":"rgba(255,255,255,0.06)",color:accent||"rgba(255,255,255,0.55)",border:"1px solid "+(accent?accent+"28":"rgba(255,255,255,0.08)")}}>{children}</span>;
 }
 
 function Bar({label,val,color}){
@@ -228,7 +255,7 @@ function Bar({label,val,color}){
       <span style={{fontSize:11,fontWeight:700,color:color}}>{val}%</span>
     </div>
     <div style={{height:4,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden"}}>
-      <div style={{height:"100%",width:val+"%",background:color,borderRadius:2,boxShadow:"0 0 8px "+color+"55",transition:"width 1.2s ease"}}/>
+      <div style={{height:"100%",width:val+"%",background:color,borderRadius:2,transition:"width 1.2s ease"}}/>
     </div>
   </div>;
 }
@@ -250,39 +277,32 @@ function SecLabel({children}){
 
 function Btn({children,onClick,variant,disabled,style}){
   variant=variant||"primary";disabled=disabled||false;
-  var base={padding:"10px 18px",borderRadius:12,border:"none",cursor:disabled?"not-allowed":"pointer",fontWeight:700,fontSize:13,transition:"all .2s",fontFamily:"var(--fb)",opacity:disabled?0.55:1};
-  Object.assign(base,style||{});
-  var bg={
-    primary:Object.assign({},base,{background:"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff",boxShadow:"0 4px 16px rgba(167,139,250,.2)"}),
+  const base=Object.assign({padding:"10px 18px",borderRadius:12,border:"none",cursor:disabled?"not-allowed":"pointer",fontWeight:700,fontSize:13,transition:"all .2s",opacity:disabled?0.55:1},style||{});
+  const styles={
+    primary:Object.assign({},base,{background:"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff"}),
     secondary:Object.assign({},base,{background:"rgba(255,255,255,0.04)",color:"var(--text2)",border:"1px solid rgba(255,255,255,0.09)"}),
     success:Object.assign({},base,{background:"linear-gradient(135deg,var(--accent3),#00d4aa)",color:"#000"}),
-    danger:Object.assign({},base,{background:"rgba(255,79,123,0.12)",color:"#ff4f7b",border:"1px solid rgba(255,79,123,0.25)"}),
   };
-  return <button onClick={disabled?undefined:onClick} disabled={disabled} style={bg[variant]||bg.primary}>{children}</button>;
+  return <button onClick={disabled?undefined:onClick} disabled={disabled} style={styles[variant]||styles.primary}>{children}</button>;
 }
 
+// -- Idea Card ------------------------------------------------------------
 function IdeaCard({idea,onClick,index}){
   index=index||0;
   const [hov,setHov]=useState(false);
-  var total=idea.votes.high+idea.votes.improve+idea.votes.notViable;
-  var pct=total?Math.round((idea.votes.high/total)*100):0;
-  var sc=statusCfg[idea.status]||statusCfg.New;
+  const total=idea.votes.high+idea.votes.improve+idea.votes.notViable;
+  const pct=total?Math.round((idea.votes.high/total)*100):0;
+  const sc=statusCfg[idea.status]||statusCfg.New;
   return(
-    <div onClick={function(){onClick(idea);}}
-      onMouseEnter={function(){setHov(true);}} onMouseLeave={function(){setHov(false);}}
-      style={{background:hov?"rgba(255,255,255,0.05)":"rgba(255,255,255,0.025)",
-        border:"1px solid "+(hov?"rgba(255,255,255,0.11)":"rgba(255,255,255,0.06)"),
-        borderRadius:"var(--r2)",padding:"20px 20px 16px",cursor:"pointer",
-        transition:"all .25s ease",transform:hov?"translateY(-3px)":"none",
-        position:"relative",overflow:"hidden",
-        animation:"fadeUp .4s ease both",animationDelay:(index*0.055)+"s"}}>
-      <div style={{position:"absolute",top:0,left:0,right:0,height:"1.5px",
-        background:"linear-gradient(90deg,transparent,"+scoreColor(idea.aiScore)+"66,transparent)",
-        opacity:hov?1:0.4,transition:"opacity .3s"}}/>
+    <div onClick={function(){onClick(idea);}} onMouseEnter={function(){setHov(true);}} onMouseLeave={function(){setHov(false);}}
+      style={{background:hov?"rgba(255,255,255,0.05)":"rgba(255,255,255,0.025)",border:"1px solid "+(hov?"rgba(255,255,255,0.11)":"rgba(255,255,255,0.06)"),
+        borderRadius:"var(--r2)",padding:"20px 20px 16px",cursor:"pointer",transition:"all .25s ease",transform:hov?"translateY(-3px)":"none",
+        position:"relative",overflow:"hidden",animation:"fadeUp .4s ease both",animationDelay:(index*0.055)+"s"}}>
+      <div style={{position:"absolute",top:0,left:0,right:0,height:"1.5px",background:"linear-gradient(90deg,transparent,"+scoreColor(idea.aiScore)+"66,transparent)",opacity:hov?1:0.4,transition:"opacity .3s"}}/>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
         <div style={{flex:1,marginRight:12,minWidth:0}}>
           <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:9}}>
-            <span style={{padding:"2px 8px",borderRadius:20,fontSize:10,fontWeight:700,letterSpacing:0.7,background:sc.bg,color:sc.c}}>{idea.status.toUpperCase()}</span>
+            <span style={{padding:"2px 8px",borderRadius:20,fontSize:10,fontWeight:700,background:sc.bg,color:sc.c}}>{idea.status.toUpperCase()}</span>
             <Pill>{idea.industry}</Pill>
           </div>
           <h3 style={{fontSize:14,fontWeight:700,color:"var(--text)",lineHeight:1.35,fontFamily:"var(--fd)",letterSpacing:-0.2,wordBreak:"break-word"}}>{idea.title}</h3>
@@ -296,7 +316,7 @@ function IdeaCard({idea,onClick,index}){
       <div style={{height:1,background:"rgba(255,255,255,0.05)",margin:"0 0 12px"}}/>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
         <div style={{display:"flex",alignItems:"center",gap:7}}>
-          <Av initials={idea.author.split(" ").map(function(n){return n[0];}).join("")} size={26} role={idea.authorRole}/>
+          <Av initials={(idea.author||"?").split(" ").map(function(n){return n[0];}).join("")} size={26} role={idea.authorRole}/>
           <div>
             <div style={{fontSize:11,fontWeight:600,color:"var(--text)"}}>{idea.author}</div>
             <div style={{fontSize:10,color:roleColor[idea.authorRole]}}>{idea.authorRole}</div>
@@ -312,6 +332,7 @@ function IdeaCard({idea,onClick,index}){
   );
 }
 
+// -- Idea Detail ----------------------------------------------------------
 function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
   const [tab,setTab]=useState("overview");
   const [comment,setComment]=useState("");
@@ -322,52 +343,54 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
   const [collabMsg,setCollabMsg]=useState("");
   const [collabSent,setCollabSent]=useState(false);
   const [aiState,setAiState]=useState({});
-  const [loading,setLoading]=useState({});
+  const [aiLoading,setAiLoading]=useState({});
 
-  var fetchAI=async function(type){
-    if(loading[type]||aiState[type])return;
-    setLoading(function(l){return Object.assign({},l,{[type]:true});});
-    var prompts={
-      analysis:"Analyze startup: \""+idea.title+"\"\nProblem: "+idea.problem+"\nSolution: "+idea.solution+"\nMarket: "+idea.marketSize+"\nMonetization: "+idea.monetization+"\n\nVenture analysis with: 3 key strengths, 3 key risks, main competitive threat, one contrarian insight. Direct and sharp. Under 300 words. Plain text only.",
-      roadmap:"90-day execution roadmap for: \""+idea.title+"\"\nProblem: "+idea.problem+"\nSolution: "+idea.solution+"\n\nOrganize by: Week 1-2 Foundation, Week 3-6 Build, Week 7-10 Launch, Week 11-12 Scale. List specific concrete tasks. Under 300 words. Plain text only.",
-      suggestions:"5 specific actionable improvements for: \""+idea.title+"\"\nProblem: "+idea.problem+"\nMonetization: "+idea.monetization+"\n\nFocus on market positioning, product differentiation, revenue model. Be specific. Under 280 words. Plain text only.",
-      trends:"Current market trends for "+idea.industry+" relevant to: \""+idea.title+"\"\n\n5 specific trends with data points. Explain opportunity or risk for this startup. Under 280 words. Plain text only.",
+  const fetchAI=async function(type){
+    if(aiLoading[type]||aiState[type])return;
+    setAiLoading(function(l){var n=Object.assign({},l);n[type]=true;return n;});
+    const prompts={
+      analysis:"Analyze startup: "+idea.title+"\nProblem: "+idea.problem+"\nSolution: "+idea.solution+"\nMarket: "+idea.marketSize+"\n\nVenture analysis with 3 strengths, 3 risks, main competitive threat, contrarian insight. Under 300 words.",
+      roadmap:"90-day roadmap for: "+idea.title+"\nProblem: "+idea.problem+"\n\nOrganize by Week 1-2 Foundation, Week 3-6 Build, Week 7-10 Launch, Week 11-12 Scale. Under 300 words.",
+      suggestions:"5 improvements for: "+idea.title+"\nProblem: "+idea.problem+"\nMonetization: "+idea.monetization+"\n\nFocus on positioning, differentiation, revenue model. Under 280 words.",
+      trends:"Market trends for "+idea.industry+" relevant to: "+idea.title+"\n\n5 trends with data points. Opportunity or risk for this startup. Under 280 words."
     };
-    var t=await callAI(prompts[type]);
-    setAiState(function(s){return Object.assign({},s,{[type]:t});});
-    setLoading(function(l){return Object.assign({},l,{[type]:false});});
+    const t=await callAI(prompts[type]);
+    setAiState(function(s){var n=Object.assign({},s);n[type]=t;return n;});
+    setAiLoading(function(l){var n=Object.assign({},l);n[type]=false;return n;});
   };
 
-  var handleVote=function(type){if(!voted){setVoted(type);onVote(idea.id,type);}};
-  var handleComment=function(){if(comment.trim()){onComment(idea.id,comment);setComment("");}};
-  var handleReply=function(){if(replyText.trim()){onComment(idea.id,replyText,replyTo);setReplyText("");setReplyTo(null);}};
-  var handleCollab=function(){
+  const handleVote=function(type){if(!voted){setVoted(type);onVote(idea.id,type);}};
+  const handleComment=function(){if(comment.trim()){onComment(idea.id,comment);setComment("");}};
+  const handleReply=function(){if(replyText.trim()){onComment(idea.id,replyText,replyTo);setReplyText("");setReplyTo(null);}};
+  const handleCollab=function(){
     if(!collabRole){alert("Please select a role first.");return;}
-    var ideaAuthor=SEED_USERS.find(function(u){return u.id===idea.authorId;})||{id:idea.authorId,name:idea.author,role:idea.authorRole,avatar:(idea.author||"").split(" ").map(function(n){return n[0]||"";}).join("").slice(0,2)||"??"};
-    onCollab(idea.id,collabRole,collabMsg||"Hi! I want to collaborate on your idea as a "+collabRole+".",ideaAuthor);
+    const ideaAuthor=SEED_USERS.find(function(u){return u.id===idea.authorId;})||{id:idea.authorId,name:idea.author,role:idea.authorRole,avatar:(idea.author||"?").split(" ").map(function(n){return n[0]||"";}).join("").slice(0,2)||"??"};
+    onCollab(idea.id,collabRole,collabMsg||"Hi! I want to collaborate as a "+collabRole+".",ideaAuthor);
     setCollabSent(true);
   };
 
-  var tabs=[{id:"overview",label:"Overview"},{id:"ai",label:"AI Report"},{id:"discuss",label:"Discussion ("+idea.comments.length+")"},{id:"team",label:"Team"}];
-  var voteOpts=[{key:"high",label:"High Potential",color:"var(--accent3)"},{key:"improve",label:"Needs Work",color:"#ffa94d"},{key:"notViable",label:"Not Viable",color:"var(--accent2)"}];
-  var sc=statusCfg[idea.status]||statusCfg.New;
+  const tabs=[{id:"overview",label:"Overview"},{id:"ai",label:"AI Report"},{id:"discuss",label:"Discussion ("+((idea.comments||[]).length)+")"},{id:"team",label:"Team"}];
+  const voteOpts=[{key:"high",label:"High Potential",color:"var(--accent3)"},{key:"improve",label:"Needs Work",color:"#ffa94d"},{key:"notViable",label:"Not Viable",color:"var(--accent2)"}];
+  const sc=statusCfg[idea.status]||statusCfg.New;
 
   return(
     <div className="page-enter" style={{maxWidth:900,margin:"0 auto"}}>
-      <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:24,padding:"6px 0",transition:"color .2s"}} onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3)";}}>
+      <button onClick={onBack} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",gap:6,marginBottom:24,padding:"6px 0",transition:"color .2s"}}
+        onMouseEnter={function(e){e.currentTarget.style.color="var(--text)";}} onMouseLeave={function(e){e.currentTarget.style.color="var(--text3);";}}>
         ← Back to Ideas
       </button>
+
       <div style={{background:"var(--bg3)",border:"1px solid var(--border)",borderRadius:"var(--r3)",padding:"clamp(18px,4vw,30px)",marginBottom:16,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#a78bfa,#4f9fff,#4fffb0)"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:14,marginBottom:20}}>
           <div style={{flex:1,minWidth:0}}>
             <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:11}}>
-              <span style={{padding:"2px 10px",borderRadius:20,fontSize:10,fontWeight:700,letterSpacing:0.7,background:sc.bg,color:sc.c}}>{idea.status.toUpperCase()}</span>
+              <span style={{padding:"2px 10px",borderRadius:20,fontSize:10,fontWeight:700,background:sc.bg,color:sc.c}}>{idea.status.toUpperCase()}</span>
               <Pill>{idea.industry}</Pill>
             </div>
             <h1 style={{fontSize:"clamp(18px,3.5vw,24px)",fontWeight:700,color:"var(--text)",lineHeight:1.25,marginBottom:14,fontFamily:"var(--fd)",letterSpacing:-0.4,wordBreak:"break-word"}}>{idea.title}</h1>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <Av initials={idea.author.split(" ").map(function(n){return n[0];}).join("")} size={36} role={idea.authorRole}/>
+              <Av initials={(idea.author||"?").split(" ").map(function(n){return n[0];}).join("")} size={36} role={idea.authorRole}/>
               <div>
                 <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{idea.author}</div>
                 <div style={{fontSize:11,color:roleColor[idea.authorRole]}}>{idea.authorRole+" · "+idea.createdAt}</div>
@@ -385,14 +408,14 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
               style={{padding:"9px 14px",borderRadius:10,cursor:voted?"default":"pointer",fontSize:12,fontWeight:600,transition:"all .2s",
                 border:"1px solid "+(voted===v.key?v.color:"rgba(255,255,255,0.09)"),
                 background:voted===v.key?v.color+"18":"rgba(255,255,255,0.03)",
-                color:voted===v.key?v.color:"var(--text2)",
-                opacity:voted&&voted!==v.key?0.5:1}}>
+                color:voted===v.key?v.color:"var(--text2)",opacity:voted&&voted!==v.key?0.5:1}}>
               {v.label+" ("+(idea.votes[v.key]+(voted===v.key?1:0))+")"}
             </button>
           );})}
         </div>
         {voted&&<div style={{marginTop:10,fontSize:12,color:"var(--accent3)"}}>Your vote was recorded. Thank you!</div>}
       </div>
+
       <div style={{display:"flex",gap:3,marginBottom:16,background:"rgba(255,255,255,0.025)",padding:4,borderRadius:"var(--r)",border:"1px solid var(--border)"}}>
         {tabs.map(function(t){return(
           <button key={t.id} onClick={function(){setTab(t.id);}}
@@ -406,26 +429,10 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
       {tab==="overview"&&(
         <div style={{display:"grid",gap:10,animation:"fadeUp .3s ease"}}>
           {[{label:"Problem",text:idea.problem},{label:"Solution",text:idea.solution},{label:"Target Users",text:idea.targetUsers},{label:"Market Size",text:idea.marketSize},{label:"Monetization",text:idea.monetization}].map(function(item){return(
-            <Card key={item.label}>
-              <SecLabel>{item.label}</SecLabel>
-              <p style={{fontSize:13.5,color:"var(--text2)",lineHeight:1.75,margin:0}}>{item.text||"Not specified"}</p>
-            </Card>
+            <Card key={item.label}><SecLabel>{item.label}</SecLabel><p style={{fontSize:13.5,color:"var(--text2)",lineHeight:1.75,margin:0}}>{item.text||"Not specified"}</p></Card>
           );})}
-          <Card>
-            <SecLabel>Tags</SecLabel>
-            <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-              {(idea.tags||[]).map(function(t){return <Pill key={t} accent="rgba(167,139,250,.6)">{"#"+t}</Pill>;})}
-              {(!idea.tags||idea.tags.length===0)&&<span style={{fontSize:12,color:"var(--text3)"}}>No tags</span>}
-            </div>
-          </Card>
-          {(idea.seeking||[]).length>0&&(
-            <Card>
-              <SecLabel>Seeking Collaborators</SecLabel>
-              <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-                {idea.seeking.map(function(r){return <span key={r} style={{padding:"5px 12px",borderRadius:10,background:(roleColor[r]||"#a78bfa")+"14",border:"1px solid "+(roleColor[r]||"#a78bfa")+"28",color:roleColor[r]||"#a78bfa",fontSize:12,fontWeight:600}}>{r}</span>;})}
-              </div>
-            </Card>
-          )}
+          <Card><SecLabel>Tags</SecLabel><div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{(idea.tags||[]).map(function(t){return <Pill key={t} accent="rgba(167,139,250,.6)">{"#"+t}</Pill>;})}</div></Card>
+          {(idea.seeking||[]).length>0&&(<Card><SecLabel>Seeking Collaborators</SecLabel><div style={{display:"flex",gap:7,flexWrap:"wrap"}}>{idea.seeking.map(function(r){return <span key={r} style={{padding:"5px 12px",borderRadius:10,background:(roleColor[r]||"#a78bfa")+"14",border:"1px solid "+(roleColor[r]||"#a78bfa")+"28",color:roleColor[r]||"#a78bfa",fontSize:12,fontWeight:600}}>{r}</span>;})}</div></Card>)}
         </div>
       )}
 
@@ -443,51 +450,42 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
             </div>
             <div style={{marginTop:14,padding:"10px 14px",background:"rgba(255,79,123,0.07)",borderRadius:10,border:"1px solid rgba(255,79,123,0.15)"}}>
               <span style={{fontSize:12,color:"var(--text2)"}}>Risk Level: </span>
-              <span style={{fontSize:13,fontWeight:700,color:scoreColor(100-idea.report.risk)}}>{idea.report.risk+"% — "+(idea.report.risk<35?"Low Risk":idea.report.risk<55?"Moderate Risk":"High Risk")}</span>
+              <span style={{fontSize:13,fontWeight:700,color:scoreColor(100-idea.report.risk)}}>{idea.report.risk+"% — "+(idea.report.risk<35?"Low":idea.report.risk<55?"Moderate":"High")+" Risk"}</span>
             </div>
           </Card>
           {(idea.report.competitors||[]).length>0&&(
-            <Card>
-              <SecLabel>Known Competitors</SecLabel>
-              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {idea.report.competitors.map(function(c){return <div key={c} style={{padding:"7px 13px",borderRadius:10,background:"rgba(255,79,123,0.08)",border:"1px solid rgba(255,79,123,0.18)",fontSize:12,color:"#ff7a9a",fontWeight:600}}>{c}</div>;})}
-              </div>
-            </Card>
+            <Card><SecLabel>Competitors</SecLabel><div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{idea.report.competitors.map(function(c){return <div key={c} style={{padding:"7px 13px",borderRadius:10,background:"rgba(255,79,123,0.08)",border:"1px solid rgba(255,79,123,0.18)",fontSize:12,color:"#ff7a9a",fontWeight:600}}>{c}</div>;})}</div></Card>
           )}
           {(idea.report.roadmap||[]).length>0&&(
-            <Card>
-              <SecLabel>Suggested Roadmap</SecLabel>
-              {idea.report.roadmap.map(function(step,i){return(
-                <div key={i} style={{display:"flex",gap:12,marginBottom:11,alignItems:"flex-start"}}>
-                  <div style={{width:22,height:22,borderRadius:"50%",background:"rgba(167,139,250,0.15)",border:"1px solid rgba(167,139,250,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:"#a78bfa",flexShrink:0}}>{i+1}</div>
-                  <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,paddingTop:2}}>{step}</span>
-                </div>
-              );})}
-            </Card>
+            <Card><SecLabel>Suggested Roadmap</SecLabel>{idea.report.roadmap.map(function(step,i){return(
+              <div key={i} style={{display:"flex",gap:12,marginBottom:11,alignItems:"flex-start"}}>
+                <div style={{width:22,height:22,borderRadius:"50%",background:"rgba(167,139,250,0.15)",border:"1px solid rgba(167,139,250,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:"#a78bfa",flexShrink:0}}>{i+1}</div>
+                <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,paddingTop:2}}>{step}</span>
+              </div>
+            );})}</Card>
           )}
           {(idea.report.stack||[]).length>0&&(
-            <Card>
-              <SecLabel>Recommended Tech Stack</SecLabel>
-              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {idea.report.stack.map(function(t){return <div key={t} style={{padding:"7px 13px",borderRadius:10,background:"rgba(79,159,255,0.08)",border:"1px solid rgba(79,159,255,0.18)",fontSize:12,color:"#7ab8ff",fontWeight:600}}>{t}</div>;})}
-              </div>
-            </Card>
+            <Card><SecLabel>Tech Stack</SecLabel><div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{idea.report.stack.map(function(t){return <div key={t} style={{padding:"7px 13px",borderRadius:10,background:"rgba(79,159,255,0.08)",border:"1px solid rgba(79,159,255,0.18)",fontSize:12,color:"#7ab8ff",fontWeight:600}}>{t}</div>;})}</div></Card>
           )}
-          {[{key:"analysis",label:"Deep AI Analysis",hint:"Get a full venture-grade analysis"},{key:"roadmap",label:"Custom 90-Day Roadmap",hint:"Step-by-step execution plan"},{key:"suggestions",label:"AI Improvement Suggestions",hint:"5 actionable improvements"},{key:"trends",label:"Live Market Trend Analysis",hint:"Current market trends for this sector"}].map(function(sec){return(
+          {[{key:"analysis",label:"Deep AI Analysis",hint:"Venture-grade strengths, risks and competitive analysis"},
+            {key:"roadmap",label:"Custom 90-Day Roadmap",hint:"Step-by-step execution plan"},
+            {key:"suggestions",label:"AI Improvement Suggestions",hint:"5 actionable improvements"},
+            {key:"trends",label:"Market Trend Analysis",hint:"Current trends for this sector"}
+          ].map(function(sec){return(
             <div key={sec.key} style={{background:"rgba(167,139,250,0.04)",borderRadius:"var(--r2)",padding:"20px 22px",border:"1px solid rgba(167,139,250,0.12)"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10,flexWrap:"wrap"}}>
                 <div>
                   <div style={{fontSize:13,color:"#a78bfa",fontWeight:700,marginBottom:3}}>{sec.label}</div>
-                  {!aiState[sec.key]&&!loading[sec.key]&&<div style={{fontSize:11,color:"var(--text3)"}}>{sec.hint}</div>}
+                  {!aiState[sec.key]&&!aiLoading[sec.key]&&<div style={{fontSize:11,color:"var(--text3)"}}>{sec.hint}</div>}
                 </div>
                 <div style={{display:"flex",gap:8}}>
                   {aiState[sec.key]&&<button onClick={function(){setAiState(function(s){var n=Object.assign({},s);delete n[sec.key];return n;});}} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:11}}>Regenerate</button>}
-                  {!aiState[sec.key]&&!loading[sec.key]&&<Btn onClick={function(){fetchAI(sec.key);}} style={{padding:"7px 14px",fontSize:11}}>Generate</Btn>}
+                  {!aiState[sec.key]&&!aiLoading[sec.key]&&<Btn onClick={function(){fetchAI(sec.key);}} style={{padding:"7px 14px",fontSize:11}}>Generate</Btn>}
                 </div>
               </div>
-              {loading[sec.key]&&<Spinner/>}
+              {aiLoading[sec.key]&&<Spinner/>}
               {aiState[sec.key]&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.9,whiteSpace:"pre-wrap",margin:0}}>{aiState[sec.key]}</p>}
-              {!aiState[sec.key]&&!loading[sec.key]&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Click Generate for live AI-powered insights.</p>}
+              {!aiState[sec.key]&&!aiLoading[sec.key]&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Click Generate for AI-powered insights.</p>}
             </div>
           );})}
         </div>
@@ -500,7 +498,7 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
               <Av initials={user.avatar} size={34} role={user.role}/>
               <div style={{flex:1}}>
                 <textarea value={comment} onChange={function(e){setComment(e.target.value);}} placeholder="Share your thoughts, feedback, or expertise..." rows={3}
-                  style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:10,color:"var(--text)",fontSize:13,lineHeight:1.7,resize:"vertical",padding:"10px 12px"}}/>
+                  style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:10,color:"var(--text)",fontSize:13,lineHeight:1.7,resize:"vertical",padding:"10px 12px",fontFamily:"var(--fb)"}}/>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8}}>
                   <span style={{fontSize:11,color:"var(--text3)"}}>{comment.length+"/500"}</span>
                   <Btn onClick={handleComment} disabled={!comment.trim()||comment.length>500} style={{padding:"8px 18px",fontSize:12}}>Post Comment</Btn>
@@ -508,8 +506,8 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
               </div>
             </div>
           </Card>
-          {idea.comments.length===0&&<div style={{textAlign:"center",padding:"40px 20px",color:"var(--text3)",fontSize:13}}>No comments yet. Be the first!</div>}
-          {idea.comments.map(function(c){return(
+          {(idea.comments||[]).length===0&&<div style={{textAlign:"center",padding:"40px 20px",color:"var(--text3)",fontSize:13}}>No comments yet. Be the first!</div>}
+          {(idea.comments||[]).map(function(c){return(
             <div key={c.id} style={{marginBottom:12}}>
               <Card>
                 <div style={{display:"flex",gap:10}}>
@@ -535,7 +533,7 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
                         <Av initials={user.avatar} size={26} role={user.role}/>
                         <div style={{flex:1}}>
                           <textarea value={replyText} onChange={function(e){setReplyText(e.target.value);}} placeholder={"Reply to "+c.user+"..."} rows={2}
-                            style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:8,color:"var(--text)",fontSize:12,resize:"none",padding:"8px 10px"}}/>
+                            style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:8,color:"var(--text)",fontSize:12,resize:"none",padding:"8px 10px",fontFamily:"var(--fb)"}}/>
                           <div style={{display:"flex",gap:8,marginTop:6}}>
                             <Btn onClick={handleReply} disabled={!replyText.trim()} style={{padding:"6px 14px",fontSize:11}}>Reply</Btn>
                             <Btn onClick={function(){setReplyTo(null);setReplyText("");}} variant="secondary" style={{padding:"6px 14px",fontSize:11}}>Cancel</Btn>
@@ -556,10 +554,7 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
                         <span style={{fontSize:11,color:"var(--text3)"}}>{r.time}</span>
                       </div>
                       <p style={{fontSize:12.5,color:"var(--text2)",lineHeight:1.65,margin:"0 0 6px",wordBreak:"break-word"}}>{r.text}</p>
-                      <button onClick={function(){onLike(idea.id,c.id,r.id);}}
-                        style={{background:"none",border:"none",cursor:"pointer",fontSize:11,color:r.liked?"#ff4f7b":"var(--text3)",display:"flex",alignItems:"center",gap:3}}>
-                        {r.liked?"❤️":"🤍"} {r.likes}
-                      </button>
+                      <button onClick={function(){onLike(idea.id,c.id,r.id);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:11,color:r.liked?"#ff4f7b":"var(--text3)",display:"flex",alignItems:"center",gap:3}}>{r.liked?"❤️":"🤍"} {r.likes}</button>
                     </div>
                   </div>
                 </div>
@@ -589,18 +584,17 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
                 </div>
                 {collabRole&&!collabSent&&(
                   <>
-                    <textarea value={collabMsg} onChange={function(e){setCollabMsg(e.target.value);}} placeholder={"Tell "+idea.author+" why you'd be a great "+collabRole+"..."} rows={3}
-                      style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:10,color:"var(--text)",fontSize:13,resize:"none",padding:"10px 12px",marginBottom:10}}/>
+                    <textarea value={collabMsg} onChange={function(e){setCollabMsg(e.target.value);}} placeholder={"Tell "+idea.author+" why you are a great "+collabRole+"..."} rows={3}
+                      style={{width:"100%",background:"rgba(255,255,255,0.03)",border:"1px solid var(--border)",borderRadius:10,color:"var(--text)",fontSize:13,resize:"none",padding:"10px 12px",marginBottom:10,fontFamily:"var(--fb)"}}/>
                     <Btn onClick={handleCollab} style={{width:"100%",padding:"12px"}}>{"Send Request as "+collabRole}</Btn>
                   </>
                 )}
-                {collabSent&&<div style={{padding:"14px 18px",background:"rgba(79,255,176,0.08)",borderRadius:12,border:"1px solid rgba(79,255,176,0.2)",color:"var(--accent3)",fontSize:13,fontWeight:600}}>{"Request sent to "+idea.author+"! They will review and respond."}</div>}
+                {collabSent&&<div style={{padding:"14px 18px",background:"rgba(79,255,176,0.08)",borderRadius:12,border:"1px solid rgba(79,255,176,0.2)",color:"var(--accent3)",fontSize:13,fontWeight:600}}>{"Request sent to "+idea.author+"!"}</div>}
               </>
             ):<p style={{fontSize:13,color:"var(--text3)"}}>This idea is not currently seeking collaborators.</p>}
           </Card>
           <Card>
             <SecLabel>AI Co-founder Matches</SecLabel>
-            <p style={{fontSize:12,color:"var(--text3)",marginBottom:16}}>Matched by skill relevance and activity</p>
             {SEED_USERS.filter(function(u){return u.id!==idea.authorId;}).slice(0,4).map(function(u,i){return(
               <div key={u.id} style={{display:"flex",gap:12,alignItems:"center",padding:"13px 0",borderBottom:i<3?"1px solid rgba(255,255,255,0.04)":"none"}}>
                 <Av initials={u.avatar} size={40} role={u.role}/>
@@ -612,8 +606,8 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
                 <div style={{textAlign:"right",flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
                   <div style={{fontSize:14,fontWeight:700,color:"var(--accent3)"}}>{[87,79,73,68][i]+"%"}</div>
                   <div style={{fontSize:10,color:"var(--text3)"}}>match</div>
-                  <button onClick={function(e){e.stopPropagation();var msg="Hi "+u.name+"! I saw you matched with my idea and wanted to connect.";onCollab(idea.id,u.role,msg,u);}}
-                    style={{padding:"4px 10px",borderRadius:8,border:"1px solid rgba(167,139,250,0.3)",background:"rgba(167,139,250,0.1)",color:"#a78bfa",cursor:"pointer",fontSize:10,fontWeight:700,marginTop:2}}>
+                  <button onClick={function(e){e.stopPropagation();onCollab(idea.id,u.role,"Hi "+u.name+"! I saw you matched with my idea and wanted to connect.",u);}}
+                    style={{padding:"4px 10px",borderRadius:8,border:"1px solid rgba(167,139,250,0.3)",background:"rgba(167,139,250,0.1)",color:"#a78bfa",cursor:"pointer",fontSize:10,fontWeight:700}}>
                     Message
                   </button>
                 </div>
@@ -626,6 +620,7 @@ function IdeaDetail({idea,user,onBack,onVote,onComment,onLike,onCollab}){
   );
 }
 
+// -- Submit Idea ----------------------------------------------------------
 function SubmitIdea({onSubmit,onCancel}){
   const [step,setStep]=useState(1);
   const [submitting,setSubmitting]=useState(false);
@@ -633,55 +628,39 @@ function SubmitIdea({onSubmit,onCancel}){
   const [errors,setErrors]=useState({});
   const [preAnalysis,setPreAnalysis]=useState(null);
   const [analyzing,setAnalyzing]=useState(false);
-
-  var set=function(k,v){setForm(function(f){return Object.assign({},f,{[k]:v});});setErrors(function(e){return Object.assign({},e,{[k]:""});});};
-
-  var validateStep1=function(){
-    var e={};
+  const set=function(k,v){setForm(function(f){var n=Object.assign({},f);n[k]=v;return n;});setErrors(function(e){var n=Object.assign({},e);n[k]="";return n;});};
+  const validateStep1=function(){
+    const e={};
     if(!form.title.trim())e.title="Title is required";
     else if(form.title.trim().length<10)e.title="Title needs at least 10 characters";
     if(!form.problem.trim())e.problem="Problem statement is required";
-    else if(form.problem.trim().length<30)e.problem="Please describe the problem in more detail (30+ chars)";
+    else if(form.problem.trim().length<30)e.problem="Please describe in more detail (30+ chars)";
     if(!form.solution.trim())e.solution="Solution is required";
-    else if(form.solution.trim().length<30)e.solution="Please describe your solution in more detail (30+ chars)";
-    setErrors(e);
-    return Object.keys(e).length===0;
+    else if(form.solution.trim().length<30)e.solution="Please describe in more detail (30+ chars)";
+    setErrors(e);return Object.keys(e).length===0;
   };
-
-  var analyze=async function(){
+  const analyze=async function(){
     if(!form.title||!form.problem||analyzing)return;
     setAnalyzing(true);
-    var t=await callAI("Quick startup validation for: \""+form.title+"\"\nProblem: "+form.problem+"\nSolution: "+form.solution+"\n\nGive: 1 biggest strength, 1 biggest risk, 3 critical questions to answer before building. Be direct. Under 200 words. Plain text only.");
-    setPreAnalysis(t);
-    setAnalyzing(false);
+    const t=await callAI("Quick startup validation for: "+form.title+"\nProblem: "+form.problem+"\nSolution: "+form.solution+"\n\n1 biggest strength, 1 biggest risk, 3 critical questions. Under 200 words.");
+    setPreAnalysis(t);setAnalyzing(false);
   };
-
-  var handleSubmit=function(){
+  const handleSubmit=function(){
     if(!validateStep1()){setStep(1);return;}
     setSubmitting(true);
     setTimeout(function(){
-      onSubmit({
-        title:form.title.trim(),problem:form.problem.trim(),solution:form.solution.trim(),
-        targetUsers:form.targetUsers.trim(),marketSize:form.marketSize.trim(),
-        monetization:form.monetization.trim(),industry:form.industry,
-        tags:form.tags?form.tags.split(",").map(function(t){return t.trim();}).filter(Boolean):[],
-        seeking:form.seeking,
-        aiScore:Math.floor(Math.random()*18+70),validationScore:Math.floor(Math.random()*15+65),
-      });
+      onSubmit({title:form.title.trim(),problem:form.problem.trim(),solution:form.solution.trim(),targetUsers:form.targetUsers.trim(),marketSize:form.marketSize.trim(),monetization:form.monetization.trim(),industry:form.industry,tags:form.tags?form.tags.split(",").map(function(t){return t.trim();}).filter(Boolean):[],seeking:form.seeking,aiScore:Math.floor(Math.random()*18+70),validationScore:Math.floor(Math.random()*15+65)});
     },500);
   };
-
-  var iS={width:"100%",padding:"12px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.03)",color:"var(--text)",fontSize:13.5,boxSizing:"border-box",transition:"border-color .2s",fontFamily:"var(--fb)"};
-  var eS=Object.assign({},iS,{border:"1px solid rgba(255,79,123,0.5)"});
-  var lS={fontSize:10,fontWeight:700,color:"rgba(167,139,250,.75)",letterSpacing:1.5,textTransform:"uppercase",display:"block",marginBottom:7};
-
+  const iS={width:"100%",padding:"12px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.03)",color:"var(--text)",fontSize:13.5,boxSizing:"border-box",transition:"border-color .2s",fontFamily:"var(--fb)"};
+  const eS=Object.assign({},iS,{border:"1px solid rgba(255,79,123,0.5)"});
+  const lS={fontSize:10,fontWeight:700,color:"rgba(167,139,250,.75)",letterSpacing:1.5,textTransform:"uppercase",display:"block",marginBottom:7};
   return(
     <div className="page-enter" style={{width:"100%",maxWidth:700,margin:"0 auto"}}>
-      
       <div style={{background:"var(--bg3)",borderRadius:"var(--r3)",padding:"clamp(20px,4vw,36px)",border:"1px solid var(--border)",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#a78bfa,#4f9fff,#4fffb0)"}}/>
         <h2 style={{fontSize:"clamp(20px,4vw,24px)",fontWeight:700,color:"var(--text)",marginBottom:5,fontFamily:"var(--fd)",letterSpacing:-0.4}}>Launch Your Idea</h2>
-        <p style={{fontSize:13,color:"var(--text3)",marginBottom:24}}>AI will automatically score, analyze and match collaborators for your idea</p>
+        <p style={{fontSize:13,color:"var(--text3)",marginBottom:24}}>AI will automatically score, analyze and match collaborators</p>
         <div style={{display:"flex",gap:6,marginBottom:28}}>
           {[1,2,3].map(function(s){return(
             <div key={s} onClick={function(){if(s<step)setStep(s);}} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:5,cursor:s<step?"pointer":"default"}}>
@@ -695,29 +674,25 @@ function SubmitIdea({onSubmit,onCancel}){
           <div style={{display:"grid",gap:16,animation:"fadeUp .3s ease"}}>
             <div>
               <label style={lS}>Idea Title (required, min 10 chars)</label>
-              <input value={form.title} onChange={function(e){set("title",e.target.value);}} placeholder="e.g. AI-powered legal contract analyzer for SMBs" style={errors.title?eS:iS} onKeyDown={function(e){if(e.key==="Enter")document.activeElement.blur();}}/>
-              {errors.title&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4,paddingLeft:2}}>{errors.title}</div>}
+              <input value={form.title} onChange={function(e){set("title",e.target.value);}} placeholder="e.g. AI-powered legal contract analyzer for SMBs" style={errors.title?eS:iS}/>
+              {errors.title&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4}}>{errors.title}</div>}
               <div style={{fontSize:10,color:"var(--text3)",marginTop:3}}>{form.title.length+"/100"}</div>
             </div>
             <div>
               <label style={lS}>Problem Statement (required, min 30 chars)</label>
-              <textarea value={form.problem} onChange={function(e){set("problem",e.target.value);}} placeholder="What painful problem are you solving? Be specific about who has this problem and why existing solutions fail." rows={4} style={errors.problem?Object.assign({},eS,{resize:"vertical",fontFamily:"var(--fb)"}):Object.assign({},iS,{resize:"vertical",fontFamily:"var(--fb)"})}/>
-              {errors.problem&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4,paddingLeft:2}}>{errors.problem}</div>}
-              <div style={{fontSize:10,color:"var(--text3)",marginTop:3}}>{form.problem.length+" characters"}</div>
+              <textarea value={form.problem} onChange={function(e){set("problem",e.target.value);}} placeholder="What painful problem are you solving? Who has this problem? Why do existing solutions fail?" rows={4} style={errors.problem?Object.assign({},eS,{resize:"vertical"}):Object.assign({},iS,{resize:"vertical"})}/>
+              {errors.problem&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4}}>{errors.problem}</div>}
+              <div style={{fontSize:10,color:"var(--text3)",marginTop:3}}>{form.problem.length+" chars"}</div>
             </div>
             <div>
               <label style={lS}>Your Solution (required, min 30 chars)</label>
-              <textarea value={form.solution} onChange={function(e){set("solution",e.target.value);}} placeholder="How does your product uniquely solve this? What makes it different from existing solutions?" rows={4} style={errors.solution?Object.assign({},eS,{resize:"vertical",fontFamily:"var(--fb)"}):Object.assign({},iS,{resize:"vertical",fontFamily:"var(--fb)"})}/>
-              {errors.solution&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4,paddingLeft:2}}>{errors.solution}</div>}
-              <div style={{fontSize:10,color:"var(--text3)",marginTop:3}}>{form.solution.length+" characters"}</div>
+              <textarea value={form.solution} onChange={function(e){set("solution",e.target.value);}} placeholder="How does your product uniquely solve this? What makes it different?" rows={4} style={errors.solution?Object.assign({},eS,{resize:"vertical"}):Object.assign({},iS,{resize:"vertical"})}/>
+              {errors.solution&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:4}}>{errors.solution}</div>}
+              <div style={{fontSize:10,color:"var(--text3)",marginTop:3}}>{form.solution.length+" chars"}</div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:12}}>
-              <div>
-                <label style={lS}>Target Users</label>
-                <input value={form.targetUsers} onChange={function(e){set("targetUsers",e.target.value);}} placeholder="e.g. SMBs, Freelancers, Startups" style={iS}/>
-              </div>
-              <div>
-                <label style={lS}>Industry</label>
+              <div><label style={lS}>Target Users</label><input value={form.targetUsers} onChange={function(e){set("targetUsers",e.target.value);}} placeholder="e.g. SMBs, Freelancers" style={iS}/></div>
+              <div><label style={lS}>Industry</label>
                 <select value={form.industry} onChange={function(e){set("industry",e.target.value);}} style={Object.assign({},iS,{background:"var(--bg2)",cursor:"pointer"})}>
                   {INDUSTRIES.map(function(i){return <option key={i}>{i}</option>;})}
                 </select>
@@ -730,29 +705,20 @@ function SubmitIdea({onSubmit,onCancel}){
         {step===2&&(
           <div style={{display:"grid",gap:16,animation:"fadeUp .3s ease"}}>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:12}}>
-              <div>
-                <label style={lS}>Market Size</label>
-                <input value={form.marketSize} onChange={function(e){set("marketSize",e.target.value);}} placeholder="e.g. $5B TAM, $800M SAM" style={iS}/>
-              </div>
-              <div>
-                <label style={lS}>Tags (comma-separated)</label>
-                <input value={form.tags} onChange={function(e){set("tags",e.target.value);}} placeholder="AI, B2B, SaaS, Marketplace" style={iS}/>
-              </div>
+              <div><label style={lS}>Market Size</label><input value={form.marketSize} onChange={function(e){set("marketSize",e.target.value);}} placeholder="e.g. $5B TAM" style={iS}/></div>
+              <div><label style={lS}>Tags (comma-separated)</label><input value={form.tags} onChange={function(e){set("tags",e.target.value);}} placeholder="AI, B2B, SaaS" style={iS}/></div>
             </div>
-            <div>
-              <label style={lS}>Monetization Strategy</label>
-              <input value={form.monetization} onChange={function(e){set("monetization",e.target.value);}} placeholder="e.g. SaaS $49/month, marketplace 5% fee, freemium..." style={iS}/>
-            </div>
+            <div><label style={lS}>Monetization Strategy</label><input value={form.monetization} onChange={function(e){set("monetization",e.target.value);}} placeholder="e.g. SaaS $49/month" style={iS}/></div>
             <div>
               <label style={lS}>Team Roles Needed</label>
               <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:4}}>
                 {ROLES.map(function(r){return(
-                  <button key={r} onClick={function(){set("seeking",form.seeking.includes(r)?form.seeking.filter(function(x){return x!==r;}):[...form.seeking,r]);}}
+                  <button key={r} onClick={function(){set("seeking",form.seeking.indexOf(r)>=0?form.seeking.filter(function(x){return x!==r;}):[...form.seeking,r]);}}
                     style={{padding:"9px 15px",borderRadius:10,cursor:"pointer",fontWeight:600,fontSize:13,transition:"all .2s",
-                      border:"1px solid "+(form.seeking.includes(r)?roleColor[r]||"#a78bfa":"rgba(255,255,255,0.09)"),
-                      background:form.seeking.includes(r)?(roleColor[r]||"#a78bfa")+"18":"rgba(255,255,255,0.03)",
-                      color:form.seeking.includes(r)?roleColor[r]||"#a78bfa":"var(--text2)"}}>
-                    {(form.seeking.includes(r)?"+ ":"")+r}
+                      border:"1px solid "+(form.seeking.indexOf(r)>=0?roleColor[r]||"#a78bfa":"rgba(255,255,255,0.09)"),
+                      background:form.seeking.indexOf(r)>=0?(roleColor[r]||"#a78bfa")+"18":"rgba(255,255,255,0.03)",
+                      color:form.seeking.indexOf(r)>=0?roleColor[r]||"#a78bfa":"var(--text2)"}}>
+                    {(form.seeking.indexOf(r)>=0?"+ ":"")+r}
                   </button>
                 );})}
               </div>
@@ -772,7 +738,6 @@ function SubmitIdea({onSubmit,onCancel}){
               <div style={{fontSize:15,fontWeight:700,color:"var(--text)",fontFamily:"var(--fd)",marginBottom:4}}>{form.title}</div>
               <div style={{fontSize:12,color:"var(--text3)",marginBottom:8}}>{form.industry+(form.marketSize?" · "+form.marketSize:"")}</div>
               <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.6,margin:0}}>{form.problem.slice(0,120)+(form.problem.length>120?"...":"")}</p>
-              {form.seeking.length>0&&<div style={{marginTop:8,display:"flex",gap:6,flexWrap:"wrap"}}>{form.seeking.map(function(r){return <span key={r} style={{padding:"3px 9px",borderRadius:20,fontSize:11,background:(roleColor[r]||"#a78bfa")+"14",color:roleColor[r]||"#a78bfa",border:"1px solid "+(roleColor[r]||"#a78bfa")+"28"}}>{"Seeking: "+r}</span>;})}</div>}
             </div>
             <div style={{padding:"18px 20px",background:"rgba(167,139,250,0.05)",borderRadius:"var(--r2)",border:"1px solid rgba(167,139,250,0.14)"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:8}}>
@@ -785,13 +750,11 @@ function SubmitIdea({onSubmit,onCancel}){
               </div>
               {analyzing&&<Spinner/>}
               {preAnalysis&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.9,whiteSpace:"pre-wrap",margin:0}}>{preAnalysis}</p>}
-              {!preAnalysis&&!analyzing&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Optional but recommended — get honest AI feedback before going live.</p>}
+              {!preAnalysis&&!analyzing&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Optional — get honest AI feedback before going live.</p>}
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:10}}>
               <Btn onClick={function(){setStep(2);setPreAnalysis(null);}} variant="secondary" style={{padding:"12px"}}>Back</Btn>
-              <Btn onClick={handleSubmit} variant="success" disabled={submitting} style={{padding:"13px",fontSize:14}}>
-                {submitting?"Submitting...":"Submit Idea"}
-              </Btn>
+              <Btn onClick={handleSubmit} variant="success" disabled={submitting} style={{padding:"13px",fontSize:14}}>{submitting?"Submitting...":"Submit Idea"}</Btn>
             </div>
           </div>
         )}
@@ -800,16 +763,24 @@ function SubmitIdea({onSubmit,onCancel}){
   );
 }
 
-function Explore({ideas,onIdeaClick,onBack}){
-  const [q,setQ]=useState("");const [ind,setInd]=useState("All");const [status,setStatus]=useState("All");const [sort,setSort]=useState("trending");
-  var industries=["All",...new Set(ideas.map(function(i){return i.industry;}))];
-  var filtered=ideas.filter(function(i){
-    if(!q)return true;var ql=q.toLowerCase();
-    return i.title.toLowerCase().includes(ql)||i.problem.toLowerCase().includes(ql)||(i.tags||[]).some(function(t){return t.toLowerCase().includes(ql);})||i.industry.toLowerCase().includes(ql)||(i.author||"").toLowerCase().includes(ql)||(i.solution||"").toLowerCase().includes(ql);
+// -- Explore --------------------------------------------------------------
+function Explore({ideas,onIdeaClick}){
+  const [q,setQ]=useState("");
+  const [ind,setInd]=useState("All");
+  const [status,setStatus]=useState("All");
+  const [sort,setSort]=useState("trending");
+  const industries=["All",...Array.from(new Set(ideas.map(function(i){return i.industry;})))];
+  const filtered=ideas.filter(function(i){
+    if(!q)return true;
+    const ql=q.toLowerCase();
+    return i.title.toLowerCase().indexOf(ql)>=0||i.problem.toLowerCase().indexOf(ql)>=0||(i.tags||[]).some(function(t){return t.toLowerCase().indexOf(ql)>=0;})||(i.author||"").toLowerCase().indexOf(ql)>=0;
   }).filter(function(i){return ind==="All"||i.industry===ind;}).filter(function(i){return status==="All"||i.status===status;}).sort(function(a,b){
-    if(sort==="score")return b.aiScore-a.aiScore;if(sort==="views")return b.views-a.views;if(sort==="newest")return new Date(b.createdAt)-new Date(a.createdAt);return b.votes.high-a.votes.high;
+    if(sort==="score")return b.aiScore-a.aiScore;
+    if(sort==="views")return b.views-a.views;
+    if(sort==="newest")return new Date(b.createdAt)-new Date(a.createdAt);
+    return b.votes.high-a.votes.high;
   });
-  var sS={padding:"10px 12px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"var(--bg3)",color:"var(--text2)",fontSize:12,cursor:"pointer"};
+  const sS={padding:"10px 12px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"var(--bg3)",color:"var(--text2)",fontSize:12,cursor:"pointer"};
   return(
     <div className="page-enter">
       <div style={{marginBottom:24}}>
@@ -824,34 +795,29 @@ function Explore({ideas,onIdeaClick,onBack}){
           <option value="trending">Trending</option><option value="score">AI Score</option><option value="views">Most Viewed</option><option value="newest">Newest</option>
         </select>
       </div>
-      <div style={{fontSize:11,color:"var(--text3)",marginBottom:14,letterSpacing:0.5}}>{filtered.length+" IDEA"+(filtered.length!==1?"S":"")+" FOUND"}</div>
-      {filtered.length===0?(
-        <div style={{textAlign:"center",padding:"60px 20px",color:"var(--text3)"}}>
-          <div style={{fontSize:32,marginBottom:12}}>🔍</div>
-          <div style={{fontSize:14,marginBottom:6}}>No ideas match your search</div>
-          <div style={{fontSize:12}}>Try different keywords or clear the filters</div>
-        </div>
-      ):(
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14}}>
-          {filtered.map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
-      )}
+      <div style={{fontSize:11,color:"var(--text3)",marginBottom:14}}>{filtered.length+" IDEA"+(filtered.length!==1?"S":"")+" FOUND"}</div>
+      {filtered.length===0
+        ?<div style={{textAlign:"center",padding:"60px 20px",color:"var(--text3)"}}><div style={{fontSize:32,marginBottom:12}}>🔍</div><div style={{fontSize:14}}>No ideas match your search</div></div>
+        :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14}}>{filtered.map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
+      }
     </div>
   );
 }
 
-function Dashboard({user,ideas,onIdeaClick,onSubmit,onBack}){
-  const [trends,setTrends]=useState(null);const [loadingTrends,setLoadingTrends]=useState(false);
-  var fetchTrends=async function(){
+// -- Dashboard ------------------------------------------------------------
+function Dashboard({user,ideas,onIdeaClick,onSubmit}){
+  const [trends,setTrends]=useState(null);
+  const [loadingTrends,setLoadingTrends]=useState(false);
+  const fetchTrends=async function(){
     setLoadingTrends(true);
-    var t=await callAI("Name the top 5 startup sectors with the highest growth potential in 2025-2026. For each: sector name, one-line reason, opportunity level (High or Very High). Be concrete and specific. Plain text only.","You are a top-tier venture capital analyst.");
+    const t=await callAI("Top 5 startup sectors highest growth potential 2025-2026. Sector name, one-line reason, opportunity level High or Very High. Concrete and specific. Plain text only.","You are a top-tier venture capital analyst.");
     setTrends(t);setLoadingTrends(false);
   };
-  var trending=ideas.filter(function(i){return i.status==="Trending";});
-  var needsVal=ideas.filter(function(i){return i.votes.high+i.votes.improve+i.votes.notViable<20;});
-  var tier=user.reputation>=3000?{l:"Elite",c:"#fbbf24"}:user.reputation>=2000?{l:"Expert",c:"#a78bfa"}:user.reputation>=500?{l:"Builder",c:"#60a5fa"}:{l:"Newcomer",c:"#4fffb0"};
+  const trending=ideas.filter(function(i){return i.status==="Trending";});
+  const needsVal=ideas.filter(function(i){return i.votes.high+i.votes.improve+i.votes.notViable<20;});
+  const tier=user.reputation>=3000?{l:"Elite",c:"#fbbf24"}:user.reputation>=2000?{l:"Expert",c:"#a78bfa"}:user.reputation>=500?{l:"Builder",c:"#60a5fa"}:{l:"Newcomer",c:"#4fffb0"};
   return(
     <div className="page-enter">
-      
       <div style={{position:"relative",background:"linear-gradient(135deg,rgba(167,139,250,.08),rgba(79,159,255,.06))",border:"1px solid rgba(167,139,250,.15)",borderRadius:"var(--r3)",padding:"clamp(20px,4vw,28px)",marginBottom:20,overflow:"hidden"}}>
         <div style={{position:"absolute",top:-40,right:-40,width:200,height:200,borderRadius:"50%",background:"rgba(167,139,250,.06)",filter:"blur(50px)",pointerEvents:"none"}}/>
         <div style={{fontSize:10,color:"rgba(167,139,250,.75)",fontWeight:700,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>Welcome back</div>
@@ -896,36 +862,35 @@ function Dashboard({user,ideas,onIdeaClick,onSubmit,onBack}){
       <div style={{background:"linear-gradient(135deg,rgba(167,139,250,.08),rgba(79,255,176,.06))",borderRadius:"var(--r2)",padding:"18px 22px",border:"1px solid rgba(167,139,250,.15)",marginBottom:26,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
         <div>
           <div style={{fontSize:14,fontWeight:700,color:"var(--text)",marginBottom:3}}>Have a startup idea?</div>
-          <div style={{fontSize:12,color:"var(--text3)"}}>Submit it in 3 steps and get instant AI analysis, scoring, and co-founder matching.</div>
+          <div style={{fontSize:12,color:"var(--text3)"}}>Submit in 3 steps and get instant AI analysis and co-founder matching.</div>
         </div>
         <Btn onClick={onSubmit} variant="success" style={{padding:"10px 20px",flexShrink:0}}>Launch Your Idea</Btn>
       </div>
       {trending.length>0&&<>
-        <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>Trending Ideas</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14,marginBottom:26}}>
-          {trending.slice(0,4).map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
+        <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🔥 Trending Ideas</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14,marginBottom:26}}>{trending.slice(0,4).map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
       </>}
       {needsVal.length>0&&<>
-        <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>Needs Your Validation</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14}}>
-          {needsVal.slice(0,4).map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
+        <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:14}}>🗳️ Needs Your Validation</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,290px),1fr))",gap:14}}>{needsVal.slice(0,4).map(function(idea,i){return <IdeaCard key={idea.id} idea={idea} onClick={onIdeaClick} index={i}/>;})}</div>
       </>}
     </div>
   );
 }
 
-function Profile({user,onSignOut,onBack}){
-  const [mentor,setMentor]=useState(null);const [loading,setLoading]=useState(false);
-  var fetchMentor=async function(){
+// -- Profile --------------------------------------------------------------
+function Profile({user,onSignOut}){
+  const [mentor,setMentor]=useState(null);
+  const [loading,setLoading]=useState(false);
+  const fetchMentor=async function(){
     setLoading(true);
-    var t=await callAI("Startup mentor advice for: "+user.name+", Role: "+user.role+", Skills: "+user.skills.join(", ")+", Reputation: "+user.reputation+"\n\n3 specific growth opportunities, 1 skill gap to address, 1 startup idea to consider. Personal, specific, sharp. Under 280 words. Plain text only.","You are a world-class startup mentor.");
+    const t=await callAI("Mentor advice for: "+user.name+", Role: "+user.role+", Skills: "+user.skills.join(", ")+", Reputation: "+user.reputation+"\n\n3 growth opportunities, 1 skill gap, 1 startup idea to explore. Personal, specific, under 280 words.","You are a world-class startup mentor.");
     setMentor(t);setLoading(false);
   };
-  var tier=user.reputation>=3000?{l:"Elite",c:"#fbbf24"}:user.reputation>=2000?{l:"Expert",c:"#a78bfa"}:user.reputation>=500?{l:"Builder",c:"#60a5fa"}:{l:"Newcomer",c:"#4fffb0"};
-  var rc=roleColor[user.role]||"#a78bfa";
+  const tier=user.reputation>=3000?{l:"Elite",c:"#fbbf24"}:user.reputation>=2000?{l:"Expert",c:"#a78bfa"}:user.reputation>=500?{l:"Builder",c:"#60a5fa"}:{l:"Newcomer",c:"#4fffb0"};
+  const rc=roleColor[user.role]||"#a78bfa";
   return(
     <div className="page-enter" style={{maxWidth:700,margin:"0 auto"}}>
-      
       <Card style={{marginBottom:14,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent)"}}/>
         <div style={{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
@@ -955,10 +920,7 @@ function Profile({user,onSignOut,onBack}){
       </div>
       <Card style={{marginBottom:14}}>
         <SecLabel>Reputation Progress</SecLabel>
-        <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:12,color:"var(--text2)"}}>
-          <span>{user.reputation.toLocaleString()+" points"}</span>
-          <span style={{color:tier.c}}>{tier.l}</span>
-        </div>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:12,color:"var(--text2)"}}><span>{user.reputation.toLocaleString()+" points"}</span><span style={{color:tier.c}}>{tier.l}</span></div>
         <div style={{height:6,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden"}}>
           <div style={{height:"100%",width:Math.min((user.reputation/3500)*100,100)+"%",background:"linear-gradient(90deg,#a78bfa,#fbbf24)",borderRadius:3,transition:"width 1s ease"}}/>
         </div>
@@ -973,7 +935,7 @@ function Profile({user,onSignOut,onBack}){
           {(!user.skills||user.skills.length===0)&&<p style={{fontSize:12,color:"var(--text3)"}}>No skills listed.</p>}
         </div>
       </Card>
-      <Card style={{background:"rgba(167,139,250,.04)",border:"1px solid rgba(167,139,250,.12)"}}>
+      <Card style={{background:"rgba(167,139,250,.04)",border:"1px solid rgba(167,139,250,.12)",marginBottom:14}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:8}}>
           <div>
             <div style={{fontSize:13,color:"#a78bfa",fontWeight:700,marginBottom:2}}>AI Personal Mentor</div>
@@ -984,99 +946,83 @@ function Profile({user,onSignOut,onBack}){
         </div>
         {loading&&<Spinner/>}
         {mentor&&<p style={{fontSize:13,color:"var(--text2)",lineHeight:1.9,whiteSpace:"pre-wrap",margin:0}}>{mentor}</p>}
-        {!mentor&&!loading&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Get personalized mentorship tailored to your startup journey.</p>}
+        {!mentor&&!loading&&<p style={{fontSize:12,color:"var(--text3)",margin:0}}>Get personalized mentorship tailored to your journey.</p>}
       </Card>
-      <button onClick={onSignOut}
-        style={{width:"100%",marginTop:8,padding:"13px",borderRadius:14,border:"1px solid rgba(255,79,123,0.2)",background:"rgba(255,79,123,0.06)",color:"#ff4f7b",cursor:"pointer",fontSize:13,fontWeight:700,transition:"all .2s",fontFamily:"var(--fb)"}}
-        onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,79,123,0.14)";e.currentTarget.style.borderColor="rgba(255,79,123,0.35)";}}
-        onMouseLeave={function(e){e.currentTarget.style.background="rgba(255,79,123,0.06)";e.currentTarget.style.borderColor="rgba(255,79,123,0.2)";}}>
+      <button onClick={onSignOut} style={{width:"100%",padding:"13px",borderRadius:14,border:"1px solid rgba(255,79,123,0.2)",background:"rgba(255,79,123,0.06)",color:"#ff4f7b",cursor:"pointer",fontSize:13,fontWeight:700,fontFamily:"var(--fb)",transition:"all .2s"}}
+        onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,79,123,0.14)";}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(255,79,123,0.06)";}}>
         ⏻ Sign Out
       </button>
     </div>
   );
 }
 
+// -- Chat Header Sub-component --------------------------------------------
+function ChatHeader({conv,getOther}){
+  const o=getOther(conv);const rc=roleColor[o.role]||"#a78bfa";
+  return(
+    <>
+      <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:rc}}>{o.avatar}</div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{o.name}</div>
+        <div style={{fontSize:10,color:"var(--text3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{"Re: "+conv.ideaTitle}</div>
+      </div>
+      <div style={{display:"flex",gap:6,alignItems:"center",marginLeft:"auto",flexShrink:0}}>
+        <div style={{width:7,height:7,borderRadius:"50%",background:"var(--accent3)"}}/>
+        <span style={{fontSize:10,color:"var(--accent3)"}}>Online</span>
+      </div>
+    </>
+  );
+}
 
+// -- Messages Panel -------------------------------------------------------
 function MessagesPanel({convs,user,activeConv,setActiveConv,onSend,onClose}){
   const [draft,setDraft]=useState("");
   const [search,setSearch]=useState("");
-  const messagesEndRef=useRef(null);
+  const msgEndRef=useRef(null);
   const inputRef=useRef(null);
-
-  var conv=convs.find(function(c){return c.id===activeConv;})||convs[0]||null;
-
-  useEffect(function(){
-    if(messagesEndRef.current){
-      messagesEndRef.current.scrollIntoView({behavior:"smooth"});
-    }
-  },[activeConv,conv&&conv.messages&&conv.messages.length]);
-
-  useEffect(function(){
-    if(inputRef.current&&activeConv)inputRef.current.focus();
-  },[activeConv]);
-
-  var getOtherUser=function(c){
-    var otherId=c.participants.find(function(p){return p!==user.id;});
-    var names={1:"Aria Chen",2:"Marcus Webb",3:"Sofia Reyes",4:"Kai Nakamura",5:"Zara Ahmed"};
-    var roles={1:"Founder",2:"Developer",3:"Designer",4:"Investor",5:"Marketer"};
-    var avatars={1:"AC",2:"MW",3:"SR",4:"KN",5:"ZA"};
-    return {id:otherId,name:names[otherId]||"User",role:roles[otherId]||"Founder",avatar:avatars[otherId]||"??"};
-  };
-
-  var filteredConvs=convs.filter(function(c){
-    if(!search)return true;
-    var other=getOtherUser(c);
-    return other.name.toLowerCase().includes(search.toLowerCase())||c.ideaTitle.toLowerCase().includes(search.toLowerCase());
-  });
-
-  var handleSend=function(){
+  const conv=convs.find(function(c){return c.id===activeConv;})||(convs.length>0?convs[0]:null);
+  const N={1:"Aria Chen",2:"Marcus Webb",3:"Sofia Reyes",4:"Kai Nakamura",5:"Zara Ahmed"};
+  const RL={1:"Founder",2:"Developer",3:"Designer",4:"Investor",5:"Marketer"};
+  const AV={1:"AC",2:"MW",3:"SR",4:"KN",5:"ZA"};
+  const getOther=function(c){const id=c.participants.find(function(p){return p!==user.id;});return{id:id,name:N[id]||"User",role:RL[id]||"Founder",avatar:AV[id]||"??"}; };
+  const filteredConvs=convs.filter(function(c){if(!search)return true;const o=getOther(c);return o.name.toLowerCase().indexOf(search.toLowerCase())>=0||c.ideaTitle.toLowerCase().indexOf(search.toLowerCase())>=0;});
+  const handleSend=function(){
     if(!draft.trim()||!conv)return;
     onSend(conv.id,draft);
     setDraft("");
-    setTimeout(function(){if(messagesEndRef.current)messagesEndRef.current.scrollIntoView({behavior:"smooth"});},50);
+    setTimeout(function(){if(msgEndRef.current)msgEndRef.current.scrollIntoView({behavior:"smooth"});},50);
   };
-
-  var formatTime=function(t){return t;};
+  useEffect(function(){if(msgEndRef.current)msgEndRef.current.scrollIntoView({behavior:"smooth"});},[activeConv,conv?conv.messages.length:0]);
+  useEffect(function(){if(inputRef.current&&activeConv)inputRef.current.focus();},[activeConv]);
 
   return(
-    <div style={{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"flex-end",pointerEvents:"none"}}>
-      {/* Backdrop */}
-      <div onClick={onClose} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.45)",pointerEvents:"all",backdropFilter:"blur(3px)"}}/>
-      {/* Panel */}
-      <div className="chat-panel" style={{position:"relative",pointerEvents:"all",width:"min(100vw,900px)",height:"min(100vh,640px)",display:"flex",borderRadius:"20px 20px 0 0",overflow:"hidden",border:"1px solid rgba(255,255,255,0.09)",borderBottom:"none",boxShadow:"0 -8px 48px rgba(0,0,0,0.6)",margin:"0 auto"}}>
-
-        {/* ── Sidebar: conversation list ── */}
-        <div style={{width:"clamp(200px,35%,280px)",background:"var(--bg2)",borderRight:"1px solid rgba(255,255,255,0.07)",display:"flex",flexDirection:"column",flexShrink:0}}>
-          {/* Header */}
-          <div style={{padding:"16px 16px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+    <div style={{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center",pointerEvents:"none"}}>
+      <div onClick={onClose} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.5)",pointerEvents:"all",backdropFilter:"blur(3px)"}}/>
+      <div style={{position:"relative",pointerEvents:"all",width:"min(100vw,900px)",height:"min(100vh,600px)",display:"flex",borderRadius:"20px 20px 0 0",overflow:"hidden",border:"1px solid rgba(255,255,255,0.09)",borderBottom:"none",boxShadow:"0 -8px 48px rgba(0,0,0,0.6)"}}>
+        <div style={{width:"clamp(180px,35%,260px)",background:"var(--bg2)",borderRight:"1px solid rgba(255,255,255,0.07)",display:"flex",flexDirection:"column",flexShrink:0}}>
+          <div style={{padding:"14px 14px 10px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
               <div style={{fontSize:14,fontWeight:700,color:"var(--text)",fontFamily:"var(--fd)"}}>Messages</div>
-              <button onClick={onClose} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:18,lineHeight:1,padding:"2px 6px"}}>×</button>
+              <button onClick={onClose} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:18,padding:"2px 6px"}}>×</button>
             </div>
-            <input value={search} onChange={function(e){setSearch(e.target.value);}} placeholder="Search conversations..."
-              style={{width:"100%",padding:"8px 12px",borderRadius:10,border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.04)",color:"var(--text)",fontSize:12}}/>
+            <input value={search} onChange={function(e){setSearch(e.target.value);}} placeholder="Search..." style={{width:"100%",padding:"7px 10px",borderRadius:9,border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.04)",color:"var(--text)",fontSize:12}}/>
           </div>
-          {/* Conversation list */}
           <div style={{flex:1,overflowY:"auto"}}>
-            {filteredConvs.length===0&&<div style={{padding:"30px 16px",textAlign:"center",fontSize:12,color:"var(--text3)"}}>No conversations yet</div>}
+            {filteredConvs.length===0&&<div style={{padding:"24px 14px",textAlign:"center",fontSize:12,color:"var(--text3)"}}>No conversations yet</div>}
             {filteredConvs.map(function(c){
-              var other=getOtherUser(c);
-              var isActive=c.id===activeConv;
-              var rc={"Founder":"#a78bfa","Developer":"#60a5fa","Designer":"#f9a8d4","Marketer":"#fb923c","Investor":"#fbbf24"}[other.role]||"#a78bfa";
+              const o=getOther(c);const isAct=c.id===activeConv;const rc=roleColor[o.role]||"#a78bfa";
               return(
-                <div key={c.id} onClick={function(){setActiveConv(c.id);}}
-                  style={{padding:"12px 14px",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.04)",transition:"background .15s",
-                    background:isActive?"rgba(167,139,250,0.1)":"transparent",position:"relative"}}>
-                  {c.unread>0&&<div style={{position:"absolute",top:12,right:12,width:7,height:7,borderRadius:"50%",background:"#ff4f7b"}}/>}
-                  <div style={{display:"flex",gap:9,alignItems:"flex-start"}}>
-                    <div style={{width:34,height:34,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:rc,flexShrink:0}}>{other.avatar}</div>
+                <div key={c.id} onClick={function(){setActiveConv(c.id);}} style={{padding:"11px 12px",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.04)",background:isAct?"rgba(167,139,250,0.1)":"transparent",position:"relative",transition:"background .15s"}}>
+                  {c.unread>0&&<div style={{position:"absolute",top:10,right:10,width:7,height:7,borderRadius:"50%",background:"#ff4f7b"}}/>}
+                  <div style={{display:"flex",gap:8,alignItems:"flex-start"}}>
+                    <div style={{width:32,height:32,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:rc,flexShrink:0}}>{o.avatar}</div>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:2}}>
-                        <div style={{fontSize:12,fontWeight:700,color:isActive?"var(--text)":"var(--text2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{other.name}</div>
+                        <div style={{fontSize:12,fontWeight:700,color:isAct?"var(--text)":"var(--text2)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{o.name}</div>
                         <div style={{fontSize:10,color:"var(--text3)",flexShrink:0,marginLeft:4}}>{c.lastTime}</div>
                       </div>
-                      <div style={{fontSize:10,color:"#a78bfa",marginBottom:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.ideaTitle}</div>
-                      <div style={{fontSize:11,color:"var(--text3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontWeight:c.unread>0?600:400,color:c.unread>0?"var(--text2)":"var(--text3)"}}>{c.lastMsg}</div>
+                      <div style={{fontSize:10,color:"#a78bfa",marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.ideaTitle}</div>
+                      <div style={{fontSize:11,color:c.unread>0?"var(--text2)":"var(--text3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontWeight:c.unread>0?600:400}}>{c.lastMsg}</div>
                     </div>
                   </div>
                 </div>
@@ -1084,122 +1030,88 @@ function MessagesPanel({convs,user,activeConv,setActiveConv,onSend,onClose}){
             })}
           </div>
         </div>
-
-        {/* ── Main chat area ── */}
         <div style={{flex:1,display:"flex",flexDirection:"column",background:"var(--bg)",minWidth:0}}>
-          {!conv&&(
-          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:12,padding:24}}>
-            <div style={{fontSize:36}}>💬</div>
-            <div style={{fontSize:14,fontWeight:600,color:"var(--text)"}}>Your Messages</div>
-            <div style={{fontSize:12,color:"var(--text3)",textAlign:"center",maxWidth:240}}>Send a collaboration request to start a conversation.</div>
-          </div>
-        )}
-        {conv&&<ActiveChat conv={conv} user={user} draft={draft} setDraft={setDraft} handleSend={handleSend} messagesEndRef={messagesEndRef} inputRef={inputRef}/>}
+          {!conv
+            ?<div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:12,padding:24}}>
+              <div style={{fontSize:36}}>💬</div>
+              <div style={{fontSize:14,fontWeight:600,color:"var(--text)"}}>Your Messages</div>
+              <div style={{fontSize:12,color:"var(--text3)",textAlign:"center",maxWidth:240}}>Send a collaboration request to start a conversation.</div>
+            </div>
+            :<>
+              <div style={{padding:"12px 16px",borderBottom:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+                <ChatHeader conv={conv} getOther={getOther}/>
+              </div>
+              <div style={{flex:1,overflowY:"auto",padding:16,display:"flex",flexDirection:"column",gap:10}}>
+                <div style={{textAlign:"center",marginBottom:4}}>
+                  <span style={{padding:"4px 12px",borderRadius:20,fontSize:10,background:"rgba(167,139,250,0.1)",color:"#a78bfa",border:"1px solid rgba(167,139,250,0.2)"}}>{"💡 "+conv.ideaTitle}</span>
+                </div>
+                {conv.messages.map(function(m){
+                  const isMe=m.from===user.id;
+                  const o=getOther(conv);const rc=roleColor[o.role]||"#a78bfa";
+                  return(
+                    <div key={m.id} style={{display:"flex",justifyContent:isMe?"flex-end":"flex-start",gap:8,alignItems:"flex-end",animation:"msgIn 0.2s ease both"}}>
+                      {!isMe&&<div style={{width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,color:rc,flexShrink:0}}>{o.avatar}</div>}
+                      <div style={{maxWidth:"72%"}}>
+                        <div style={{padding:"10px 14px",borderRadius:isMe?"16px 16px 4px 16px":"16px 16px 16px 4px",fontSize:13,lineHeight:1.55,wordBreak:"break-word",
+                          background:isMe?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.07)",color:isMe?"#fff":"var(--text)"}}>
+                          {m.text}
+                        </div>
+                        <div style={{fontSize:10,color:"var(--text3)",marginTop:3,display:"flex",alignItems:"center",gap:4,justifyContent:isMe?"flex-end":"flex-start"}}>
+                          {m.time}{isMe&&<span style={{color:m.read?"#4fffb0":"var(--text3)"}}>{m.read?"✓✓":"✓"}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={msgEndRef}/>
+              </div>
+              <div style={{padding:"12px 14px",borderTop:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",gap:8,alignItems:"flex-end",flexShrink:0}}>
+                <textarea ref={inputRef} value={draft} onChange={function(e){setDraft(e.target.value);}}
+                  onKeyDown={function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
+                  placeholder={"Message "+getOther(conv).name+"..."}
+                  rows={1} style={{flex:1,padding:"10px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.05)",color:"var(--text)",fontSize:13,resize:"none",lineHeight:1.5,fontFamily:"var(--fb)",maxHeight:100,overflowY:"auto"}}/>
+                <button onClick={handleSend} disabled={!draft.trim()}
+                  style={{width:40,height:40,borderRadius:12,border:"none",cursor:draft.trim()?"pointer":"not-allowed",flexShrink:0,
+                    background:draft.trim()?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.06)",
+                    color:draft.trim()?"#fff":"var(--text3)",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  &#10148;
+                </button>
+              </div>
+            </>
+          }
+        </div>
       </div>
     </div>
   );
 }
 
-function ActiveChat({conv,user,draft,setDraft,handleSend,messagesEndRef,inputRef}){
-  var roleColor={"Founder":"#a78bfa","Developer":"#60a5fa","Designer":"#f9a8d4","Marketer":"#fb923c","Investor":"#fbbf24"};
-  var names={1:"Aria Chen",2:"Marcus Webb",3:"Sofia Reyes",4:"Kai Nakamura",5:"Zara Ahmed"};
-  var roles={1:"Founder",2:"Developer",3:"Designer",4:"Investor",5:"Marketer"};
-  var avatars={1:"AC",2:"MW",3:"SR",4:"KN",5:"ZA"};
-  var otherId=conv.participants.find(function(p){return p!==user.id;});
-  var otherName=names[otherId]||"User";
-  var otherRole=roles[otherId]||"Founder";
-  var otherAvatar=avatars[otherId]||"??";
-  var rc=roleColor[otherRole]||"#a78bfa";
-  return(
-    <>
-      <div style={{padding:"12px 16px",borderBottom:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-        <div style={{width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:rc}}>{otherAvatar}</div>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{otherName}</div>
-          <div style={{fontSize:10,color:"var(--text3)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{"Re: "+conv.ideaTitle}</div>
-        </div>
-        <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0}}>
-          <div style={{width:7,height:7,borderRadius:"50%",background:"var(--accent3)",boxShadow:"0 0 6px var(--accent3)"}}/>
-          <span style={{fontSize:10,color:"var(--accent3)"}}>Online</span>
-        </div>
-      </div>
-      <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:10}}>
-        <div style={{textAlign:"center",marginBottom:4}}>
-          <span style={{padding:"4px 12px",borderRadius:20,fontSize:10,background:"rgba(167,139,250,0.1)",color:"#a78bfa",border:"1px solid rgba(167,139,250,0.2)"}}>{"💡 "+conv.ideaTitle}</span>
-        </div>
-        {conv.messages.map(function(m){
-          var isMe=m.from===user.id;
-          return(
-            <div key={m.id} className="msg-bubble" style={{display:"flex",justifyContent:isMe?"flex-end":"flex-start",gap:8,alignItems:"flex-end"}}>
-              {!isMe&&<div style={{width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,"+rc+"22,"+rc+"0a)",border:"1.5px solid "+rc+"44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,color:rc,flexShrink:0}}>{otherAvatar}</div>}
-              <div style={{maxWidth:"72%"}}>
-                <div style={{padding:"10px 14px",borderRadius:isMe?"16px 16px 4px 16px":"16px 16px 16px 4px",fontSize:13,lineHeight:1.55,wordBreak:"break-word",
-                  background:isMe?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.07)",
-                  color:isMe?"#fff":"var(--text)",boxShadow:isMe?"0 2px 12px rgba(167,139,250,0.3)":"none"}}>
-                  {m.text}
-                </div>
-                <div style={{fontSize:10,color:"var(--text3)",marginTop:3,display:"flex",alignItems:"center",gap:4,justifyContent:isMe?"flex-end":"flex-start"}}>
-                  {m.time}
-                  {isMe&&<span style={{color:m.read?"#4fffb0":"var(--text3)"}}>{m.read?"✓✓":"✓"}</span>}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-        <div ref={messagesEndRef}/>
-      </div>
-      <div style={{padding:"12px 14px",borderTop:"1px solid rgba(255,255,255,0.07)",background:"rgba(255,255,255,0.02)",display:"flex",gap:8,alignItems:"flex-end",flexShrink:0}}>
-        <textarea ref={inputRef} value={draft} onChange={function(e){setDraft(e.target.value);}}
-          onKeyDown={function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
-          placeholder={"Message "+otherName+"..."}
-          rows={1}
-          style={{flex:1,padding:"10px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.05)",color:"var(--text)",fontSize:13,resize:"none",lineHeight:1.5,fontFamily:"var(--fb)",maxHeight:100,overflowY:"auto"}}/>
-        <button onClick={handleSend} disabled={!draft.trim()}
-          style={{width:40,height:40,borderRadius:12,border:"none",cursor:draft.trim()?"pointer":"not-allowed",flexShrink:0,
-            background:draft.trim()?"linear-gradient(135deg,#a78bfa,#818cf8)":"rgba(255,255,255,0.06)",
-            color:draft.trim()?"#fff":"var(--text3)",fontSize:16,transition:"all .2s",
-            display:"flex",alignItems:"center",justifyContent:"center"}}>&#10148;</button>
-      </div>
-    </>
-  );
-}
-meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>LetsDoIt — Where Ideas Become Companies</title>
-<meta name="description" content="AI-powered startup collaboration platform. Submit ideas, validate them, find co-founders, and build companies together."/>
-<meta name="theme-color" content="#080810"/>
-<meta property="og:title" content="LetsDoIt — Where Ideas Become Companies"/>
-<meta property="og:description" content="AI-powered startup collaboration. Validate ideas, find co-founders, build companies."/>
-<meta property="og:type" content="website"/>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@300,400,500,700,800&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin
+// -- Auth -----------------------------------------------------------------
 function Auth({onLogin}){
   const [mode,setMode]=useState("login");
   const [form,setForm]=useState({name:"",email:"",password:"",role:"Founder",skills:"",country:"",bio:""});
   const [errors,setErrors]=useState({});
   const [submitting,setSubmitting]=useState(false);
-  var set=function(k,v){setForm(function(f){return Object.assign({},f,{[k]:v});});setErrors(function(e){return Object.assign({},e,{[k]:""}); });};
-  var validate=function(){
-    var e={};
-    if(mode==="signup"){if(!form.name.trim())e.name="Full name is required";else if(form.name.trim().length<2)e.name="Name too short";}
-    if(!form.email.trim())e.email="Email is required";else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))e.email="Please enter a valid email";
-    if(!form.password)e.password="Password is required";else if(mode==="signup"&&form.password.length<6)e.password="Password must be at least 6 characters";
+  const set=function(k,v){setForm(function(f){var n=Object.assign({},f);n[k]=v;return n;});setErrors(function(e){var n=Object.assign({},e);n[k]="";return n;});};
+  const validate=function(){
+    const e={};
+    if(mode==="signup"){if(!form.name.trim())e.name="Name is required";}
+    if(!form.email.trim())e.email="Email is required";
+    else if(form.email.indexOf("@")<0||form.email.indexOf(".")<0)e.email="Valid email required";
+    if(!form.password)e.password="Password is required";
+    else if(mode==="signup"&&form.password.length<6)e.password="Password must be 6+ characters";
     setErrors(e);return Object.keys(e).length===0;
   };
-  var handleSubmit=function(){
+  const handleSubmit=function(){
     if(!validate())return;setSubmitting(true);
     setTimeout(function(){
       if(mode==="login"){onLogin(SEED_USERS[0]);}
       else{onLogin({id:99,name:form.name.trim(),role:form.role,avatar:form.name.trim().split(" ").map(function(n){return n[0]||"";}).join("").slice(0,2).toUpperCase()||"U",country:form.country||"Global",skills:form.skills?form.skills.split(",").map(function(s){return s.trim();}).filter(Boolean):[],bio:form.bio||"New startup builder on LetsDoIt.",reputation:100,ideas:0,collabs:0});}
     },700);
   };
-  var iS={width:"100%",padding:"13px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.04)",color:"var(--text)",fontSize:13.5,boxSizing:"border-box",transition:"border-color .2s"};
-  var eS=Object.assign({},iS,{border:"1px solid rgba(255,79,123,0.5)"});
+  const iS={width:"100%",padding:"13px 14px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.04)",color:"var(--text)",fontSize:13.5,boxSizing:"border-box",transition:"border-color .2s"};
+  const eS=Object.assign({},iS,{border:"1px solid rgba(255,79,123,0.5)"});
   return(
-    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:16,position:"relative",background:"var(--bg)"}}>
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:16,background:"var(--bg)"}}>
       <div style={{position:"fixed",top:"15%",left:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(167,139,250,.04)",filter:"blur(100px)",pointerEvents:"none"}}/>
       <div style={{position:"fixed",bottom:"15%",right:"5%",width:350,height:350,borderRadius:"50%",background:"rgba(79,255,176,.03)",filter:"blur(80px)",pointerEvents:"none"}}/>
       <div style={{width:"100%",maxWidth:460,animation:"fadeUp .5s ease",position:"relative",zIndex:1}}>
@@ -1213,35 +1125,22 @@ function Auth({onLogin}){
             {["login","signup"].map(function(m){return <button key={m} onClick={function(){setMode(m);setErrors({});}} style={{flex:1,padding:"10px",borderRadius:9,border:"none",cursor:"pointer",fontSize:13,fontWeight:600,transition:"all .2s",background:mode===m?"rgba(167,139,250,.15)":"transparent",color:mode===m?"#a78bfa":"var(--text3)"}}>{m==="login"?"Sign In":"Sign Up"}</button>;})}
           </div>
           <div style={{display:"grid",gap:10}}>
-            {mode==="signup"&&<div>
-              <input value={form.name} onChange={function(e){set("name",e.target.value);}} placeholder="Full Name" style={errors.name?eS:iS}/>
-              {errors.name&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.name}</div>}
-            </div>}
-            <div>
-              <input value={form.email} onChange={function(e){set("email",e.target.value);}} placeholder="Email address" style={errors.email?eS:iS}/>
-              {errors.email&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.email}</div>}
-            </div>
-            <div>
-              <input type="password" value={form.password} onChange={function(e){set("password",e.target.value);}} onKeyDown={function(e){if(e.key==="Enter")handleSubmit();}} placeholder="Password" style={errors.password?eS:iS}/>
-              {errors.password&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.password}</div>}
-            </div>
+            {mode==="signup"&&<div><input value={form.name} onChange={function(e){set("name",e.target.value);}} placeholder="Full Name" style={errors.name?eS:iS}/>{errors.name&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.name}</div>}</div>}
+            <div><input value={form.email} onChange={function(e){set("email",e.target.value);}} placeholder="Email address" style={errors.email?eS:iS}/>{errors.email&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.email}</div>}</div>
+            <div><input type="password" value={form.password} onChange={function(e){set("password",e.target.value);}} onKeyDown={function(e){if(e.key==="Enter")handleSubmit();}} placeholder="Password" style={errors.password?eS:iS}/>{errors.password&&<div style={{fontSize:11,color:"#ff4f7b",marginTop:3}}>{errors.password}</div>}</div>
             {mode==="signup"&&<>
               <select value={form.role} onChange={function(e){set("role",e.target.value);}} style={Object.assign({},iS,{background:"var(--bg2)",cursor:"pointer"})}>
                 {["Founder","Developer","Designer","Marketer","Investor"].map(function(r){return <option key={r}>{r}</option>;})}
               </select>
-              <input value={form.skills} onChange={function(e){set("skills",e.target.value);}} placeholder="Skills (e.g. React, Product, Growth)" style={iS}/>
+              <input value={form.skills} onChange={function(e){set("skills",e.target.value);}} placeholder="Skills (e.g. React, Product)" style={iS}/>
               <input value={form.country} onChange={function(e){set("country",e.target.value);}} placeholder="Country" style={iS}/>
               <textarea value={form.bio} onChange={function(e){set("bio",e.target.value);}} placeholder="Short bio (optional)" rows={2} style={Object.assign({},iS,{resize:"none"})}/>
             </>}
             <button onClick={handleSubmit} disabled={submitting}
-              style={{padding:"14px",borderRadius:12,border:"none",marginTop:4,cursor:submitting?"not-allowed":"pointer",fontWeight:700,fontSize:15,transition:"all .2s",
-                background:submitting?"rgba(167,139,250,.4)":"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff",boxShadow:submitting?"none":"0 4px 20px rgba(167,139,250,.25)"}}>
+              style={{padding:"14px",borderRadius:12,border:"none",marginTop:4,cursor:submitting?"not-allowed":"pointer",fontWeight:700,fontSize:15,transition:"all .2s",background:submitting?"rgba(167,139,250,.4)":"linear-gradient(135deg,#a78bfa,#818cf8)",color:"#fff"}}>
               {submitting?"Signing in...":(mode==="login"?"Sign In":"Create Account")}
             </button>
-            {mode==="login"&&<button onClick={function(){setSubmitting(true);setTimeout(function(){onLogin(SEED_USERS[0]);},400);}}
-              style={{padding:"12px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.03)",color:"var(--text2)",cursor:"pointer",fontSize:13}}>
-              Continue as Demo User
-            </button>}
+            {mode==="login"&&<button onClick={function(){setSubmitting(true);setTimeout(function(){onLogin(SEED_USERS[0]);},400);}} style={{padding:"12px",borderRadius:12,border:"1px solid rgba(255,255,255,0.09)",background:"rgba(255,255,255,0.03)",color:"var(--text2)",cursor:"pointer",fontSize:13}}>Continue as Demo User</button>}
           </div>
         </div>
         <p style={{textAlign:"center",fontSize:11,color:"var(--text3)",marginTop:16}}>Join 12,000+ founders, builders and investors · Free forever</p>
@@ -1250,47 +1149,37 @@ function Auth({onLogin}){
   );
 }
 
+// -- Toast ----------------------------------------------------------------
 function Toast({msg,type,onClose}){
   type=type||"success";
-  useEffect(function(){var t=setTimeout(onClose,3500);return function(){clearTimeout(t);};},[]);
-  var cfg={success:{bg:"rgba(79,255,176,.1)",border:"rgba(79,255,176,.25)",c:"var(--accent3)"},error:{bg:"rgba(255,79,123,.1)",border:"rgba(255,79,123,.25)",c:"var(--accent2)"},info:{bg:"rgba(167,139,250,.1)",border:"rgba(167,139,250,.25)",c:"#a78bfa"}};
-  var s=cfg[type]||cfg.success;
+  useEffect(function(){const t=setTimeout(onClose,3500);return function(){clearTimeout(t);};});
+  const cfg={success:{bg:"rgba(79,255,176,.1)",border:"rgba(79,255,176,.25)",c:"var(--accent3)"},error:{bg:"rgba(255,79,123,.1)",border:"rgba(255,79,123,.25)",c:"var(--accent2)"},info:{bg:"rgba(167,139,250,.1)",border:"rgba(167,139,250,.25)",c:"#a78bfa"}};
+  const s=cfg[type]||cfg.success;
   return <div style={{padding:"11px 16px",borderRadius:12,background:s.bg,border:"1px solid "+s.border,color:s.c,fontSize:13,fontWeight:600,backdropFilter:"blur(20px)",animation:"slideDown .3s ease",display:"flex",alignItems:"center",gap:8,maxWidth:320,wordBreak:"break-word"}}>
-    {msg}
-    <button onClick={onClose} style={{background:"none",border:"none",color:s.c,cursor:"pointer",fontSize:14,marginLeft:4,opacity:0.6}}>x</button>
+    {msg}<button onClick={onClose} style={{background:"none",border:"none",color:s.c,cursor:"pointer",fontSize:14,marginLeft:4,opacity:0.6}}>×</button>
   </div>;
 }
 
+// -- App ------------------------------------------------------------------
 function App(){
-  // ── Persist session across refreshes ──────────────────────────────────────
-  var APP_VERSION="v4";
-  var loadState=function(){
+  const loadState=function(){
     try{
-      // Version check - wipe stale localStorage from old broken builds
-      var ver=localStorage.getItem("ldi_version");
-      if(ver!==APP_VERSION){
-        localStorage.clear();
-        localStorage.setItem("ldi_version",APP_VERSION);
-        return {user:null,ideas:SEED_IDEAS,convs:SEED_CONVS};
-      }
-      var u=localStorage.getItem("ldi_user");
-      var id=localStorage.getItem("ldi_ideas");
-      var cv=localStorage.getItem("ldi_convs");
-      var parsedUser=null,parsedIdeas=SEED_IDEAS,parsedConvs=SEED_CONVS;
-      try{if(u)parsedUser=JSON.parse(u);}catch(e){parsedUser=null;}
-      try{if(id)parsedIdeas=JSON.parse(id);}catch(e){parsedIdeas=SEED_IDEAS;}
-      try{if(cv)parsedConvs=JSON.parse(cv);}catch(e){parsedConvs=SEED_CONVS;}
-      return {user:parsedUser,ideas:parsedIdeas,convs:parsedConvs};
-    }catch(e){
-      try{localStorage.clear();}catch(e2){}
-      return {user:null,ideas:SEED_IDEAS,convs:SEED_CONVS};
-    }
+      const ver=localStorage.getItem("ldi_version");
+      if(ver!==APP_VERSION){localStorage.clear();localStorage.setItem("ldi_version",APP_VERSION);return{user:null,ideas:SEED_IDEAS,convs:SEED_CONVS};}
+      const u=localStorage.getItem("ldi_user");
+      const id=localStorage.getItem("ldi_ideas");
+      const cv=localStorage.getItem("ldi_convs");
+      let pu=null,pi=SEED_IDEAS,pc=SEED_CONVS;
+      try{if(u)pu=JSON.parse(u);}catch(e){}
+      try{if(id)pi=JSON.parse(id);}catch(e){}
+      try{if(cv)pc=JSON.parse(cv);}catch(e){}
+      return{user:pu,ideas:pi,convs:pc};
+    }catch(e){try{localStorage.clear();}catch(e2){}return{user:null,ideas:SEED_IDEAS,convs:SEED_CONVS};}
   };
-  var saved=loadState();
+  const saved=loadState();
 
   const [user,setUser]=useState(saved.user);
   const [page,setPage]=useState("explore");
-  const [history,setHistory]=useState([]);
   const [ideas,setIdeas]=useState(saved.ideas);
   const [convs,setConvs]=useState(saved.convs);
   const [activeConv,setActiveConv]=useState(null);
@@ -1298,224 +1187,125 @@ function App(){
   const [selected,setSelected]=useState(null);
   const [toasts,setToasts]=useState([]);
 
-  // Persist user
-  useEffect(function(){
-    try{
-      if(user)localStorage.setItem("ldi_user",JSON.stringify(user));
-      else localStorage.removeItem("ldi_user");
-    }catch(e){}
+  useEffect(function(){try{if(user)localStorage.setItem("ldi_user",JSON.stringify(user));else localStorage.removeItem("ldi_user");}catch(e){}
   },[user]);
-
-  // Persist ideas
-  useEffect(function(){
-    try{localStorage.setItem("ldi_ideas",JSON.stringify(ideas));}catch(e){}
+  useEffect(function(){try{localStorage.setItem("ldi_ideas",JSON.stringify(ideas));}catch(e){}
+  },[ideas]);
+  useEffect(function(){try{localStorage.setItem("ldi_convs",JSON.stringify(convs));}catch(e){}
+  },[convs]);
+  useEffect(function(){if(selected){const f=ideas.find(function(i){return i.id===selected.id;});if(f)setSelected(f);}
   },[ideas]);
 
-  // Persist convs
-  useEffect(function(){
-    try{localStorage.setItem("ldi_convs",JSON.stringify(convs));}catch(e){}
-  },[convs]);
-
-  var notify=function(msg,type){
-    type=type||"success";var id=Date.now();
+  const notify=function(msg,type){
+    const id=Date.now();type=type||"success";
     setToasts(function(t){return [...t,{id,msg,type}];});
     setTimeout(function(){setToasts(function(t){return t.filter(function(x){return x.id!==id;});});},4500);
   };
-
-  var navigate=function(pg,idea,replace){
-    if(!replace){
-      setHistory(function(h){
-        // Don't push duplicate consecutive entries
-        if(h.length>0&&h[h.length-1]===page)return h;
-        return [...h,page];
-      });
-    }
+  const navigate=function(pg,idea){
     setPage(pg);
     if(idea)setSelected(idea);
     else if(pg!=="detail")setSelected(null);
     window.scrollTo({top:0,behavior:"smooth"});
   };
-
-  var goBack=function(){
-    setHistory(function(h){
-      if(h.length===0){
-        // No history left — on landing page, close/minimize (window.close or go to explore)
-        try{window.close();}catch(e){}
-        // If window.close doesn't work (most browsers block it), stay on explore
-        setPage("explore");
-        return h;
-      }
-      var prev=h[h.length-1];
-      var newH=h.slice(0,-1);
-      setPage(prev);
-      if(prev!=="detail")setSelected(null);
-      window.scrollTo({top:0,behavior:"smooth"});
-      return newH;
-    });
-  };
-
-  var handleSignOut=function(){
-    setUser(null);
-    setPage("explore");
-    setSelected(null);
-    try{localStorage.removeItem("ldi_user");}catch(e){}
-  };
-
-  useEffect(function(){
-    if(selected){var fresh=ideas.find(function(i){return i.id===selected.id;});if(fresh)setSelected(fresh);}
-  },[ideas]);
-
-  var handleVote=function(ideaId,type){
-    setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{votes:Object.assign({},i.votes,{[type]:i.votes[type]+1})}):i;});});
-    notify("Vote recorded! +5 reputation earned","success");
-  };
-
-  var handleComment=function(ideaId,text,parentId){
-    var nc={id:Date.now(),userId:user.id,user:user.name,avatar:user.avatar,text:text.trim(),likes:0,liked:false,time:"Just now",replies:[]};
-    if(parentId){
-      setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{comments:i.comments.map(function(c){return c.id===parentId?Object.assign({},c,{replies:[...c.replies,nc]}):c;})}):i;});});
-    }else{
-      setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{comments:[...i.comments,nc]}):i;});});
-    }
+  const handleSignOut=function(){setUser(null);setPage("explore");setSelected(null);try{localStorage.removeItem("ldi_user");}catch(e){}};
+  const handleVote=function(ideaId,type){setIdeas(function(p){return p.map(function(i){if(i.id!==ideaId)return i;const v=Object.assign({},i.votes);v[type]=(v[type]||0)+1;return Object.assign({},i,{votes:v});});});notify("Vote recorded! +5 reputation","success");};
+  const handleComment=function(ideaId,text,parentId){
+    const nc={id:Date.now(),userId:user.id,user:user.name,avatar:user.avatar,text:text.trim(),likes:0,liked:false,time:"Just now",replies:[]};
+    if(parentId){setIdeas(function(p){return p.map(function(i){if(i.id!==ideaId)return i;return Object.assign({},i,{comments:i.comments.map(function(c){if(c.id!==parentId)return c;return Object.assign({},c,{replies:[...c.replies,nc]});})});});});}
+    else{setIdeas(function(p){return p.map(function(i){if(i.id!==ideaId)return i;return Object.assign({},i,{comments:[...i.comments,nc]});});});}
     notify("Comment posted! +10 reputation","success");
   };
-
-  var handleLike=function(ideaId,commentId,replyId){
+  const handleLike=function(ideaId,commentId,replyId){
     setIdeas(function(p){return p.map(function(i){
       if(i.id!==ideaId)return i;
       return Object.assign({},i,{comments:i.comments.map(function(c){
         if(c.id!==commentId)return c;
-        if(replyId){return Object.assign({},c,{replies:c.replies.map(function(r){return r.id===replyId?Object.assign({},r,{likes:r.liked?r.likes-1:r.likes+1,liked:!r.liked}):r;})});}
+        if(replyId){return Object.assign({},c,{replies:c.replies.map(function(r){if(r.id!==replyId)return r;return Object.assign({},r,{likes:r.liked?r.likes-1:r.likes+1,liked:!r.liked});})});}
         return Object.assign({},c,{likes:c.liked?c.likes-1:c.likes+1,liked:!c.liked});
       })});
     });});
   };
-
-  var handleCollab=function(ideaId,role,message,otherUser){
-    setIdeas(function(p){return p.map(function(i){return i.id===ideaId?Object.assign({},i,{collaborators:(i.collaborators||0)+1}):i;});});
-    // Auto-create a conversation when collaboration request is sent
+  const handleCollab=function(ideaId,role,message,otherUser){
+    setIdeas(function(p){return p.map(function(i){if(i.id!==ideaId)return i;return Object.assign({},i,{collaborators:(i.collaborators||0)+1});});});
     if(otherUser&&message){
-      var idea=ideas.find(function(i){return i.id===ideaId;});
-      var existingConv=convs.find(function(c){
-        return c.participants.includes(user.id)&&c.participants.includes(otherUser.id)&&c.ideaId===ideaId;
-      });
-      if(!existingConv){
-        var newConv={
-          id:"c"+Date.now(),
-          participants:[user.id,otherUser.id],
-          ideaId:ideaId,
-          ideaTitle:idea?idea.title:"",
-          lastMsg:message,
-          lastTime:"Just now",
-          unread:0,
-          messages:[{id:"m"+Date.now(),from:user.id,text:message,time:"Just now",read:true}]
-        };
-        setConvs(function(cv){return [newConv,...cv];});
-        setActiveConv(newConv.id);
-        setShowMessages(true);
-        notify("Collaboration request sent! Chat opened.","success");
-        return;
+      const idea=ideas.find(function(i){return i.id===ideaId;});
+      const exists=convs.find(function(c){return c.participants.indexOf(user.id)>=0&&c.participants.indexOf(otherUser.id)>=0&&c.ideaId===ideaId;});
+      if(!exists){
+        const nc={id:"c"+Date.now(),participants:[user.id,otherUser.id],ideaId:ideaId,ideaTitle:idea?idea.title:"",lastMsg:message,lastTime:"Just now",unread:0,messages:[{id:"m"+Date.now(),from:user.id,text:message,time:"Just now",read:true}]};
+        setConvs(function(cv){return [nc,...cv];});
+        setActiveConv(nc.id);setShowMessages(true);
+        notify("Collaboration request sent! Chat opened.","success");return;
       }
     }
-    notify("Collaboration request sent as "+role+"! +30 reputation when approved.","success");
+    notify("Collaboration request sent as "+role+"!","success");
   };
-
-  var handleSendMessage=function(convId,text){
+  const handleSendMessage=function(convId,text){
     if(!text.trim())return;
-    var newMsg={id:"m"+Date.now(),from:user.id,text:text.trim(),time:"Just now",read:true};
-    setConvs(function(cv){return cv.map(function(c){
-      if(c.id!==convId)return c;
-      return Object.assign({},c,{messages:[...c.messages,newMsg],lastMsg:text.trim(),lastTime:"Just now"});
-    });});
+    const nm={id:"m"+Date.now(),from:user.id,text:text.trim(),time:"Just now",read:true};
+    setConvs(function(cv){return cv.map(function(c){if(c.id!==convId)return c;return Object.assign({},c,{messages:[...c.messages,nm],lastMsg:text.trim(),lastTime:"Just now"});});});
   };
-
-  var handleOpenConv=function(convId){
-    // Mark all as read
-    setConvs(function(cv){return cv.map(function(c){
-      if(c.id!==convId)return c;
-      return Object.assign({},c,{unread:0,messages:c.messages.map(function(m){return Object.assign({},m,{read:true});})});
-    });});
-    setActiveConv(convId);
-    setShowMessages(true);
+  const handleOpenConv=function(convId){
+    setConvs(function(cv){return cv.map(function(c){if(c.id!==convId)return c;return Object.assign({},c,{unread:0,messages:c.messages.map(function(m){return Object.assign({},m,{read:true});})});});});
+    setActiveConv(convId);setShowMessages(true);
   };
-
-  var totalUnread=convs.reduce(function(acc,c){return acc+(c.unread||0);},0);
-
-  var handleSubmitIdea=function(data){
-    var ni=Object.assign({},data,{
-      id:Date.now(),authorId:user.id,author:user.name,authorRole:user.role,
-      votes:{high:0,improve:0,notViable:0},collaborators:0,views:1,comments:[],status:"New",
-      createdAt:new Date().toISOString().slice(0,10),
-      report:{marketDemand:data.aiScore||Math.floor(Math.random()*20+65),competition:Math.floor(Math.random()*30+45),monetization:Math.floor(Math.random()*20+65),scalability:Math.floor(Math.random()*20+65),risk:Math.floor(Math.random()*30+20),success:Math.floor(Math.random()*20+55),investor:Math.floor(Math.random()*30+45),competitors:[],trends:[],roadmap:[],stack:[]}
-    });
+  const handleSubmitIdea=function(data){
+    const ni=Object.assign({},data,{id:Date.now(),authorId:user.id,author:user.name,authorRole:user.role,votes:{high:0,improve:0,notViable:0},collaborators:0,views:1,comments:[],status:"New",createdAt:new Date().toISOString().slice(0,10),report:{marketDemand:data.aiScore||Math.floor(Math.random()*20+65),competition:Math.floor(Math.random()*30+45),monetization:Math.floor(Math.random()*20+65),scalability:Math.floor(Math.random()*20+65),risk:Math.floor(Math.random()*30+20),success:Math.floor(Math.random()*20+55),investor:Math.floor(Math.random()*30+45),competitors:[],trends:[],roadmap:[],stack:[]}});
     setIdeas(function(p){return [ni,...p];});
     setUser(function(u){return Object.assign({},u,{ideas:(u.ideas||0)+1,reputation:(u.reputation||0)+50});});
     notify("Idea submitted! AI analysis ready. +50 reputation","success");
     navigate("explore");
   };
 
-  var navItems=[{id:"dashboard",label:"Home",icon:"⊞"},{id:"explore",label:"Explore",icon:"✦"},{id:"submit",label:"Launch",icon:"+"},{id:"messages",label:"Messages",icon:"✉"},{id:"profile",label:"Profile",icon:"◎"}];
+  const totalUnread=convs.reduce(function(acc,c){return acc+(c.unread||0);},0);
+  const navItems=[{id:"dashboard",label:"Home",icon:"⊞"},{id:"explore",label:"Explore",icon:"✦"},{id:"submit",label:"Launch",icon:"+"},{id:"messages",label:"Messages",icon:"✉"},{id:"profile",label:"Profile",icon:"◎"}];
 
   if(!user)return <Auth onLogin={function(u){setUser(u);setPage("explore");try{localStorage.setItem("ldi_user",JSON.stringify(u));}catch(e){}}}/>;
 
-  return <>
-    <div style={{position:"fixed",top:"5%",left:"5%",width:500,height:500,borderRadius:"50%",background:"rgba(167,139,250,.018)",filter:"blur(130px)",pointerEvents:"none",zIndex:0}}/>
-    <div style={{position:"fixed",bottom:"10%",right:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(79,255,176,.012)",filter:"blur(110px)",pointerEvents:"none",zIndex:0}}/>
-    <nav style={{position:"sticky",top:0,zIndex:100,borderBottom:"1px solid rgba(255,255,255,0.06)",background:"rgba(8,8,16,0.9)",backdropFilter:"blur(24px)"}}>
-      <div style={{maxWidth:1400,margin:"0 auto",padding:"0 clamp(12px,3vw,24px)",display:"flex",alignItems:"center",justifyContent:"space-between",height:56}}>
-        <button onClick={function(){navigate("dashboard");}} style={{background:"linear-gradient(135deg,#a78bfa,#60a5fa)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",border:"none",cursor:"pointer",fontSize:19,fontWeight:700,fontFamily:"var(--fd)",letterSpacing:-0.8}}>LetsDoIt</button>
-        <div style={{display:"flex",gap:2}}>
-          {navItems.map(function(n){return(
-            <button key={n.id} onClick={function(){if(n.id==="messages"){setShowMessages(true);setActiveConv(activeConv||(convs[0]&&convs[0].id)||null);}else{navigate(n.id);}}}
-              style={{padding:"7px 9px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all .2s",position:"relative",
-                background:(n.id==="messages"?showMessages:page===n.id&&page!=="detail")?"rgba(167,139,250,.12)":"transparent",
-                color:(n.id==="messages"?showMessages:page===n.id&&page!=="detail")?"#a78bfa":"rgba(240,240,248,.4)"}}>
-              <span style={{marginRight:3}}>{n.icon}</span><span className="nav-text">{n.label}</span>
-              {n.id==="messages"&&totalUnread>0&&<span style={{position:"absolute",top:3,right:3,width:8,height:8,borderRadius:"50%",background:"#ff4f7b",border:"1px solid var(--bg)"}}/>}
-            </button>
-          );})}
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <span className="hide-mobile" style={{fontSize:12,color:"#fbbf24",fontWeight:700}}>{"⭐ "+user.reputation.toLocaleString()}</span>
-          <button onClick={function(){navigate("profile");}} style={{background:"none",border:"none",cursor:"pointer",borderRadius:"50%",padding:0}}>
-            <Av initials={user.avatar} size={30} role={user.role}/>
-          </button>
+  // Hide loading screen
+  if(typeof window.__hideLd==="function")window.__hideLd();
 
+  return(
+    <>
+      <div style={{position:"fixed",top:"5%",left:"5%",width:500,height:500,borderRadius:"50%",background:"rgba(167,139,250,.018)",filter:"blur(130px)",pointerEvents:"none",zIndex:0}}/>
+      <div style={{position:"fixed",bottom:"10%",right:"5%",width:400,height:400,borderRadius:"50%",background:"rgba(79,255,176,.012)",filter:"blur(110px)",pointerEvents:"none",zIndex:0}}/>
+      <nav style={{position:"sticky",top:0,zIndex:100,borderBottom:"1px solid rgba(255,255,255,0.06)",background:"rgba(8,8,16,0.9)",backdropFilter:"blur(24px)"}}>
+        <div style={{maxWidth:1400,margin:"0 auto",padding:"0 clamp(12px,3vw,24px)",display:"flex",alignItems:"center",justifyContent:"space-between",height:56}}>
+          <button onClick={function(){navigate("dashboard");}} style={{background:"linear-gradient(135deg,#a78bfa,#60a5fa)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",border:"none",cursor:"pointer",fontSize:19,fontWeight:700,fontFamily:"var(--fd)",letterSpacing:-0.8}}>LetsDoIt</button>
+          <div style={{display:"flex",gap:2}}>
+            {navItems.map(function(n){return(
+              <button key={n.id} onClick={function(){if(n.id==="messages"){setShowMessages(true);setActiveConv(activeConv||(convs.length>0?convs[0].id:null));}else{navigate(n.id);}}}
+                style={{padding:"7px 9px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:600,transition:"all .2s",position:"relative",
+                  background:(n.id==="messages"?showMessages:(page===n.id&&page!=="detail"))?"rgba(167,139,250,.12)":"transparent",
+                  color:(n.id==="messages"?showMessages:(page===n.id&&page!=="detail"))?"#a78bfa":"rgba(240,240,248,.4)"}}>
+                <span style={{marginRight:3}}>{n.icon}</span><span className="nav-text">{n.label}</span>
+                {n.id==="messages"&&totalUnread>0&&<span style={{position:"absolute",top:3,right:3,width:8,height:8,borderRadius:"50%",background:"#ff4f7b",border:"1px solid var(--bg)"}}/>}
+              </button>
+            );})}
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <span className="hide-mobile" style={{fontSize:12,color:"#fbbf24",fontWeight:700}}>{"⭐ "+user.reputation.toLocaleString()}</span>
+            <button onClick={function(){navigate("profile");}} style={{background:"none",border:"none",cursor:"pointer",borderRadius:"50%",padding:0}}><Av initials={user.avatar} size={30} role={user.role}/></button>
+          </div>
         </div>
-      </div>
-    </nav>
-    <div style={{position:"fixed",top:66,right:16,zIndex:999,display:"flex",flexDirection:"column",gap:8}}>
-      {toasts.map(function(t){return <Toast key={t.id} msg={t.msg} type={t.type} onClose={function(){setToasts(function(ts){return ts.filter(function(x){return x.id!==t.id;});});}}/>;})}
-    </div>
-    <main style={{width:"100%",maxWidth:1400,margin:"0 auto",padding:"24px clamp(12px,3vw,24px) 60px",position:"relative",zIndex:1}}>
-      {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}} onSubmit={function(){navigate("submit");}} onBack={function(){navigate("explore");}}/>}
-      {page==="explore"&&<Explore ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}}/>}
-      {page==="submit"&&<SubmitIdea onSubmit={handleSubmitIdea} onCancel={function(){navigate("explore");}}/>}
-      {page==="profile"&&<Profile user={user} onSignOut={handleSignOut} onBack={function(){navigate("explore");}}/>}
-      {page==="detail"&&selected&&<IdeaDetail idea={selected} user={user} onBack={goBack} onVote={handleVote} onComment={handleComment} onLike={handleLike} onCollab={handleCollab}/>}
-    </main>
-    <footer style={{borderTop:"1px solid rgba(255,255,255,0.04)",padding:"16px 20px",textAlign:"center",position:"relative",zIndex:1}}>
-      <span style={{fontSize:10,color:"var(--text3)",letterSpacing:0.8}}>LETSDOIT · AI-POWERED STARTUP COLLABORATION · WHERE IDEAS BECOME COMPANIES</span>
-    </footer>
-    {showMessages&&<MessagesPanel
-      convs={convs}
-      user={user}
-      activeConv={activeConv}
-      setActiveConv={function(id){handleOpenConv(id);}}
-      onSend={handleSendMessage}
-      onClose={function(){setShowMessages(false);}}
-    />}
-  </>;
+      </nav>
+      <div style={{position:"fixed",top:66,right:16,zIndex:999,display:"flex",flexDirection:"column",gap:8}}>
+        {toasts.map(function(t){return <Toast key={t.id} msg={t.msg} type={t.type} onClose={function(){setToasts(function(ts){return ts.filter(function(x){return x.id!==t.id;});});}}/>;})}</div>
+      <main style={{width:"100%",maxWidth:1400,margin:"0 auto",padding:"24px clamp(12px,3vw,24px) 60px",position:"relative",zIndex:1}}>
+        {page==="dashboard"&&<Dashboard user={user} ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}} onSubmit={function(){navigate("submit");}}/>}
+        {page==="explore"&&<Explore ideas={ideas} onIdeaClick={function(idea){navigate("detail",idea);}}/>}
+        {page==="submit"&&<SubmitIdea onSubmit={handleSubmitIdea} onCancel={function(){navigate("explore");}}/>}
+        {page==="profile"&&<Profile user={user} onSignOut={handleSignOut}/>}
+        {page==="detail"&&selected&&<IdeaDetail idea={selected} user={user} onBack={function(){navigate("explore");}} onVote={handleVote} onComment={handleComment} onLike={handleLike} onCollab={handleCollab}/>}
+      </main>
+      <footer style={{borderTop:"1px solid rgba(255,255,255,0.04)",padding:"16px 20px",textAlign:"center",position:"relative",zIndex:1}}>
+        <span style={{fontSize:10,color:"var(--text3)",letterSpacing:0.8}}>LETSDOIT · AI-POWERED STARTUP COLLABORATION · WHERE IDEAS BECOME COMPANIES</span>
+      </footer>
+      {showMessages&&<MessagesPanel convs={convs} user={user} activeConv={activeConv} setActiveConv={function(id){handleOpenConv(id);}} onSend={handleSendMessage} onClose={function(){setShowMessages(false);}}/>}
+    </>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-// Hide loading screen
-(function(){
-  try{clearTimeout(window.__ldTimeout);}catch(e){}
-  var el=document.getElementById("loading");
-  if(el)el.style.display="none";
-})();
-
 </script>
 </body>
-</html>
+ </html>
